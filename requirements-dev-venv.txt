@@ -1,0 +1,14 @@
+virtualenv
+# required for code analyzer
+pep8
+pylint
+# required by ssh and Ansible
+paramiko
+pywinrm
+# required to run unit tests
+pytest
+sphinx
+ansible
+click
+shade
+#python-novaclient<=7.1.1
