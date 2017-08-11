@@ -11,4 +11,5 @@ PAWS documentation
    :maxdepth: 2
 
    links
-
+   contributing
+   authors

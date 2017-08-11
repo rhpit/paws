@@ -1,0 +1,15 @@
+virtualenv
+pep8
+pylint
+paramiko
+pywinrm
+pytest
+sphinx
+ansible
+click
+shade
+# providers
+python-novaclient
+python-glanceclient
+python-keystoneclient
+libvirt-python

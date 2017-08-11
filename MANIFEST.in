@@ -1,0 +1,9 @@
+include setup.py
+include README.md doc/authors.rst MANIFEST.in rpmbuild/SOURCES/paws.1 paws/version.txt
+recursive-include paws *.py
+recursive-exclude tests *
+recursive-exclude * __pycache__
+recursive-exclude * *.pyc
+recursive-exclude * *.pyo
+recursive-exclude * *.orig
+recursive-exclude doc *
