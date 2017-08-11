@@ -46,8 +46,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'PAWS'
-copyright = u'2017, Eduardo Cerqueira'
-author = u'Eduardo Cerqueira'
+copyright = u'2017, Red Hat'
+author = u'Eduardo Cerqueira, Ryan Williams'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -89,6 +89,22 @@ html_theme = 'alabaster'
 # documentation.
 #
 # html_theme_options = {}
+# http://alabaster.readthedocs.io/en/latest/customization.html
+html_theme_options = {
+    'logo_text_align': 'center',
+    'description': "Provision Automated Windows and Services"
+    "</br>version: <b>0.3.8-0</b>",
+    'link': '#3782BE',
+    'link_hover': '#3782BE',
+    'page_width': '85%',
+    'github_user': 'rhpit',
+    'github_repo': 'paws',
+    'github_banner': True,
+    'show_related': True
+}
+
+# HTML sidebar logo
+html_logo = "_static/logo_no_bg.png"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -105,8 +121,7 @@ html_sidebars = {
         'about.html',
         'navigation.html',
         'relations.html',  # needs 'show_related': True theme option to display
-        'searchbox.html',
-        'donate.html',
+        'searchbox.html'
     ]
 }
 
@@ -151,7 +166,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'paws', u'PAWS Documentation',
+        (master_doc, 'paws', u'PAWS :: Provision Automated Windows and Services',
      [author], 1)
 ]
 
@@ -162,7 +177,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'PAWS', u'PAWS Documentation',
+        (master_doc, 'PAWS', u'PAWS :: Provision Automated Windows and Services',
      author, 'PAWS', 'One line description of project.',
      'Miscellaneous'),
 ]

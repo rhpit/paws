@@ -11,18 +11,31 @@ GHPAGES       = $(BUILDDIR)/html
 
 # Put it first so that "make" without argument is like "make help".
 help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@echo "-- PAWS sphinx documentation --"
+	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "  clean      to clean build doc folder $(BUILDDIR)"
+	@echo "  doc        to make html doc available at $(GHPAGES)"
+	@echo "  gh-pages   to make doc and push to gh-pages branch live"
+	@echo
 
 .PHONY: help Makefile
 
-# generate html documentation to separated folder paws-doc/html
-doc:
-	@mkdir -p $(BUILDDIR)
-	git clone --branch gh-pages git@github.com:rhpit/paws.git $(BUILDDIR)/html
-	make html
+clean:
+	@rm -rf $(BUILDDIR)/*
+	@echo "deleted $(BUILDDIR)/*"
+
+prep: clean
+	@mkdir -p $(GHPAGES)
+	git clone --branch gh-pages git@github.com:rhpit/paws.git $(GHPAGES)
+	@echo "gh-pages branch cloned at $(GHPAGES)"
+
+# generate html documentation to separated folder ../../paws-doc/html
+doc: prep
+	$(SPHINXBUILD) -W -c $(SOURCEDIR) -b html $(SOURCEDIR) $(GHPAGES)
+	@echo "Build finished. The HTML pages are in $(GHPAGES)"
 
 # generate html documentation and push to github pages
-gh-pages: clean doc
+gh-pages: doc
 	cd $(GHPAGES) && git add . 
 	cd $(GHPAGES) && git commit -m "Generated gh-pages for `git log master -1 --pretty=short --abbrev-commit`"
 	cd $(GHPAGES) && git push origin gh-pages
@@ -31,5 +44,5 @@ gh-pages: clean doc
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+#%: Makefile
+#	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
