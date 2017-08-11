@@ -1,1 +1,1 @@
-Search.setIndex({docnames:["index"],envversion:52,filenames:["index.rst"],objects:{},objnames:{},objtypes:{},terms:{index:0,modul:0,page:0,search:0},titles:["Welcome to PAWS\u2019s documentation!"],titleterms:{document:0,indic:0,paw:0,tabl:0,welcom:0}})
+Search.setIndex({docnames:["index","links"],envversion:52,filenames:["index.rst","links.rst"],objects:{},objnames:{},objtypes:{},terms:{content:0,git:1,index:0,link:0,modul:0,page:0,repo:1,search:0},titles:["Welcome to PAWS\u2019s documentation!","Links"],titleterms:{document:0,indic:0,link:1,paw:0,tabl:0,welcom:0}})

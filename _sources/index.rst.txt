@@ -10,7 +10,7 @@ Welcome to PAWS's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   links
 
 Indices and tables
 ==================
