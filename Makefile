@@ -53,17 +53,18 @@ help:
 	@echo
 	@echo -e "Usage: $(WARN_COLOR) make target$(NO_COLOR) where $(WARN_COLOR)target$(NO_COLOR) is one of following:"
 	@echo
-	@echo -e "\t$(WARN_COLOR)clean$(NO_COLOR)      clean temp files from local workspace"
-	@echo -e "\t$(WARN_COLOR)doc$(NO_COLOR)        generate sphinx doc html and man pages"
-	@echo -e "\t$(WARN_COLOR)gh-pages$(NO_COLOR)   publish html doc to github pages"
-	@echo -e "\t$(WARN_COLOR)codecheck$(NO_COLOR)  run code checkers pep8 and pylint"
-	@echo -e "\t$(WARN_COLOR)rpm$(NO_COLOR)        build source codes and generate rpm file"
-	@echo -e "\t$(WARN_COLOR)test$(NO_COLOR)       run unit tests locally"
-	@echo -e "\t$(WARN_COLOR)tarball$(NO_COLOR)    generate tarball of project"
-	@echo -e "\t$(WARN_COLOR)srpm$(NO_COLOR)       generate srpm of project"
-	@echo -e "\t$(WARN_COLOR)build$(NO_COLOR)      generate srpm and send to build in copr"
-	@echo -e "\t$(WARN_COLOR)all$(NO_COLOR)        clean test doc rpm"
-	@echo -e "\t$(WARN_COLOR)dev$(NO_COLOR)        clean, rpm and install PAWS locally"
+	@echo -e "\t$(WARN_COLOR)clean$(NO_COLOR)         clean temp files from local workspace"
+	@echo -e "\t$(WARN_COLOR)doc$(NO_COLOR)           generate sphinx doc html and man pages"
+	@echo -e "\t$(WARN_COLOR)gh-pages$(NO_COLOR)      publish html doc to github pages"
+	@echo -e "\t$(WARN_COLOR)codecheck$(NO_COLOR)     run code checkers pep8 and pylint"
+	@echo -e "\t$(WARN_COLOR)rpm$(NO_COLOR)           build source codes and generate rpm file"
+	@echo -e "\t$(WARN_COLOR)test$(NO_COLOR)          run unit tests locally"
+	@echo -e "\t$(WARN_COLOR)tarball$(NO_COLOR)       generate tarball of project"
+	@echo -e "\t$(WARN_COLOR)srpm$(NO_COLOR)          generate srpm of project"
+	@echo -e "\t$(WARN_COLOR)copr-dev$(NO_COLOR)      generate srpm and send to build in copr-devel internal Red Hat"
+	@echo -e "\t$(WARN_COLOR)copr-upstream$(NO_COLOR) generate srpm and send to build in upstream copr-fedora"
+	@echo -e "\t$(WARN_COLOR)all$(NO_COLOR)           clean test doc rpm"
+	@echo -e "\t$(WARN_COLOR)dev$(NO_COLOR)           clean, rpm and install PAWS locally"
 	@echo -e "$(NO_COLOR)"
 
 all: clean test rpm
@@ -121,21 +122,26 @@ doc: prep set-version
 	cp $(MANPAGE) paws.1
 	cp $(MANPAGE) $(RPMTOP)/SOURCES/
 	cp $(MANPAGE) $(RPMTOP)/BUILD/paws.1
-	@echo "html doc saved at: ../paws-doc/html/index.html"
-	@echo "man page saved at: ../paws-doc/man/paws.1"
+	@echo -e "$(OK_COLOR)html doc saved at: ../paws-doc/html/index.html$(NO_COLOR)"
+	@echo -e "$(OK_COLOR)man page saved at: ../paws-doc/man/paws.1$(NO_COLOR)"
+	@echo
 
-build: srpm
-	# run build in copr project depending of your local branch.
-	# you need to have a valid ~/.config/copr file to use copr-cli
+copr-dev: srpm
+	# for devel and ci we use internal copr
+	# you need to have a valid ~/.config/copr-devel file to use copr-cli
+	@echo "building source-code from branch $(BRANCH)"
+	@echo -e "$(OK_COLOR)running build in https://copr.devel.redhat.com/coprs/rhpit/paws-devel$(NO_COLOR)"
+	@copr-cli --config /home/$(USER)/.config/copr-devel build rhpit/paws-devel $(RPMTOP)/SRPMS/$(SRPM) 
+
+copr-upstream: srpm
+	# build in fedora copr
+	# you need to have a valid ~/.config/copr-fedora file to use copr-cli
 	@echo "building source-code from branch $(BRANCH)"
 ifeq ("$(BRANCH)","master")
-	@echo "running build in https://copr.devel.redhat.com/coprs/rhpit/paws"
-	@copr-cli --config /home/$(USER)/.config/copr build rhpit/paws \
-	$(RPMTOP)/SRPMS/$(SRPM) 
+	@echo -e "$(OK_COLOR)running build in https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/$(NO_COLOR)"
+	@copr-cli --config /home/$(USER)/.config/copr-fedora build eduardocerqueira/paws $(RPMTOP)/SRPMS/$(SRPM) 
 else
-	@echo "running build in https://copr.devel.redhat.com/coprs/rhpit/paws-devel"
-	@copr-cli --config /home/$(USER)/.config/copr build rhpit/paws-devel \
-	$(RPMTOP)/SRPMS/$(SRPM) 
+	@echo -e "$(ERROR_COLOR)can't run build for branch != master to upstream$(NO_COLOR)"
 endif
 	
 codecheck: 
