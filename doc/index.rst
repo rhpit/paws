@@ -6,10 +6,16 @@
 PAWS documentation
 ==================
 
+.. include:: about.rst
+
 .. toctree::
    :hidden:
    :maxdepth: 2
 
+   install
    links
    contributing
    authors
+   about
+   providers
+   contact
