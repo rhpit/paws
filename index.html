@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Welcome to PAWS’s documentation! &#8212; PAWS 0.3.8 documentation</title>
+    <title>PAWS documentation &#8212; PAWS 0.3.8 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -21,9 +21,10 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Links" href="links.html" />
+    <link rel="next" title="Installation" href="install.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -39,22 +40,84 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-paws-s-documentation">
-<h1>Welcome to PAWS’s documentation!<a class="headerlink" href="#welcome-to-paws-s-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="links.html">Links</a></li>
-</ul>
+  <div class="section" id="paws-documentation">
+<h1>PAWS documentation<a class="headerlink" href="#paws-documentation" title="Permalink to this headline">¶</a></h1>
+<a class="reference internal image-reference" href="_images/paws_highlevel_2.png"><img alt="_images/paws_highlevel_2.png" class="align-center" src="_images/paws_highlevel_2.png" style="width: 60%;" /></a>
+<div class="section" id="about">
+<h2>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h2>
+<p>Paws is a <strong>Linux based tool</strong> to provision Windows systems and configure
+Windows services with a simpler way to test hybrid environments
+<strong>Linux and Windows</strong></p>
 </div>
+<div class="section" id="benefits">
+<h2>Benefits<a class="headerlink" href="#benefits" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Create, build and destroy Windows test environments within minutes.</li>
+<li>Ability to use evaluation Windows images or internal pre-defined QCOW
+Windows images during trial period.</li>
+<li>Create fresh environments to validate bugs.</li>
+<li>Reduce the time spent on support and maintenance of “golden-environments”.</li>
+<li>Use native Windows language (PowerShell) to automate Windows server
+configurations.</li>
+<li>Easily share paws scripts to run in different test environments (eliminating
+need to create scripts that already exists).</li>
+</ol>
 </div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="examples-of-usage">
+<h2>Examples of usage<a class="headerlink" href="#examples-of-usage" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+<li>developers, working in components that interacts with Windows platform can
+use PAWS to provision Windows with all configuration needed to verify their
+code changes.</li>
+<li>quality engineer, executing any type of tests for products running on hybrid
+environment <strong>Linux and Windows</strong> can use PAWS to provision the Windows
+environment with pre-defined configuration and ready to start the tests
+execution.</li>
+<li>developers, quality engineers and release engineers, can use PAWS to
+provison the Windows environment for a release dry-run before go to production.
+With PAWS groups the installation and workflow can be defined managing the
+reproducibility and avoiding left over data reducing risks of a production
+release.</li>
+<li>devOps, before apply changes in a hybrid environment <strong>Linux and Windows</strong> can
+use PAWS to replicate the Windows environment based on scripts.</li>
 </ul>
+</div>
+<div class="section" id="paws-layers">
+<h2>Paws layers<a class="headerlink" href="#paws-layers" title="Permalink to this headline">¶</a></h2>
+<p>Paws is composed of three elements (layers) shown below.</p>
+<img alt="_images/paws_overview.png" class="align-center" src="_images/paws_overview.png" />
+<p><strong>PAWS:</strong> Command line tool installed on a Linux machine.</p>
+<p><strong>Providers:</strong> The infrastructure that will host the Windows machines. See
+<a class="reference external" href="providers.html">providers</a> for all providers available at this current
+version and it might be expanded further for others such as AWS, GCE etc
+It is important to highlight that PAWS uses Ansible <a class="reference external" href="http://docs.ansible.com/ansible/list_of_cloud_modules.html">cloud modules</a>  to
+perform tasks to provision and teardown systems.</p>
+<p><strong>WS:</strong> Is a centralized repository where all PowerShell scripts will live.
+PAWS users can use the PowerShells in the repository or they can set PAWS to
+use PowerShells from another local repo/folder. This is all configurable by
+parameters.</p>
+<p>Paws creates Windows environments using two main components:</p>
+<p>1. <a class="reference external" href="http://docs.ansible.com/">Ansible</a> to provision/teardown and communicate
+via SSH to remote Windows systems provisioned in PAWS providers as example
+in an Openstack cloud computing or in a local virtualized environment
+running on Libvirt.</p>
+<p>2. Windows configuration scripts wrote in <a class="reference external" href="https://msdn.microsoft.com/en-us/powershell/mt173057.aspx">Windows PowerShell</a> language which
+perform configuration actions.</p>
+<p><em>Paws is NOT another tool to provision Windows systems and doesn’t intend
+to replace any configuration management tool.</em></p>
+<p>Paws is a great choice to be used for spinning up Windows systems and
+performing a remote desktop connection or to be used by automation/CI
+requiring interactions with Windows environments.</p>
+<p>We envision paws as the solution to efficiently spin up and configure free
+Windows systems leaving hybrid environments no longer an issue for development
+or testing purposes.</p>
+<hr class="docutils" />
+<p>To get started, navigate to the side bar on the left to see how to
+<a class="reference external" href="install.html">install</a>, <a class="reference external" href="guide.html">use</a> or <a class="reference external" href="contributing.html">contribute</a>
+to paws.</p>
+<div class="toctree-wrapper compound">
+</div>
+</div>
 </div>
 
 
@@ -63,26 +126,52 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="#">
+              <img class="logo" src="_static/logo_no_bg.png" alt="Logo"/>
+            </a></p>
 <h1 class="logo"><a href="#">PAWS</a></h1>
 
 
 
+<p class="blurb">Provision Automated Windows and Services</br>version: <b>0.3.8-0</b></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=rhpit&repo=paws&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
 
 
 
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="providers.html">Providers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html">Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_group.html">Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="powershell.html">Windows PowerShell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="questions.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#benefits">Benefits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#examples-of-usage">Examples of usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#paws-layers">Paws layers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="links.html">Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="links.html" title="next chapter">Links</a></li>
+      <li>Next: <a href="install.html" title="next chapter">Installation</a></li>
   </ul></li>
 </ul>
 </div>
@@ -101,7 +190,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Eduardo Cerqueira.
+      &copy;2017, Red Hat.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
@@ -112,6 +201,10 @@
           rel="nofollow">Page source</a>
     </div>
 
+    
+    <a href="https://github.com/rhpit/paws" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
     
 
     

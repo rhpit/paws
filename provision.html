@@ -1,0 +1,220 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Provision &#8212; PAWS 0.3.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="provision">
+<h1>Provision<a class="headerlink" href="#provision" title="Permalink to this headline">¶</a></h1>
+<p><strong>DESCRIPTION</strong></p>
+<p>Provision task will provision system resources in your provider that you have
+defined inside resources.yaml. If something unexpected happens during
+provisioning. Paws will invoke the teardown task automatically.</p>
+<p><strong>ARGUMENTS</strong></p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Argument</th>
+<th class="head">Default</th>
+<th class="head">Required</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>-c, –credentials</td>
+<td><a class="reference external" href="files.html#credentials-yaml">credentials.yaml</a></td>
+<td>Yes</td>
+<td>Providers credential file
+which contains authentication information.</td>
+</tr>
+<tr class="row-odd"><td>-t, –topology</td>
+<td><a class="reference external" href="files.html#resources-yaml">resources.yaml</a></td>
+<td>Yes</td>
+<td>System resources file which
+contains systems you want to provision.</td>
+</tr>
+<tr class="row-even"><td>-h, –help</td>
+<td>&#160;</td>
+<td>No</td>
+<td>Enable to show help menu.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>EXAMPLES</strong></p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span># Provision using default arguments
+$ paws provision
+
+# Provision using default arguments and verbose logging
+$ paws -v provision
+
+# Provision using specific user directory and verbose logging
+$ paws -v -ud /home/user provision
+
+# Show provision help menu
+$ paws provision -h
+</pre></div>
+</div>
+<p><strong>OUTPUT</strong></p>
+<p>Here is an example output at the end of provision task.</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span> <span class="o">*********************************************</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span>         <span class="n">System</span> <span class="n">Resources</span> <span class="p">(</span><span class="n">provisioned</span><span class="p">)</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span> <span class="o">*********************************************</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span> <span class="mf">1.</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span>     <span class="n">Name</span>         <span class="p">:</span> <span class="n">ryan_windows</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span>     <span class="n">Public</span> <span class="n">IPv4</span>  <span class="p">:</span> <span class="mf">10.8</span><span class="o">.</span><span class="mf">175.135</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span>     <span class="n">Username</span>     <span class="p">:</span> <span class="n">Admin</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span>     <span class="n">Password</span>     <span class="p">:</span> <span class="n">rBFXHL6eiuHOcGnQBiK9</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span> <span class="o">*********************************************</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span> <span class="n">END</span><span class="p">:</span> <span class="n">Provision</span><span class="p">,</span> <span class="n">TIME</span><span class="p">:</span> <span class="mi">0</span><span class="n">h</span><span class="p">:</span><span class="mi">0</span><span class="n">m</span><span class="p">:</span><span class="mi">10</span><span class="n">s</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span> <span class="n">End</span> <span class="n">paws</span> <span class="n">execution</span> <span class="ow">in</span> <span class="mi">0</span><span class="n">h</span><span class="p">:</span><span class="mi">0</span><span class="n">m</span><span class="p">:</span><span class="mi">14</span><span class="n">s</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<blockquote>
+<div>When the provision task is finished you will find a resources.paws file
+located within your user directory. This contains information about the
+system provisioned.</div></blockquote>
+<div class="code yaml last highlight-default"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="p">:</span>
+   <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">windows_2012_server</span>
+     <span class="n">public_v4</span><span class="p">:</span> <span class="mf">10.8</span><span class="o">.</span><span class="mf">174.162</span>
+     <span class="n">private_v4</span><span class="p">:</span> <span class="mf">172.16</span><span class="o">.</span><span class="mf">5.184</span>
+     <span class="n">ssh_key_file</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">id_rsa</span>
+     <span class="n">keypair</span><span class="p">:</span> <span class="n">my_key_pair</span>
+     <span class="nb">id</span><span class="p">:</span> <span class="mi">79</span><span class="n">f0dd24</span><span class="o">-</span><span class="mi">28</span><span class="n">f0</span><span class="o">-</span><span class="mf">45e1</span><span class="o">-</span><span class="n">b560</span><span class="o">-</span><span class="n">a299767fa969</span>
+     <span class="n">win_password</span><span class="p">:</span> <span class="n">my_password</span><span class="nd">@2016</span>
+     <span class="n">win_username</span><span class="p">:</span> <span class="n">Administrator</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_no_bg.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="index.html">PAWS</a></h1>
+
+
+
+<p class="blurb">Provision Automated Windows and Services</br>version: <b>0.3.8-0</b></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=rhpit&repo=paws&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="providers.html">Providers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html">Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_group.html">Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="powershell.html">Windows PowerShell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="questions.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#benefits">Benefits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#examples-of-usage">Examples of usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#paws-layers">Paws layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="links.html">Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Red Hat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/provision.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/rhpit/paws" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

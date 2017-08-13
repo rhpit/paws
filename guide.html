@@ -1,0 +1,339 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Getting Started &#8212; PAWS 0.3.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Providers" href="providers.html" />
+    <link rel="prev" title="Installation" href="install.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>Now you have PAWS installed in your system we need to get inital files
+from <a class="reference external" href="https://github.com/rhpit/ws.git">WS repo</a> to perform paws actions.
+Each action will be covered with more detail along this documentation.</p>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p>Git is needed in your system to download paws files.
+it is not installed by PAWS, you can check if you have git in your system
+by running:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ git --version
+</pre></div>
+</div>
+<p>if git is not in your system you can run the commands below:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span># Yum package manager
+$ sudo yum install -y git
+
+# Dnf package manager
+$ sudo dnf install -y git
+</pre></div>
+</div>
+</div>
+<div class="section" id="paws-files">
+<h2>Paws Files<a class="headerlink" href="#paws-files" title="Permalink to this headline">¶</a></h2>
+<p>PAWS files are to help get you started with paws and can be modified to
+meet your needs. You can save PAWS WS files in any convenient location in
+your system and use <strong>-ud</strong> parameter while running PAWS to load your files from
+any path. By default we recommend saving these files at your /home/$USER/paws</p>
+<p>PAWS default user directory <strong>/home/$USER/paws</strong></p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span>$ cd ~
+$ mkdir paws
+$ git clone https://github.com/rhpit/ws.git paws
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">We strongly recommend that you visit the following page
+<a class="reference external" href="files.html">paws files</a>. This page will go into detail
+about each key and their values.</p>
+</div>
+</div>
+<div class="section" id="how-to-run">
+<h2>How To Run<a class="headerlink" href="#how-to-run" title="Permalink to this headline">¶</a></h2>
+<p>Paws interface is very simple and easy to use open a terminal and run the
+following command:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span>$ paws
+</pre></div>
+</div>
+<p>It will display the help menu (by default) showing available paws tasks. Each
+task contains their own set of arguments. You can view them by passing the
+help argument to any task.</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span># Replace task with one of the available commands
+$ paws task -h
+</pre></div>
+</div>
+<p>Paws also has bash completion, so you can [tab][tab] your way through the
+interface.</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span>$ paws -- [tab][tab]
+--help   --userdir   --verbose   --version
+$ paws --verbose [tab][tab]
+group    provision    show    teardown    winsetup
+$ paws --verbose provision -- [tab][tab]
+--credentials    --help    --topology
+</pre></div>
+</div>
+<p>Now that you have seen how to use paws interface, lets dive into running each
+available task.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For each task below we will be using the default values for their arguments.</p>
+</div>
+<div class="section" id="provision">
+<h3>Provision<a class="headerlink" href="#provision" title="Permalink to this headline">¶</a></h3>
+<p>Provision task will provision system resource(s) in the provider(s) supplied
+by your paws files.</p>
+<p>Details about credentials keys/values can be found here:
+<a class="reference external" href="files.html#credentials-yaml">credentials.yaml</a>.</p>
+<p>Next edit or create <strong>/home/$USER/paws/resources.yaml</strong> which contains the
+system resource you want to provision.</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="p">:</span>
+   <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">windows_2012</span>
+     <span class="n">count</span><span class="p">:</span> <span class="mi">1</span>
+     <span class="n">image</span><span class="p">:</span> <span class="n">win</span><span class="o">-</span><span class="mi">2012</span><span class="o">-</span><span class="n">r2</span>
+     <span class="n">flavor</span><span class="p">:</span> <span class="mi">4</span>
+     <span class="n">network</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">22</span>
+     <span class="n">keypair</span><span class="p">:</span> <span class="n">my_key_pair</span>
+     <span class="n">ssh_private_key</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">id_rsa</span>
+     <span class="n">administrator_password</span><span class="p">:</span> <span class="n">my_password</span><span class="nd">@2016</span>
+</pre></div>
+</div>
+<p>More details about resources keys/values can be found here:
+<a class="reference external" href="files.html#resources-yaml">resources.yaml</a>.</p>
+<p>Now that your files are set. Call paws to provision your system resource.</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span>$ paws provision
+</pre></div>
+</div>
+<p>That is it, paws will take it from here to create the instance in your provider
+and prepare your Windows system ready for you to use.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">More details about provision task can be found here:
+<a class="reference external" href="tasks.html#provision">provision task</a>.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="teardown">
+<h3>Teardown<a class="headerlink" href="#teardown" title="Permalink to this headline">¶</a></h3>
+<p>Teardown task will teardown a system resource in your provider and this task
+requires <strong>credentials.yaml</strong> and <strong>resources.yaml</strong> files.</p>
+<p>These files tell teardown which provider to connect too and which system
+resources to delete.</p>
+<p>Now that your files are set. Call paws to teardown your system resource.</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span>$ paws teardown
+</pre></div>
+</div>
+<p>That is it, paws will take it from here to delete the instance in your provider.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">More details about teardown task can be found here:
+<a class="reference external" href="tasks.html#teardown">teardown task</a>.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="winsetup">
+<h3>Winsetup<a class="headerlink" href="#winsetup" title="Permalink to this headline">¶</a></h3>
+<p>Winsetup task will configure services on a Windows system by running a
+Windows PowerShell script. Winsetup needs files generated by paws provision
+task.</p>
+<p>At top of this page you saw how to clone <a class="reference external" href="https://github.com/rhpit/ws">https://github.com/rhpit/ws</a> repo
+that contains some samples of powershell and scripts you can use here.</p>
+<p>Following the standard scripts files can be found at
+<strong>/home/$USER/paws/powershell</strong>.</p>
+<p>Now that you have your PowerShell script you are ready to configure your Windows
+system. Call paws to configure your system resource.</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span>$ paws winsetup -ps powershell/get_system_info.ps1
+</pre></div>
+</div>
+<p>That is it, paws will take it from here to run your PowerShell script on your
+Windows system. In the console output you will see all messages from your
+PowerShell script.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">More details about winsetup task can be found here:
+<a class="reference external" href="tasks.html#winsetup">winsetup task</a>.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="group">
+<h3>Group<a class="headerlink" href="#group" title="Permalink to this headline">¶</a></h3>
+<p>Group task will run multiple paws commands as one command. A group is a YAML
+file which defines a list of paws tasks to run.</p>
+<p>Following the standard group files can be found at <strong>/home/$USER/paws/group</strong>.</p>
+<p>First edit or create a group file which will define a list of tasks you want
+to run.</p>
+<p>Now that you have your group file you are ready to execute all tasks you have
+defined. Call paws to execute your group file.</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span>$ paws group -n group/2012_winad.yaml
+</pre></div>
+</div>
+<p>That is it, paws will take it from here to run your group. The group we passed
+to paws was <strong>2012_winad.yaml</strong>. This group will provision a Windows system and
+configure it as an Active Directory Server. To setup this configuration it
+would require lots of paws commands to be run and by using a group it allows
+you to simply run one paws command.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">More details about group task can be found here:
+<a class="reference external" href="tasks.html#group">group task</a>.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="show">
+<h3>Show<a class="headerlink" href="#show" title="Permalink to this headline">¶</a></h3>
+<p>Show task will display system resources in your supplied provider. It assumes
+the <a class="reference external" href="getting_started.html#provision">provision</a> task was called and systems
+were successfully provisioned. If no systems were provisioned by it, a warning
+message will be displayed.</p>
+<p>Show will require files from
+<a class="reference external" href="getting_started.html#provision">provision</a> task in order to work.</p>
+<p>To view system resources that may have been provisioned, just call paws to see.</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span>$ paws show
+</pre></div>
+</div>
+<p>That is it, paws will take it from here to display any system resources that
+may still be active in your provider.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">More details about show task can be found here:
+<a class="reference external" href="tasks.html#show">show task</a>.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_no_bg.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="index.html">PAWS</a></h1>
+
+
+
+<p class="blurb">Provision Automated Windows and Services</br>version: <b>0.3.8-0</b></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=rhpit&repo=paws&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#paws-files">Paws Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-run">How To Run</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#provision">Provision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#teardown">Teardown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#winsetup">Winsetup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#group">Group</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#show">Show</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="providers.html">Providers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html">Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_group.html">Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="powershell.html">Windows PowerShell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="questions.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#benefits">Benefits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#examples-of-usage">Examples of usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#paws-layers">Paws layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="links.html">Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="install.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="providers.html" title="next chapter">Providers</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Red Hat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/guide.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/rhpit/paws" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

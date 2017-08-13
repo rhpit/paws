@@ -1,0 +1,552 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Providers &#8212; PAWS 0.3.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Files" href="files.html" />
+    <link rel="prev" title="Getting Started" href="guide.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="providers">
+<h1>Providers<a class="headerlink" href="#providers" title="Permalink to this headline">¶</a></h1>
+<p>The definition of <strong>provider</strong> for PAWS is the location where the Windows will
+be provisioned and managed by PAWS. it is the list of providers supported:</p>
+<ul class="simple">
+<li><a class="reference external" href="providers.html#openstack">Openstack provider</a></li>
+<li><a class="reference external" href="providers.html#libvirt">Libvirt provider</a></li>
+</ul>
+<div class="section" id="openstack">
+<h2>Openstack<a class="headerlink" href="#openstack" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.openstack.org">http://www.openstack.org</a></p>
+<p>PAWS is integrated with Openstack and able to provision, configure and manage
+Windows virtual machines running on public or private clouds.</p>
+<p>Path: /home/$USER/paws/credentials.yaml</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">credentials</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">provider</span><span class="p">:</span> <span class="n">openstack</span>
+    <span class="n">os_auth_url</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">my</span><span class="o">-</span><span class="n">openstack</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="mi">5000</span><span class="o">/</span><span class="n">v2</span><span class="o">.</span><span class="mi">0</span>
+    <span class="n">os_username</span><span class="p">:</span> <span class="n">paws</span>
+    <span class="n">os_password</span><span class="p">:</span> <span class="o">********</span>
+    <span class="n">os_project_name</span><span class="p">:</span> <span class="n">paws</span>
+</pre></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="36%" />
+<col width="36%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Field name</th>
+<th class="head">Description</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>provider</td>
+<td>name of provider where
+your Windows system
+will live</td>
+<td>openstack, libvirt</td>
+</tr>
+<tr class="row-odd"><td>os_auth_url</td>
+<td>OpenStack URL/port for
+authentication</td>
+<td>HTTP URL see in file
+above to use OSP7</td>
+</tr>
+<tr class="row-even"><td>os_username</td>
+<td>Username to login to
+OpenStack tenant</td>
+<td>tenant username</td>
+</tr>
+<tr class="row-odd"><td>os_password</td>
+<td>Password to login to
+OpenStack tenant</td>
+<td>tenant password</td>
+</tr>
+<tr class="row-even"><td>os_project_name</td>
+<td>Name of the OpenStack
+tenant or project</td>
+<td>tenant or project</td>
+</tr>
+</tbody>
+</table>
+<p>Path: /home/$USER/paws/resources.yaml</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">PAWS_WIN2012_R2</span>
+  <span class="n">provider</span><span class="p">:</span> <span class="n">openstack</span>
+  <span class="n">count</span><span class="p">:</span> <span class="mi">2</span>
+  <span class="n">image</span><span class="p">:</span> <span class="n">win</span><span class="o">-</span><span class="mi">2012</span><span class="o">-</span><span class="n">r2</span>
+  <span class="n">flavor</span><span class="p">:</span> <span class="mi">4</span>
+  <span class="n">network</span><span class="p">:</span> <span class="mf">10.8</span><span class="o">.</span><span class="mf">172.0</span><span class="o">/</span><span class="mi">22</span>
+  <span class="n">keypair</span><span class="p">:</span> <span class="n">paws</span>
+  <span class="n">ssh_private_key</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">ecerquei</span><span class="o">/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">paws</span>
+  <span class="n">administrator_password</span><span class="p">:</span> <span class="n">my_password</span><span class="nd">@2016</span>
+</pre></div>
+</div>
+<p><em>PS: resources accepts multiple resources definition.</em></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="49%" />
+<col width="18%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Field name</th>
+<th class="head">Description</th>
+<th class="head">Required</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>name</td>
+<td>The name that will be given when
+the instance is provisioned
+(Openstack sets this as the
+instance name). When count &gt; 1
+during provisioning the instance
+name will be automatically
+appended with sequential numbers.</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>provider</td>
+<td>provider name to use</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>count</td>
+<td>The number of identical resources
+to create. This count only applies
+to each specific resource section.
+It does not apply to all resources
+in the file.</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>image</td>
+<td>The name of the image to be used
+to create the instance. The
+Windows image should exist and
+your provider account must have
+permission to use it.
+<em>Check Openstack in FAQ to see</em>
+<em>how you can get the full list of</em>
+<em>current Windows images in your</em>
+<em>Openstack provider</em></td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>flavor</td>
+<td>The flavor name or ID which should
+be used when creating the new
+instance
+<em>Check Openstack FAQ to see how</em>
+<em>you can get the full list of</em>
+<em>current Windows flavors in your</em>
+<em>Openstack provider</em></td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>network</td>
+<td>The name or ID of a network to
+attach this instance to. This
+network will provide the floating
+IP to your instance. You will want
+to supply the external network
+name as your network if it has a
+router connecting it to an
+internal network.</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>keypair</td>
+<td>The key pair name to be used when
+creating an instance</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>ssh_private_key</td>
+<td>Absolute path from your host
+machine to the SSH private key to
+login to system via SSH</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>administrator_password</td>
+<td>The administrator password to set
+on the Windows system after
+provisioning has finished
+<em>If you do not want to set an</em>
+<em>administrator password initially</em>
+<em>you can remove this key from</em>
+<em>your resource section. It will</em>
+<em>then use the Admin account to</em>
+<em>login to the system via SSH</em></td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>snapshot</td>
+<td>Take a snapshot for a given
+resource. You can define a list of
+tasks when to take a snapshot</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>- snapshot:</strong> Take a snapshot for a given resource. You can define a
+list of tasks when to take a snapshot.</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Example 1: Create snapshot &amp; clean old server snapshots</span>
+<span class="n">resources</span><span class="p">:</span>
+   <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">MY_WINDOWS_VM</span>
+     <span class="n">snapshot</span><span class="p">:</span>
+       <span class="o">-</span> <span class="n">task</span><span class="p">:</span> <span class="n">teardown</span>
+</pre></div>
+</div>
+<p>The resource above will take a snapshot and clean any old snapshots
+created for this VM (MY_WINDOWS_VM) during teardown task. The default
+behavior is when you give a list of tasks to create snapshots it will
+always create the snapshot and clean old snapshots. To override this
+please see the following example:</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Example 2: Create snapshot &amp; do not clean old server snapshots</span>
+<span class="n">resources</span><span class="p">:</span>
+   <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">MY_WINDOWS_VM</span>
+     <span class="n">snapshot</span><span class="p">:</span>
+       <span class="o">-</span> <span class="n">task</span><span class="p">:</span> <span class="n">teardown</span>
+         <span class="n">clean</span><span class="p">:</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p class="last">This resource will take a snapshot and will not clean old snapshots
+created by paws for this server.</p>
+</div>
+<div class="section" id="single-network">
+<h3>single network<a class="headerlink" href="#single-network" title="Permalink to this headline">¶</a></h3>
+<p>An Openstack tenant which has a single network connected to a public network.</p>
+<a class="reference internal image-reference" href="_images/osp_single_networks.png"><img alt="_images/osp_single_networks.png" src="_images/osp_single_networks.png" style="width: 400px; height: 500px;" /></a>
+<p>You can find your Openstacks network topology by accessing the following link
+with your credentials <a class="reference external" href="http://ip/dashboard/project/network_topology/">http://ip/dashboard/project/network_topology/</a></p>
+<p>Example resources.yaml:</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">PAWS_WIN2012_R2</span>
+  <span class="n">provider</span><span class="p">:</span> <span class="n">openstack</span>
+  <span class="n">count</span><span class="p">:</span> <span class="mi">2</span>
+  <span class="n">image</span><span class="p">:</span> <span class="n">win</span><span class="o">-</span><span class="mi">2012</span><span class="o">-</span><span class="n">r2</span>
+  <span class="n">flavor</span><span class="p">:</span> <span class="mi">4</span>
+  <span class="n">network</span><span class="p">:</span> <span class="mf">10.8</span><span class="o">.</span><span class="mf">172.0</span><span class="o">/</span><span class="mi">22</span>
+  <span class="n">keypair</span><span class="p">:</span> <span class="n">paws</span>
+  <span class="n">ssh_private_key</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">ecerquei</span><span class="o">/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">paws</span>
+  <span class="n">administrator_password</span><span class="p">:</span> <span class="n">my_password</span><span class="nd">@2016</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><em>E.g. Looking at the network topology image above, you will see a router
+is connected to the 10.8.172.0/22 external network. This external
+network can be used as the network name in your resources.yaml.</em></p>
+</div>
+</div>
+<div class="section" id="multiple-networks">
+<h3>multiple networks<a class="headerlink" href="#multiple-networks" title="Permalink to this headline">¶</a></h3>
+<p>A Openstack tenant which has multiple networks connected to a
+public network.</p>
+<a class="reference internal image-reference" href="_images/osp_multiple_networks.png"><img alt="_images/osp_multiple_networks.png" src="_images/osp_multiple_networks.png" style="width: 400px; height: 500px;" /></a>
+<p>You can find your Openstacks network topology by accessing the following link
+with your credentials <a class="reference external" href="http://ip/dashboard/project/network_topology/">http://ip/dashboard/project/network_topology/</a></p>
+<p>Example resources.yaml:</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="p">:</span>
+   <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">MY_WINDOWS_VM</span>
+     <span class="n">count</span><span class="p">:</span> <span class="mi">1</span>
+     <span class="n">image</span><span class="p">:</span> <span class="n">win</span><span class="o">-</span><span class="mi">2012</span><span class="o">-</span><span class="n">r2</span>
+     <span class="n">flavor</span><span class="p">:</span> <span class="mi">4</span>
+     <span class="n">network</span><span class="p">:</span> <span class="n">network_name</span>
+     <span class="n">floating_ip_pools</span><span class="p">:</span> <span class="mf">192.186</span><span class="o">.</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">22</span>
+     <span class="n">keypair</span><span class="p">:</span> <span class="n">my_key_pair</span>
+     <span class="n">ssh_private_key</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">id_rsa</span>
+     <span class="n">administrator_password</span><span class="p">:</span> <span class="n">my_password</span><span class="nd">@2016</span>
+</pre></div>
+</div>
+<p>In this example we want to highlight on two keys that will need to be set
+correctly if your Openstack tenant has multiple networks connected to the
+same public network. For information about all other keys, please reference
+to the descriptions above.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>(REQUIRED)
+<strong>- network:</strong> The network name should define which internal network you
+want the instance to be created on. It should not be the name of the
+external network to attach too.</p>
+<blockquote>
+<div><em>E.g. Looking at the network topology image above, we will want to
+give the name of one of the internal networks to use. In this case we
+will give idm-ad-domain.</em></div></blockquote>
+<p><strong>- floating_ip_pools:</strong> The name of the external network to use to create
+the floating IP for the provisioned instance.</p>
+<blockquote class="last">
+<div><em>E.g. Looking at the network topology image above, we will want to give
+the floating_ip_pools a value of 10.8.176.0/22. Since this is the
+external network connected to one of the internal networks in the
+image.</em></div></blockquote>
+</div>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p>If your Openstack has multiple networks connected to the same external
+network, it is REQUIRED that you set the floating_ip_pools key. This key
+tells paws which external network to use to create the floating IP.</p>
+<p class="last">Setting both network and floating_ip_pools for a single network connected
+to an external network will work as well.</p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="libvirt">
+<h2>Libvirt<a class="headerlink" href="#libvirt" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.libvirt.org">http://www.libvirt.org</a></p>
+<p>PAWS is integrated with Libvirt and able to provision, configure and manage
+Windows virtual machines running locally.</p>
+<p><a class="reference external" href="https://github.com/rhpit/paws-imgsrv">PAWS Image Service</a> is an internal
+repository for Windows QCOW images. If you have your own QCOW Windows images
+ready to run on Libvirt you only need to configure your paws files.</p>
+<p>To run PAWS with libvirt you need to create <strong>credentials.yaml</strong> and
+<strong>resources.yaml</strong> see below details for these two files and a sample.</p>
+<p>To configure your machine to run PAWS with libvirt follow
+the section <a class="reference external" href="libvirt.html">Running Windows on VM</a></p>
+<p>path: /home/$USER/paws/credentials.yaml</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">credentials</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">provider</span><span class="p">:</span> <span class="n">libvirt</span>
+    <span class="n">qemu_instance</span><span class="p">:</span> <span class="n">qemu</span><span class="p">:</span><span class="o">///</span><span class="n">system</span>
+    <span class="n">imgsrv_url</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">imgsrv</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">com</span>
+</pre></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="32%" />
+<col width="45%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Field name</th>
+<th class="head">Description</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>provider</td>
+<td>name of provider where
+your Windows system
+will live</td>
+<td>openstack, libvirt</td>
+</tr>
+<tr class="row-odd"><td>qemu_instance</td>
+<td>specify the instance
+for QEMU driver to use</td>
+<td>system, session
+for more information
+<a class="reference external" href="https://libvirt.org/drvqemu.html">https://libvirt.org/drvqemu.html</a></td>
+</tr>
+<tr class="row-even"><td>imgsrv_url</td>
+<td>URL to retrieve the
+pre-configured Windows
+image for Libvirt</td>
+<td><a class="reference external" href="http://imgsrv.url.com">http://imgsrv.url.com</a>
+or for dev purpose, if running
+IMGSRV locally you can use
+<a class="reference external" href="http://127.0.0.1:5000">http://127.0.0.1:5000</a></td>
+</tr>
+</tbody>
+</table>
+<p>path: /home/$USER/paws/resources.yaml</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">PAWS_WIN2012_R2</span>
+    <span class="n">provider</span><span class="p">:</span> <span class="n">libvirt</span>
+    <span class="n">memory</span><span class="p">:</span> <span class="mi">4000</span>
+    <span class="n">vcpu</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="n">disk_source</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">Downloads</span><span class="o">/</span><span class="n">windows_2012_R2</span><span class="o">.</span><span class="n">qcow</span>
+    <span class="n">win_username</span><span class="p">:</span> <span class="n">Administrator</span>
+    <span class="n">win_password</span><span class="p">:</span> <span class="n">my_password</span><span class="nd">@2016</span>
+</pre></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="49%" />
+<col width="18%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Field name</th>
+<th class="head">Description</th>
+<th class="head">Required</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>name</td>
+<td>The name that will be given when
+the instance is provisioned</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>provider</td>
+<td>provider name to use</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>memory</td>
+<td>The amount of memory you want to
+set for the new virtual machine
+that will be provisioned
+<em>must be in MB</em></td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>vcpu</td>
+<td>The number of virtual CPU you want
+to allocate for the new virtual
+machine</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>disk_source</td>
+<td>The location in your local machine
+where the pre-configured Windows
+image will be saved. This file is
+the storage drive for your virtual
+machine</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>win_username</td>
+<td>the username pre-configured in the
+Windows image. You get this from
+IMGSRV</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>win_password</td>
+<td>the password pre-configured in the
+Windows image. You get this from
+IMGSRV</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_no_bg.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="index.html">PAWS</a></h1>
+
+
+
+<p class="blurb">Provision Automated Windows and Services</br>version: <b>0.3.8-0</b></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=rhpit&repo=paws&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Providers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#openstack">Openstack</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#single-network">single network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multiple-networks">multiple networks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#libvirt">Libvirt</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="files.html">Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_group.html">Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="powershell.html">Windows PowerShell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="questions.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#benefits">Benefits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#examples-of-usage">Examples of usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#paws-layers">Paws layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="links.html">Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="guide.html" title="previous chapter">Getting Started</a></li>
+      <li>Next: <a href="files.html" title="next chapter">Files</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Red Hat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/providers.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/rhpit/paws" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,259 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Files &#8212; PAWS 0.3.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tasks" href="tasks.html" />
+    <link rel="prev" title="Providers" href="providers.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="files">
+<h1>Files<a class="headerlink" href="#files" title="Permalink to this headline">¶</a></h1>
+<p>This document will explain in more detail about files used by paws.</p>
+<div class="section" id="ansible-cfg">
+<h2>ansible.cfg<a class="headerlink" href="#ansible-cfg" title="Permalink to this headline">¶</a></h2>
+<p>Paws creates an Ansible configuration file stored at the default user
+directory <strong>/home/$USER/paws</strong> to be used when run. This file will not have
+Ansible generate playbook <strong>.retry</strong> files.</p>
+<p>Since this file lives in the user directory, you can modify Ansible settings
+if you wish. Please be aware if you change settings not supported by paws,
+you could see potential failures.</p>
+<p>See Ansible doc for more information about .retry at
+<a class="reference external" href="http://docs.ansible.com/ansible/latest/intro_configuration.html#retry-files-enabled">http://docs.ansible.com/ansible/latest/intro_configuration.html#retry-files-enabled</a></p>
+</div>
+<hr class="docutils" />
+<div class="section" id="credentials-yaml">
+<h2>credentials.yaml<a class="headerlink" href="#credentials-yaml" title="Permalink to this headline">¶</a></h2>
+<p>Dictionary of your providers credentials.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p>For Openstack as provider, you can use Openstack system environment
+variables instead of the credentials.yaml file. The physical
+credentials.yaml file is the primary source. If you are using system
+environments but still have credentials.yaml in your paws user directory,
+paws will use the file. For Openstack provider you can use Openstack
+system environment variables</p>
+<p class="last">Check Openstack FAQ to see where to get and how to use  Openstack system
+environment variables <a class="reference external" href="https://docs.openstack.org/keystone/latest/install/keystone-openrc.html">https://docs.openstack.org/keystone/latest/install/keystone-openrc.html</a></p>
+</div>
+<p>Example credentials.yaml:</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">credentials</span>
+   <span class="o">-</span> <span class="n">provider</span><span class="p">:</span> <span class="n">openstack</span>
+     <span class="n">os_auth_url</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">10.10</span><span class="o">.</span><span class="mf">10.10</span><span class="p">:</span><span class="mi">5000</span><span class="o">/</span><span class="n">v2</span><span class="o">.</span><span class="mi">0</span>
+     <span class="n">os_username</span><span class="p">:</span> <span class="n">username</span>
+     <span class="n">os_password</span><span class="p">:</span> <span class="n">password</span>
+     <span class="n">os_project_name</span><span class="p">:</span> <span class="n">tenant</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>see <a class="reference external" href="providers.html#Openstack">Openstack provider</a> for fields definition</p>
+<p class="last">see <a class="reference external" href="providers.html#Libvirt">Libvirt provider</a> for fields definition</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="resources-yaml">
+<h2>resources.yaml<a class="headerlink" href="#resources-yaml" title="Permalink to this headline">¶</a></h2>
+<p>A list of resources that you would like to provision.</p>
+<p>Example resources.yaml for Openstack provider:</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="p">:</span>
+   <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">MY_WINDOWS_VM</span>
+     <span class="n">count</span><span class="p">:</span> <span class="mi">1</span>
+     <span class="n">image</span><span class="p">:</span> <span class="n">win</span><span class="o">-</span><span class="mi">2012</span><span class="o">-</span><span class="n">r2</span>
+     <span class="n">flavor</span><span class="p">:</span> <span class="mi">4</span>
+     <span class="n">network</span><span class="p">:</span> <span class="n">network_name</span>
+     <span class="n">keypair</span><span class="p">:</span> <span class="n">my_key_pair</span>
+     <span class="n">ssh_private_key</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">id_rsa</span>
+     <span class="n">administrator_password</span><span class="p">:</span> <span class="n">my_password</span><span class="nd">@2016</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>see <a class="reference external" href="providers.html#Openstack">Openstack provider</a> for fields definition</p>
+<p class="last">see <a class="reference external" href="providers.html#Libvirt">Libvirt provider</a> for fields definition</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="resources-paws">
+<h2>resources.paws<a class="headerlink" href="#resources-paws" title="Permalink to this headline">¶</a></h2>
+<p>A list of resources that have been provisioned by provision task. This
+file will be generated when provision task is finished. It is stored under the
+users directory.</p>
+<p>Example resources.paws:</p>
+<div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="p">:</span>
+   <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">windows_2012_server</span>
+     <span class="n">public_v4</span><span class="p">:</span> <span class="mf">10.8</span><span class="o">.</span><span class="mf">174.162</span>
+     <span class="n">private_v4</span><span class="p">:</span> <span class="mf">172.16</span><span class="o">.</span><span class="mf">5.194</span>
+     <span class="n">ssh_key_file</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">id_rsa</span>
+     <span class="n">keypair</span><span class="p">:</span> <span class="n">my_key_pair</span>
+     <span class="nb">id</span><span class="p">:</span> <span class="mi">79</span><span class="n">f0dd24</span><span class="o">-</span><span class="mi">28</span><span class="n">f0</span><span class="o">-</span><span class="mf">45e1</span><span class="o">-</span><span class="n">b560</span><span class="o">-</span><span class="n">a299767fa969</span>
+     <span class="n">win_password</span><span class="p">:</span> <span class="n">my_password</span><span class="nd">@2016</span>
+     <span class="n">win_username</span><span class="p">:</span> <span class="n">Administrator</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>- name:</strong> The name of the instance created in Openstack.</p>
+<p><strong>- public_v4:</strong> The public IPv4 address.</p>
+<p><strong>- private_v4:</strong> The private (internal) IPv4 address.</p>
+<p><strong>- ssh_key_file:</strong> The SSH private key to login to the system via SSH.</p>
+<p><strong>- keypair:</strong> They key pair associated with the instance when created.</p>
+<p><strong>- id:</strong> The ID of the instance running in Openstack.</p>
+<p><strong>- win_password:</strong> The password to login to your instance. This can be
+used by SSH or RDP (Remote Desktop Protocol).</p>
+<p class="last"><strong>- win_username:</strong> The username to login to your instance. This can be
+used by SSH or RDP (Remote Desktop Protocol).</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="powershell-files">
+<h2>powershell files<a class="headerlink" href="#powershell-files" title="Permalink to this headline">¶</a></h2>
+<p>For more information about PowerShell scripts can be found here:
+<a class="reference external" href="powershell.html#ws">PowerShell</a>.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="group-files">
+<h2>group files<a class="headerlink" href="#group-files" title="Permalink to this headline">¶</a></h2>
+<p>For more information about groups can be found here:
+<a class="reference external" href="create_group.html">group</a>.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">Files under powershell or group directories can be modified by your need.
+These are just base templates to help get you started with paws.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_no_bg.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="index.html">PAWS</a></h1>
+
+
+
+<p class="blurb">Provision Automated Windows and Services</br>version: <b>0.3.8-0</b></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=rhpit&repo=paws&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="providers.html">Providers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ansible-cfg">ansible.cfg</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#credentials-yaml">credentials.yaml</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#resources-yaml">resources.yaml</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#resources-paws">resources.paws</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#powershell-files">powershell files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#group-files">group files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_group.html">Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="powershell.html">Windows PowerShell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="questions.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#benefits">Benefits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#examples-of-usage">Examples of usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#paws-layers">Paws layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="links.html">Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="providers.html" title="previous chapter">Providers</a></li>
+      <li>Next: <a href="tasks.html" title="next chapter">Tasks</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Red Hat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/files.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/rhpit/paws" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,752 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Tasks &#8212; PAWS 0.3.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Groups" href="create_group.html" />
+    <link rel="prev" title="Files" href="files.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tasks">
+<h1>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h1>
+<p>This document will go into more detail about each paws task.</p>
+<p>Below are common arguments that are available to all paws tasks.</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Argument</th>
+<th class="head">Default</th>
+<th class="head">Required</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>-ud, –userdir</td>
+<td>/home/$USER/paws</td>
+<td>Yes</td>
+<td>User directory where files
+used by paws are stored.</td>
+</tr>
+<tr class="row-odd"><td>-v, –verbose</td>
+<td>&#160;</td>
+<td>No</td>
+<td>Enable to have verbose logging.</td>
+</tr>
+<tr class="row-even"><td>-h, –help</td>
+<td>&#160;</td>
+<td>No</td>
+<td>Enable to show help menu.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="provision">
+<h2>Provision<a class="headerlink" href="#provision" title="Permalink to this headline">¶</a></h2>
+<p><strong>DESCRIPTION</strong></p>
+<p>Provision task will provision system resources in your provider that you have
+defined inside resources.yaml. If something unexpected happens during
+provisioning. Paws will invoke the teardown task automatically.</p>
+<p><strong>ARGUMENTS</strong></p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Argument</th>
+<th class="head">Default</th>
+<th class="head">Required</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>-c, –credentials</td>
+<td><a class="reference external" href="files.html#credentials-yaml">credentials.yaml</a></td>
+<td>Yes</td>
+<td>Providers credential file
+which contains authentication information.</td>
+</tr>
+<tr class="row-odd"><td>-t, –topology</td>
+<td><a class="reference external" href="files.html#resources-yaml">resources.yaml</a></td>
+<td>Yes</td>
+<td>System resources file which
+contains systems you want to provision.</td>
+</tr>
+<tr class="row-even"><td>-h, –help</td>
+<td>&#160;</td>
+<td>No</td>
+<td>Enable to show help menu.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>EXAMPLES</strong></p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span># Provision using default arguments
+$ paws provision
+
+# Provision using default arguments and verbose logging
+$ paws -v provision
+
+# Provision using specific user directory and verbose logging
+$ paws -v -ud /home/user provision
+
+# Show provision help menu
+$ paws provision -h
+</pre></div>
+</div>
+<p><strong>OUTPUT</strong></p>
+<p>Here is an example output at the end of provision task.</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span> <span class="o">*********************************************</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span>         <span class="n">System</span> <span class="n">Resources</span> <span class="p">(</span><span class="n">provisioned</span><span class="p">)</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span> <span class="o">*********************************************</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span> <span class="mf">1.</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span>     <span class="n">Name</span>         <span class="p">:</span> <span class="n">ryan_windows</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span>     <span class="n">Public</span> <span class="n">IPv4</span>  <span class="p">:</span> <span class="mf">10.8</span><span class="o">.</span><span class="mf">175.135</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span>     <span class="n">Username</span>     <span class="p">:</span> <span class="n">Admin</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span>     <span class="n">Password</span>     <span class="p">:</span> <span class="n">rBFXHL6eiuHOcGnQBiK9</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span> <span class="o">*********************************************</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span> <span class="n">END</span><span class="p">:</span> <span class="n">Provision</span><span class="p">,</span> <span class="n">TIME</span><span class="p">:</span> <span class="mi">0</span><span class="n">h</span><span class="p">:</span><span class="mi">0</span><span class="n">m</span><span class="p">:</span><span class="mi">10</span><span class="n">s</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">15</span> <span class="mi">20</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">22</span> <span class="n">INFO</span> <span class="n">End</span> <span class="n">paws</span> <span class="n">execution</span> <span class="ow">in</span> <span class="mi">0</span><span class="n">h</span><span class="p">:</span><span class="mi">0</span><span class="n">m</span><span class="p">:</span><span class="mi">14</span><span class="n">s</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<blockquote>
+<div>When the provision task is finished you will find a resources.paws file
+located within your user directory. This contains information about the
+system provisioned.</div></blockquote>
+<div class="code yaml last highlight-default"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="p">:</span>
+   <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">windows_2012_server</span>
+     <span class="n">public_v4</span><span class="p">:</span> <span class="mf">10.8</span><span class="o">.</span><span class="mf">174.162</span>
+     <span class="n">private_v4</span><span class="p">:</span> <span class="mf">172.16</span><span class="o">.</span><span class="mf">5.184</span>
+     <span class="n">ssh_key_file</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">id_rsa</span>
+     <span class="n">keypair</span><span class="p">:</span> <span class="n">my_key_pair</span>
+     <span class="nb">id</span><span class="p">:</span> <span class="mi">79</span><span class="n">f0dd24</span><span class="o">-</span><span class="mi">28</span><span class="n">f0</span><span class="o">-</span><span class="mf">45e1</span><span class="o">-</span><span class="n">b560</span><span class="o">-</span><span class="n">a299767fa969</span>
+     <span class="n">win_password</span><span class="p">:</span> <span class="n">my_password</span><span class="nd">@2016</span>
+     <span class="n">win_username</span><span class="p">:</span> <span class="n">Administrator</span>
+</pre></div>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="teardown">
+<h2>Teardown<a class="headerlink" href="#teardown" title="Permalink to this headline">¶</a></h2>
+<p><strong>DESCRIPTION</strong></p>
+<p>Teardown task will teardown system resources in your supplied provider. It will
+teardown the resources you have defined inside your resources.yaml if they are
+active instances.</p>
+<p><strong>ARGUMENTS</strong></p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Argument</th>
+<th class="head">Default</th>
+<th class="head">Required</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>-c, –credentials</td>
+<td><a class="reference external" href="files.html#credentials-yaml">credentials.yaml</a></td>
+<td>Yes</td>
+<td>Providers credential file
+which contains authentication information.</td>
+</tr>
+<tr class="row-odd"><td>-t, –topology</td>
+<td><a class="reference external" href="files.html#resources-yaml">resources.yaml</a></td>
+<td>Yes</td>
+<td>System resources file which
+contains systems you want to teardown.</td>
+</tr>
+<tr class="row-even"><td>-h, –help</td>
+<td>&#160;</td>
+<td>No</td>
+<td>Enable to see help menu.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>EXAMPLES</strong></p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span># Teardown using default arguments
+$ paws teardown
+
+# Teardown using default arguments and verbose logging
+$ paws -v teardown
+
+# Teardown using specific user directory and verbose logging
+$ paws -v -ud /home/user teardown
+
+# Show teardown help menu
+$ paws teardown -h
+</pre></div>
+</div>
+<p><strong>OUTPUT</strong></p>
+<p>You will see similar output as below when a system resource has been deleted.</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">59</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">log_resources</span><span class="p">:</span><span class="mi">305</span><span class="p">]</span> <span class="o">*********************************************</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">59</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">log_resources</span><span class="p">:</span><span class="mi">306</span><span class="p">]</span>           <span class="n">System</span> <span class="n">Resources</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">59</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">log_resources</span><span class="p">:</span><span class="mi">307</span><span class="p">]</span> <span class="o">*********************************************</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">59</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">log_resources</span><span class="p">:</span><span class="mi">311</span><span class="p">]</span> <span class="mf">1.</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">59</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">log_resources</span><span class="p">:</span><span class="mi">312</span><span class="p">]</span>     <span class="n">Name</span>         <span class="p">:</span> <span class="n">CI_PAWS_win</span><span class="o">-</span><span class="mi">2012</span><span class="o">-</span><span class="n">r2</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">59</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">log_resources</span><span class="p">:</span><span class="mi">314</span><span class="p">]</span>     <span class="n">Public</span> <span class="n">IPv4</span>  <span class="p">:</span> <span class="mf">10.8</span><span class="o">.</span><span class="mf">173.232</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">59</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">log_resources</span><span class="p">:</span><span class="mi">319</span><span class="p">]</span> <span class="o">*********************************************</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">59</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">teardown</span><span class="o">.</span><span class="n">post_tasks</span><span class="p">:</span><span class="mi">136</span><span class="p">]</span> <span class="n">END</span><span class="p">:</span> <span class="n">Teardown</span><span class="p">,</span> <span class="n">TIME</span><span class="p">:</span> <span class="mi">0</span><span class="n">h</span><span class="p">:</span><span class="mi">0</span><span class="n">m</span><span class="p">:</span><span class="mi">7</span><span class="n">s</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">59</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">main</span><span class="p">:</span><span class="mi">94</span><span class="p">]</span> <span class="n">End</span> <span class="n">paws</span> <span class="n">execution</span> <span class="ow">in</span> <span class="mi">0</span><span class="n">h</span><span class="p">:</span><span class="mi">0</span><span class="n">m</span><span class="p">:</span><span class="mi">7</span><span class="n">s</span>
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="winsetup">
+<h2>Winsetup<a class="headerlink" href="#winsetup" title="Permalink to this headline">¶</a></h2>
+<p><strong>DESCRIPTION</strong></p>
+<p>Winsetup task will perform configuration on Windows systems by running a
+Windows PowerShell script supplied by parameter input.</p>
+<p><strong>ARGUMENTS</strong></p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Argument</th>
+<th class="head">Default</th>
+<th class="head">Required</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>-t, –topology</td>
+<td><a class="reference external" href="files.html#resources-yaml">resources.yaml</a></td>
+<td>Yes</td>
+<td>System resources file which
+contains systems you want to perform configuration on.</td>
+</tr>
+<tr class="row-odd"><td>-ps, –powershell</td>
+<td>&#160;</td>
+<td>Yes</td>
+<td>PowerShell script to be run.</td>
+</tr>
+<tr class="row-even"><td>-psv, –powershell_vars</td>
+<td>&#160;</td>
+<td>No</td>
+<td>Variables used by PowerShell. Can be
+a file which PS reads or the exact PS input arguments.</td>
+</tr>
+<tr class="row-odd"><td>-s, –system</td>
+<td>all system resources</td>
+<td>No</td>
+<td>Systems to configure.</td>
+</tr>
+<tr class="row-even"><td>-h, –help</td>
+<td>&#160;</td>
+<td>No</td>
+<td>Enable to see help menu.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>EXAMPLES</strong></p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span># Winsetup using default user directory and specific powershell
+$ paws winsetup -ps powershell/my_ps.ps1
+
+# Winsetup using default user directory, specific powershell and verbose logging
+$ paws -v winsetup -ps powershell/my_ps.ps1
+
+# Winsetup using default user directory, specific powershell and
+# specific powershell vars by a file
+$ paws winetup -ps powershell/my_ps.ps1 -psv powershell/ps_vars.json
+
+# Winsetup using default user directory, specific powershell and
+# specific system defined within resources topology
+$ paws winsetup -ps powershell/my_ps.ps1 -s win2012_1
+
+# Winsetup using default user directory, specific powershell and
+# specific system(s) defined within resources topology
+$ paws winsetup -ps powershell/my_ps.ps1 -s win2012_1 -s win2012_2
+
+# Winsetup using default user directory, specific powershell and
+# powershell input parameters
+$ paws winsetup -ps powershell/set_uac.ps1 -psv &#39;-uacValue 0&#39;
+
+# Show winsetup help menu
+$ paws winsetup -h
+</pre></div>
+</div>
+<p><strong>OUTPUT</strong></p>
+<p>Here is an example of PowerShell output when run by paws.</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">44</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">run_playbook</span><span class="p">:</span><span class="mi">243</span><span class="p">]</span> <span class="n">PowerShell</span> <span class="n">script</span> <span class="n">to</span> <span class="n">be</span> <span class="n">run</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">paws</span><span class="o">/</span><span class="n">powershell</span><span class="o">/</span><span class="n">get_system_info</span><span class="o">.</span><span class="n">ps1</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">44</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">run_playbook</span><span class="p">:</span><span class="mi">248</span><span class="p">]</span> <span class="o">*********************************************</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">44</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">run_playbook</span><span class="p">:</span><span class="mi">249</span><span class="p">]</span> <span class="n">PLEASE</span> <span class="n">WAIT</span> <span class="n">WHILE</span> <span class="n">ANSIBLE</span> <span class="n">PLAYBOOK</span> <span class="n">IS</span> <span class="n">RUNNING</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">44</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">run_playbook</span><span class="p">:</span><span class="mi">250</span><span class="p">]</span> <span class="n">This</span> <span class="n">could</span> <span class="n">take</span> <span class="n">several</span> <span class="n">minutes</span> <span class="n">to</span> <span class="n">complete</span><span class="o">.</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">44</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">run_playbook</span><span class="p">:</span><span class="mi">251</span><span class="p">]</span> <span class="o">*********************************************</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">99</span><span class="p">]</span> <span class="o">---------------</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">100</span><span class="p">]</span> <span class="n">Results</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">101</span><span class="p">]</span> <span class="o">---------------</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">109</span><span class="p">]</span> <span class="o">**</span> <span class="mf">10.8</span><span class="o">.</span><span class="mf">173.232</span> <span class="o">**</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">113</span><span class="p">]</span> <span class="n">Standard</span> <span class="n">output</span><span class="p">:</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="mi">12</span><span class="o">/</span><span class="mi">13</span><span class="o">/</span><span class="mi">2016</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">44</span> <span class="o">-</span> <span class="n">get_system_info</span><span class="o">.</span><span class="n">ps1</span> <span class="o">-</span> <span class="n">Starting</span> <span class="n">get_system_info</span><span class="o">.</span><span class="n">ps1</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">Status</span>                                    <span class="p">:</span> <span class="n">OK</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">Name</span>                                      <span class="p">:</span> <span class="n">Microsoft</span> <span class="n">Windows</span> <span class="n">Server</span> <span class="mi">2012</span> <span class="n">R2</span> <span class="n">St</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span>                                             <span class="n">andard</span><span class="o">|</span><span class="n">C</span><span class="p">:</span>\<span class="n">windows</span><span class="o">|</span>\<span class="n">Device</span>\<span class="n">Harddisk0</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span>                                             \<span class="n">Partition1</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">FreePhysicalMemory</span>                        <span class="p">:</span> <span class="mi">7776952</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">FreeSpaceInPagingFiles</span>                    <span class="p">:</span> <span class="mi">1310720</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">FreeVirtualMemory</span>                         <span class="p">:</span> <span class="mi">9117784</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">Caption</span>                                   <span class="p">:</span> <span class="n">Microsoft</span> <span class="n">Windows</span> <span class="n">Server</span> <span class="mi">2012</span> <span class="n">R2</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span>                                             <span class="n">Standard</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">Description</span>                               <span class="p">:</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">InstallDate</span>                               <span class="p">:</span> <span class="mi">12</span><span class="o">/</span><span class="mi">13</span><span class="o">/</span><span class="mi">2016</span> <span class="mi">8</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mi">15</span> <span class="n">PM</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">CreationClassName</span>                         <span class="p">:</span> <span class="n">Win32_OperatingSystem</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">CSCreationClassName</span>                       <span class="p">:</span> <span class="n">Win32_ComputerSystem</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">CSName</span>                                    <span class="p">:</span> <span class="n">CI</span><span class="o">-</span><span class="n">PAWS</span><span class="o">-</span><span class="n">WIN</span><span class="o">-</span><span class="mi">201</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">CurrentTimeZone</span>                           <span class="p">:</span> <span class="mi">0</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">Distributed</span>                               <span class="p">:</span> <span class="kc">False</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">LastBootUpTime</span>                            <span class="p">:</span> <span class="mi">12</span><span class="o">/</span><span class="mi">13</span><span class="o">/</span><span class="mi">2016</span> <span class="mi">8</span><span class="p">:</span><span class="mi">55</span><span class="p">:</span><span class="mi">44</span> <span class="n">PM</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">LocalDateTime</span>                             <span class="p">:</span> <span class="mi">12</span><span class="o">/</span><span class="mi">13</span><span class="o">/</span><span class="mi">2016</span> <span class="mi">8</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">44</span> <span class="n">PM</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">MaxNumberOfProcesses</span>                      <span class="p">:</span> <span class="mi">4294967295</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">MaxProcessMemorySize</span>                      <span class="p">:</span> <span class="mi">137438953344</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">NumberOfLicensedUsers</span>                     <span class="p">:</span> <span class="mi">0</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">NumberOfProcesses</span>                         <span class="p">:</span> <span class="mi">36</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">NumberOfUsers</span>                             <span class="p">:</span> <span class="mi">2</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">OSType</span>                                    <span class="p">:</span> <span class="mi">18</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">OtherTypeDescription</span>                      <span class="p">:</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">SizeStoredInPagingFiles</span>                   <span class="p">:</span> <span class="mi">1310720</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">TotalSwapSpaceSize</span>                        <span class="p">:</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">TotalVirtualMemorySize</span>                    <span class="p">:</span> <span class="mi">9698800</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">TotalVisibleMemorySize</span>                    <span class="p">:</span> <span class="mi">8388080</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">Version</span>                                   <span class="p">:</span> <span class="mf">6.3</span><span class="o">.</span><span class="mi">9600</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">BootDevice</span>                                <span class="p">:</span> \<span class="n">Device</span>\<span class="n">HarddiskVolume1</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">BuildNumber</span>                               <span class="p">:</span> <span class="mi">9600</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">BuildType</span>                                 <span class="p">:</span> <span class="n">Multiprocessor</span> <span class="n">Free</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">CodeSet</span>                                   <span class="p">:</span> <span class="mi">1252</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">CountryCode</span>                               <span class="p">:</span> <span class="mi">1</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">CSDVersion</span>                                <span class="p">:</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">DataExecutionPrevention_32BitApplications</span> <span class="p">:</span> <span class="kc">True</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">DataExecutionPrevention_Available</span>         <span class="p">:</span> <span class="kc">True</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">DataExecutionPrevention_Drivers</span>           <span class="p">:</span> <span class="kc">True</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">DataExecutionPrevention_SupportPolicy</span>     <span class="p">:</span> <span class="mi">3</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">Debug</span>                                     <span class="p">:</span> <span class="kc">False</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">EncryptionLevel</span>                           <span class="p">:</span> <span class="mi">256</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">ForegroundApplicationBoost</span>                <span class="p">:</span> <span class="mi">2</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">LargeSystemCache</span>                          <span class="p">:</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">Locale</span>                                    <span class="p">:</span> <span class="mi">0409</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">Manufacturer</span>                              <span class="p">:</span> <span class="n">Microsoft</span> <span class="n">Corporation</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">MUILanguages</span>                              <span class="p">:</span> <span class="p">{</span><span class="n">en</span><span class="o">-</span><span class="n">US</span><span class="p">}</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">OperatingSystemSKU</span>                        <span class="p">:</span> <span class="mi">7</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">Organization</span>                              <span class="p">:</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">OSArchitecture</span>                            <span class="p">:</span> <span class="mi">64</span><span class="o">-</span><span class="n">bit</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">OSLanguage</span>                                <span class="p">:</span> <span class="mi">1033</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">OSProductSuite</span>                            <span class="p">:</span> <span class="mi">272</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">PAEEnabled</span>                                <span class="p">:</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">PlusProductID</span>                             <span class="p">:</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">PlusVersionNumber</span>                         <span class="p">:</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">PortableOperatingSystem</span>                   <span class="p">:</span> <span class="kc">False</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">Primary</span>                                   <span class="p">:</span> <span class="kc">True</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">ProductType</span>                               <span class="p">:</span> <span class="mi">3</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">RegisteredUser</span>                            <span class="p">:</span> <span class="n">Windows</span> <span class="n">User</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">SerialNumber</span>                              <span class="p">:</span> <span class="mi">00252</span><span class="o">-</span><span class="mi">00055</span><span class="o">-</span><span class="mi">00001</span><span class="o">-</span><span class="n">AA028</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">ServicePackMajorVersion</span>                   <span class="p">:</span> <span class="mi">0</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">ServicePackMinorVersion</span>                   <span class="p">:</span> <span class="mi">0</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">SuiteMask</span>                                 <span class="p">:</span> <span class="mi">272</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">SystemDevice</span>                              <span class="p">:</span> \<span class="n">Device</span>\<span class="n">HarddiskVolume1</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">SystemDirectory</span>                           <span class="p">:</span> <span class="n">C</span><span class="p">:</span>\<span class="n">windows</span>\<span class="n">system32</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">SystemDrive</span>                               <span class="p">:</span> <span class="n">C</span><span class="p">:</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">WindowsDirectory</span>                          <span class="p">:</span> <span class="n">C</span><span class="p">:</span>\<span class="n">windows</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">PSComputerName</span>                            <span class="p">:</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">CimClass</span>                                  <span class="p">:</span> <span class="n">root</span><span class="o">/</span><span class="n">cimv2</span><span class="p">:</span><span class="n">Win32_OperatingSystem</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">CimInstanceProperties</span>                     <span class="p">:</span> <span class="p">{</span><span class="n">Caption</span><span class="p">,</span> <span class="n">Description</span><span class="p">,</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span>                                             <span class="n">InstallDate</span><span class="p">,</span> <span class="n">Name</span><span class="o">...</span><span class="p">}</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span> <span class="n">CimSystemProperties</span>                       <span class="p">:</span> <span class="n">Microsoft</span><span class="o">.</span><span class="n">Management</span><span class="o">.</span><span class="n">Infrastructure</span>
+<span class="mi">2016</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span> <span class="mi">20</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">51</span> <span class="n">INFO</span> <span class="p">[</span><span class="n">paws</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">process</span><span class="p">:</span><span class="mi">115</span><span class="p">]</span>                                             <span class="o">.</span><span class="n">CimSystemProperties</span>
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="group">
+<h2>Group<a class="headerlink" href="#group" title="Permalink to this headline">¶</a></h2>
+<p><strong>DESCRIPTION</strong></p>
+<p>Group task gives users the ability to bulk multiple paws task calls into a
+single paws call.</p>
+<p><strong>ARGUMENTS</strong></p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Argument</th>
+<th class="head">Default</th>
+<th class="head">Required</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>-ud, –userdir</td>
+<td>/usr/share/paws</td>
+<td>Yes</td>
+<td>User directory where files
+used by paws are stored.</td>
+</tr>
+<tr class="row-odd"><td>-n, –name</td>
+<td>&#160;</td>
+<td>Yes</td>
+<td>Group template filename.</td>
+</tr>
+<tr class="row-even"><td>-v, –verbose</td>
+<td>&#160;</td>
+<td>No</td>
+<td>Enable to have verbose logging.</td>
+</tr>
+<tr class="row-odd"><td>-h, –help</td>
+<td>&#160;</td>
+<td>No</td>
+<td>Enable to see help menu.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>EXAMPLES</strong></p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span># Group using default user directory and specific group file
+$ paws group -n group/my_group.yaml
+
+# Group using specific user directory, specific group file and verbose logging
+$ paws -v -ud /home/user group -n group/my_group.yaml
+
+# Show group help menu
+$ paws group -h
+</pre></div>
+</div>
+<p><strong>OUTPUT</strong></p>
+<p>Group output will be the same as all other paws tasks just combined.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">To learn how to create a group visit the following: <a class="reference external" href="create_group.html">Create group file</a>.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="show">
+<h2>Show<a class="headerlink" href="#show" title="Permalink to this headline">¶</a></h2>
+<p><strong>DESCRIPTION</strong></p>
+<p>Show task will display system resources in your supplied provider. It
+assumes the <a class="reference external" href="guide.html#provision">provision task</a> was called previously and
+your system resource was successfully provisioned. If show does not find any
+system resources in your supplied provider. A warning message will be
+displayed instead.</p>
+<p><strong>ARGUMENTS</strong></p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Argument</th>
+<th class="head">Default</th>
+<th class="head">Required</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>-c, –credentials</td>
+<td><a class="reference external" href="files.html#credentials-yaml">credentials.yaml</a></td>
+<td>Yes</td>
+<td>Providers credentials file
+containing authentication information.</td>
+</tr>
+<tr class="row-odd"><td>-t, –topology</td>
+<td><a class="reference external" href="files.html#resources-yaml">resources.yaml</a></td>
+<td>Yes</td>
+<td>System resources file which
+contains systems you want to display information for.</td>
+</tr>
+<tr class="row-even"><td>-h, –help</td>
+<td>&#160;</td>
+<td>No</td>
+<td>Enable to see help menu.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>EXAMPLES</strong></p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span># Show using default arguments
+$ paws show
+
+# Show using default arguments and verbose logging
+$ paws -v show
+
+# Show using specific user directory and verbose logging
+$ paws -v -ud /home/user show
+
+# Show help menu for show
+$ paws show -h
+</pre></div>
+</div>
+<p><strong>OUTPUT</strong></p>
+<p><strong>Active instance provisioned by paws.</strong></p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span>[ecerquei@dev paws]$ paws show
+2016-12-02 16:26:30 INFO Begin paws execution
+2016-12-02 16:26:30 INFO START: Show
+2016-12-02 16:26:30 INFO Openstack providers credentials are set by a credentials file.
+2016-12-02 16:26:35 INFO *********************************************
+2016-12-02 16:26:35 INFO            System Resources (show)
+2016-12-02 16:26:35 INFO *********************************************
+2016-12-02 16:26:35 INFO 1.
+2016-12-02 16:26:35 INFO     Name         : PAWS_eduardo
+2016-12-02 16:26:35 INFO     Public IPv4  : 10.8.172.154
+2016-12-02 16:26:35 INFO     Username     : Administrator
+2016-12-02 16:26:35 INFO     Password     : my_password@2016
+2016-12-02 16:26:35 INFO *********************************************
+2016-12-02 16:26:35 INFO END: Show, TIME: 0h:0m:4s
+2016-12-02 16:26:35 INFO End paws execution in 0h:0m:5s
+</pre></div>
+</div>
+<p><strong>Active instance provisioned by paws running in verbose mode.</strong></p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span>[ecerquei@dev paws]$ paws show -v
+2016-12-02 16:27:07 INFO [paws.main:53] Begin paws execution
+2016-12-02 16:27:07 DEBUG [paws.main:54] *********************************************
+2016-12-02 16:27:07 DEBUG [paws.main:55]                 Paws arguments
+2016-12-02 16:27:07 DEBUG [paws.main:56] *********************************************
+2016-12-02 16:27:07 DEBUG [paws.main:59] task: show
+2016-12-02 16:27:07 DEBUG [paws.main:59] verbose: 2
+2016-12-02 16:27:07 DEBUG [paws.main:59] userdir: /usr/share/paws
+2016-12-02 16:27:07 DEBUG [paws.main:59] credentials: credentials.yaml
+2016-12-02 16:27:07 DEBUG [paws.main:59] topology: resources.yaml
+2016-12-02 16:27:07 DEBUG [paws.main:60] *********************************************
+2016-12-02 16:27:07 INFO [paws.tasks.show.run:74] START: Show
+2016-12-02 16:27:07 DEBUG [paws.providers.openstack.get_credentials:215] Getting Openstack credentials.
+2016-12-02 16:27:07 INFO [paws.providers.openstack.get_credentials:231] Openstack providers credentials are set by a credentials file.
+2016-12-02 16:27:07 DEBUG [paws.providers.openstack.create:641] Playbook /usr/share/paws/.get_ops_facts.yaml created.
+2016-12-02 16:27:07 DEBUG [paws.remote.driver.run_playbook:241] Running Ansible Playbook /usr/share/paws/.get_ops_facts.yaml
+2016-12-02 16:27:09 DEBUG [paws.remote.results.msg:59] Ansible call executed successfully!
+2016-12-02 16:27:09 DEBUG [paws.providers.openstack.generate_resources_paws:284] Generating /usr/share/paws/resources.paws
+2016-12-02 16:27:09 DEBUG [paws.providers.openstack.generate_resources_paws:317] Successfully created /usr/share/paws/resources.paws
+2016-12-02 16:27:09 DEBUG [paws.util.update_resources_paws:289] Successfully updated /usr/share/paws/resources.paws
+2016-12-02 16:27:09 INFO [paws.util.log_resources:305] *********************************************
+2016-12-02 16:27:09 INFO [paws.util.log_resources:306]            System Resources (show)
+2016-12-02 16:27:09 INFO [paws.util.log_resources:307] *********************************************
+2016-12-02 16:27:09 INFO [paws.util.log_resources:311] 1.
+2016-12-02 16:27:09 INFO [paws.util.log_resources:312]     Name         : PAWS_eduardo
+2016-12-02 16:27:09 INFO [paws.util.log_resources:314]     Public IPv4  : 10.8.172.154
+2016-12-02 16:27:09 INFO [paws.util.log_resources:316]     Username     : Administrator
+2016-12-02 16:27:09 INFO [paws.util.log_resources:317]     Password     : my_password@2016
+2016-12-02 16:27:09 INFO [paws.util.log_resources:319] *********************************************
+2016-12-02 16:27:09 INFO [paws.tasks.show.post_tasks:130] END: Show, TIME: 0h:0m:2s
+2016-12-02 16:27:09 INFO [paws.main:94] End paws execution in 0h:0m:3s
+</pre></div>
+</div>
+<p><strong>No active instance.</strong></p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span>[ecerquei@dev paws]$ paws show
+2016-12-02 15:45:02 INFO Begin paws execution
+2016-12-02 15:45:02 INFO START: Show
+2016-12-02 15:45:02 INFO Openstack providers credentials are set by a credentials file.
+2016-12-02 15:45:05 INFO *********************************************
+2016-12-02 15:45:05 WARNING Nothing to show, did you try provision?
+2016-12-02 15:45:05 INFO *********************************************
+2016-12-02 15:45:05 INFO END: Show, TIME: 0h:0m:3s
+2016-12-02 15:45:05 INFO End paws execution in 0h:0m:3s
+</pre></div>
+</div>
+<p><strong>No active instance running in verbose mode.</strong></p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span>[ecerquei@dev paws]$ paws show -v
+2016-12-02 15:54:47 INFO [paws.main:53] Begin paws execution
+2016-12-02 15:54:47 DEBUG [paws.main:54] *********************************************
+2016-12-02 15:54:47 DEBUG [paws.main:55]                 Paws arguments
+2016-12-02 15:54:47 DEBUG [paws.main:56] *********************************************
+2016-12-02 15:54:47 DEBUG [paws.main:59] task: show
+2016-12-02 15:54:47 DEBUG [paws.main:59] verbose: 2
+2016-12-02 15:54:47 DEBUG [paws.main:59] userdir: /usr/share/paws
+2016-12-02 15:54:47 DEBUG [paws.main:59] credentials: credentials.yaml
+2016-12-02 15:54:47 DEBUG [paws.main:59] topology: resources.yaml
+2016-12-02 15:54:47 DEBUG [paws.main:60] *********************************************
+2016-12-02 15:54:47 INFO [paws.tasks.show.run:74] START: Show
+2016-12-02 15:54:47 DEBUG [paws.providers.openstack.get_credentials:215] Getting Openstack credentials.
+2016-12-02 15:54:47 INFO [paws.providers.openstack.get_credentials:231] Openstack providers credentials are set by a credentials file.
+2016-12-02 15:54:47 DEBUG [paws.providers.openstack.create:641] Playbook /usr/share/paws/.get_ops_facts.yaml created.
+2016-12-02 15:54:47 DEBUG [paws.remote.driver.run_playbook:241] Running Ansible Playbook /usr/share/paws/.get_ops_facts.yaml
+2016-12-02 15:54:51 DEBUG [paws.remote.results.msg:59] Ansible call executed successfully!
+2016-12-02 15:54:51 DEBUG [paws.providers.openstack.generate_resources_paws:284] Generating /usr/share/paws/resources.paws
+2016-12-02 15:54:51 INFO [paws.util.log_resources:297] *********************************************
+2016-12-02 15:54:51 WARNING [paws.util.log_resources:298] Nothing to show, did you try provision?
+2016-12-02 15:54:51 INFO [paws.util.log_resources:299] *********************************************
+2016-12-02 15:54:51 INFO [paws.tasks.show.post_tasks:130] END: Show, TIME: 0h:0m:3s
+2016-12-02 15:54:51 INFO [paws.main:94] End paws execution in 0h:0m:4s
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<blockquote>
+<div><p>The credentials <strong>username and password</strong> from your Windows system
+provisioned is displayed at the console output.</p>
+<p>As we think Paws is a tool to simplify your access to Windows systems. We
+thought it would be okay to show the username and password for a system. We
+felt it was not a big security issue because the system is not to be run in
+any production application only for testing purposes.</p>
+<p>Maybe you have a use case that you need a Windows machine for a single
+task (just to access via RDP - remote desktop protocol) and then teardown
+the system. It would be nice to have all this information that you need to
+access the machine after provisioned. Instead of having to navigate
+through files to find the login information.</p>
+</div></blockquote>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="o">*********************************************</span>
+            <span class="n">System</span> <span class="n">Resources</span> <span class="p">(</span><span class="n">show</span><span class="p">)</span>
+<span class="o">*********************************************</span>
+ <span class="mf">1.</span>
+     <span class="n">Name</span>         <span class="p">:</span> <span class="n">PAWS_eduardo</span>
+     <span class="n">Public</span> <span class="n">IPv4</span>  <span class="p">:</span> <span class="mf">10.8</span><span class="o">.</span><span class="mf">172.154</span>
+     <span class="n">Username</span>     <span class="p">:</span> <span class="n">Administrator</span>
+     <span class="n">Password</span>     <span class="p">:</span> <span class="n">my_password</span><span class="nd">@2016</span>
+<span class="o">*********************************************</span>
+</pre></div>
+</div>
+<p class="last">If you find it not acceptable to display this username for security or
+critical types of test. Please contact the maintainers of paws and we can
+implement a parameter to show this information or not. Feel free to send
+a code patch to our gerrit as well.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_no_bg.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="index.html">PAWS</a></h1>
+
+
+
+<p class="blurb">Provision Automated Windows and Services</br>version: <b>0.3.8-0</b></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=rhpit&repo=paws&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="providers.html">Providers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html">Files</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#provision">Provision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#teardown">Teardown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#winsetup">Winsetup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#group">Group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#show">Show</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="create_group.html">Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="powershell.html">Windows PowerShell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="questions.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#benefits">Benefits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#examples-of-usage">Examples of usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#paws-layers">Paws layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="links.html">Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="files.html" title="previous chapter">Files</a></li>
+      <li>Next: <a href="create_group.html" title="next chapter">Groups</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Red Hat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/tasks.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/rhpit/paws" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

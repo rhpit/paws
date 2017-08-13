@@ -1,0 +1,204 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Windows PowerShell &#8212; PAWS 0.3.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing" href="contributing.html" />
+    <link rel="prev" title="Groups" href="create_group.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="windows-powershell">
+<h1>Windows PowerShell<a class="headerlink" href="#windows-powershell" title="Permalink to this headline">¶</a></h1>
+<p>PowerShell (including Windows PowerShell and PowerShell Core) <a class="footnote-reference" href="#id4" id="id1">[1]</a> <em>is a task
+automation and configuration management framework from Microsoft, consisting
+of a command-line shell and associated scripting language built on the
+.NET Framework.</em></p>
+<div class="section" id="why-powershell">
+<h2>Why PowerShell?<a class="headerlink" href="#why-powershell" title="Permalink to this headline">¶</a></h2>
+<p>PowerShell is the native script language for Microsoft Operating Systems.</p>
+<ul class="simple">
+<li>PowerShell gives us access to a large number of MS libraries, making scripts
+easy to interact with MS components and features.</li>
+<li>PowerShell can interact with a dizzying number of technologies.</li>
+<li>PowerShell is object-based.</li>
+<li>PowerShell can help anyone working in the Microsoft ecosystem.</li>
+</ul>
+<p><a class="footnote-reference" href="#id5" id="id2">[2]</a> <em>Windows PowerShell is a shell developed by Microsoft for purposes of task
+automation and configuration management. This powerful shell is based on the
+.NET framework and it includes a command-line shell and a scripting language.
+On top of the standard command-line shell, you can also find the Windows
+PowerShell ISE</em></p>
+</div>
+<div class="section" id="paws-and-powershell-ws">
+<span id="ws"></span><h2>PAWS and PowerShell [ws]<a class="headerlink" href="#paws-and-powershell-ws" title="Permalink to this headline">¶</a></h2>
+<p>PAWS uses PowerShell scripts to install, configure and perform any change in a
+Windows previously provisioned.</p>
+<p>WS <strong>Windows Scripts</strong> is a git repo to store PowerShell scripts to be used
+during PAWS execution.</p>
+<p>Everybody can use this repository and the idea is to use this a
+<strong>centralized place</strong> that people can re-use scripts already developed and
+contribute to expand for others use cases.</p>
+<p><strong>WS REPO URL:</strong> <a class="reference external" href="https://github.com/rhpit/ws">https://github.com/rhpit/ws</a></p>
+<p>We strongly recommend cloning this repository to your user directory
+<strong>/home/$USER/paws</strong></p>
+<p><strong>powershell:</strong> We currently have some PowerShell scripts that you can
+start using with paws and more can be found here <a class="footnote-reference" href="#id6" id="id3">[3]</a>.</p>
+<p><strong>group:</strong> A group may have one or more PowerShell script calls. Groups allow
+you to build and share your Windows pipeline. You can see more about groups at
+<a class="reference external" href="create_group.html">group task</a>.</p>
+<p>Users can use all these scripts provided to run winsetup or group tasks. Users
+can pull or push their scripts/groups to this repository.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="https://en.wikipedia.org/wiki/PowerShell">https://en.wikipedia.org/wiki/PowerShell</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td><a class="reference external" href="http://www.digitalcitizen.life/simple-questions-what-powershell-what-can-you-do-it">http://www.digitalcitizen.life/simple-questions-what-powershell-what-can-you-do-it</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td><a class="reference external" href="https://www.powershellgallery.com">https://www.powershellgallery.com</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_no_bg.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="index.html">PAWS</a></h1>
+
+
+
+<p class="blurb">Provision Automated Windows and Services</br>version: <b>0.3.8-0</b></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=rhpit&repo=paws&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="providers.html">Providers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html">Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_group.html">Groups</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Windows PowerShell</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#why-powershell">Why PowerShell?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#paws-and-powershell-ws">PAWS and PowerShell [ws]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="questions.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#benefits">Benefits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#examples-of-usage">Examples of usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#paws-layers">Paws layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="links.html">Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="create_group.html" title="previous chapter">Groups</a></li>
+      <li>Next: <a href="contributing.html" title="next chapter">Contributing</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Red Hat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/powershell.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/rhpit/paws" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

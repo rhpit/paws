@@ -1,0 +1,245 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Installation &#8212; PAWS 0.3.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="guide.html" />
+    <link rel="prev" title="PAWS documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>PAWS is only supported in Linux systems and currently can be installed as
+regular application based on RPM or container.</p>
+<div class="section" id="support-matrix">
+<h2>Support matrix<a class="headerlink" href="#support-matrix" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="32%" />
+<col width="24%" />
+<col width="22%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operating System</th>
+<th class="head">Version</th>
+<th class="head">Application</th>
+<th class="head">Container</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference external" href="http://www.centos.org">CentOS</a></td>
+<td>7.2, 7.3, 7.4</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td><a class="reference external" href="http://www.fedoraproject.org">Fedora</a></td>
+<td>24, 25, 26</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td><a class="reference external" href="https://www.redhat.com/en/technologies/linux-platforms">Red Hat Enterprise Linux</a></td>
+<td>7.2, 7.3, 7.4</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="application">
+<h2>Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h2>
+<p>PAWS is distributed as RPM package compatible with YUM and DNF package manager systems and the repos are available in Fedora Copr project
+<a class="reference external" href="https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/">https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/</a> below follow the steps to install PAWS for each of supported OS:</p>
+<div class="section" id="id1">
+<h3>CentOS<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo yum install -y centos-release-openstack-liberty
+sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
+sudo yum install -y paws
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>Fedora<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>Replace version from repo url to match with your Fedora version.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/fedora-24/eduardocerqueira-paws-fedora-24.repo
+sudo dnf install -y paws
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>Red Hat Enterprise Linux<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>On RHEL you need to have a valid subscription and enable repos below. EPEL is optional.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo subscription-manager register
+sudo subscription-manager attach
+sudo subscription-manager repos --enable rhel-7-&lt;variant&gt;-rpms
+sudo subscription-manager repos --enable rhel-7-&lt;variant&gt;-optional-rpms
+sudo subscription-manager repos --enable rhel-7-&lt;variant&gt;-extras-rpms
+sudo subscription-manager repos --enable rhel-7-&lt;variant&gt;-openstack-8-tools-rpms
+sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
+sudo yum install -y paws
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p>Ansible requires two additional python packages to be installed in order
+to communicate with Windows systems.</p>
+<p><strong>pywinrm</strong>: This package is used for Windows remote management.
+At this time there is no RPM available.</p>
+<p><em>https://pypi.python.org/pypi/pywinrm</em></p>
+<p><strong>shade</strong>: This package is required by Ansible to
+provision/teardown resources in a cloud infrastructure.</p>
+<p class="last"><em>https://pypi.python.org/pypi/shade</em>
+<em>http://docs.openstack.org/infra/shade/</em>
+<em>http://docs.ansible.com/ansible/list_of_cloud_modules.html#openstack</em></p>
+</div>
+</div>
+</div>
+<div class="section" id="container">
+<h2>Container<a class="headerlink" href="#container" title="Permalink to this headline">¶</a></h2>
+<p>To use paws in a container, you will need to have docker installed and running
+on your system. Please see the following link for details to setup your system
+with docker: <a class="reference external" href="https://docs.docker.com/engine/installation/">https://docs.docker.com/engine/installation/</a></p>
+<p>this doc will be updated soon.</p>
+<hr class="docutils" />
+<p>You are now ready to begin using paws! To get started please navigate to the
+side bar on the left to see the <a class="reference external" href="guide.html">getting started</a>
+guide.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_no_bg.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="index.html">PAWS</a></h1>
+
+
+
+<p class="blurb">Provision Automated Windows and Services</br>version: <b>0.3.8-0</b></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=rhpit&repo=paws&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#support-matrix">Support matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#application">Application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">CentOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Fedora</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Red Hat Enterprise Linux</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#container">Container</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="providers.html">Providers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html">Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_group.html">Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="powershell.html">Windows PowerShell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="questions.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#benefits">Benefits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#examples-of-usage">Examples of usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#paws-layers">Paws layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="links.html">Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">PAWS documentation</a></li>
+      <li>Next: <a href="guide.html" title="next chapter">Getting Started</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Red Hat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/install.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/rhpit/paws" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
