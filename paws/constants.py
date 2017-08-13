@@ -116,11 +116,8 @@ LINE = "*" * 45
 PAWS_TASK_MODULES_PATH = "paws.tasks."
 
 # Documentation links
-GROUP_HELP = "http://pit-dashboard.rhev-ci-vms.eng.rdu2.redhat.com/doc/paws/"\
-    "create_group.html"
-
-LIBVIRT_AUTH_HELP = "http://pit-dashboard.rhev-ci-vms.eng.rdu2.redhat.com"\
-    "/doc/paws/libvirt.html#authentication"
+GROUP_HELP = "https://rhpit.github.io/paws/create_group.html"
+LIBVIRT_AUTH_HELP = "https://rhpit.github.io/paws/providers.html#libvirt"
 
 # Register a new supported provider to PAWS
 PROVIDERS = [{'name': 'openstack',
@@ -132,8 +129,3 @@ PROVIDERS = [{'name': 'openstack',
 
 # Libvirt vm definition saved temporally to be imported during creation
 LIBVIRT_OUTPUT = '.output.xml'
-
-# IMGSRV
-API_LIST = '/api/v1/list'
-API_GET = '/api/v1/get?name='
-API_FIND = '/api/v1/find?name='
