@@ -67,4 +67,5 @@ gh-pages: doc
 	cd $(GHPAGES) && git commit -m "Generated gh-pages for `git log master -1 --pretty=short --abbrev-commit`"
 	cd $(GHPAGES) && git push origin gh-pages
 	@echo -e "$(OK_COLOR)documentation published to https://rhpit.github.io/paws/$(NO_COLOR)"	
+	@echo -e "$(WARN_COLOR)might take some seconds/minute to update$(NO_COLOR)"
 	@echo

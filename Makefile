@@ -126,6 +126,9 @@ doc: prep set-version
 	@echo -e "$(OK_COLOR)man page saved at: ../paws-doc/man/paws.1$(NO_COLOR)"
 	@echo
 
+gh-pages:
+	make -C doc/ gh-pages
+
 copr-dev: srpm
 	# for devel and ci we use internal copr
 	# you need to have a valid ~/.config/copr-devel file to use copr-cli
