@@ -6,17 +6,13 @@ Contact
 IRC
 ---
 
-Currently #paws irc channel is not opened world-wide, it is hosted at
-irc.devel.redhat.com and we are working figuring out a new home.
+Currently #paws irc channel is not opened world-wide, we are working 
+to create a channel at freenode and this page will be updated soon
 
 Mailing List
 ------------
 
 Same as above we are working moving to a world-wide mailing list soon.
-
-Feel free to reach out/sign up to our mailing list <paws@redhat.com>. This
-list will contain paws developers/users who can help with questions you may
-have. This list also will provide updates about upcoming releases.
 
 Report Issue
 ------------

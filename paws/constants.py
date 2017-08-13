@@ -20,7 +20,9 @@
 Constants used throughout paws.
 """
 
-DEFAULT_USERDIR = "/usr/share/paws"
+from os.path import expanduser, join
+
+DEFAULT_USERDIR = join(expanduser('~'), 'paws')
 
 # CLI definitions
 TASK_ARGS = {

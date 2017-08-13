@@ -10,12 +10,18 @@ PAWS documentation
 
 .. toctree::
    :hidden:
-   :maxdepth: 2
+   :maxdepth: 3
 
    install
-   links
+   guide  
+   providers
+   files
+   tasks
+   create_group   
+   powershell
    contributing
    authors
+   questions
    about
-   providers
+   links
    contact

@@ -1,52 +1,156 @@
 Contributing
--------------
+=============
+
+There are several ways to contribute with PAWS project and **everyone is welcome**:
+
+* are you python or ansible guy? you can fix bugs or improve the application 
+  with new features
+
+* are you Windows guy? you can add new powershell scripts at ws repo
+  https://github.com/rhpit/ws
+
+* do you like writing? you can help on documentation.
+
+* and too many others ... testing, reporting issues and new ideas to be
+  implemented by developer team
+
+Setup your local environment
+-----------------------------
+
+Before you dive into contributing to paws. You will need to setup your
+environment so you are able to test your code changes before submitting a code
+review.
+
+First enable the repositories on your system that paws requires. You
+can find these at the `installation <install.html#dependencies>`_ page.
+
+Next you will need to install packages needed for development. Most of these
+packages are dependencies that paws would install when installing by repository.
+From a terminal, run the following command based on your operating system.
+
+.. code:: bash
+
+	# Yum package manager
+	sudo yum install -y git git-review wget gcc make rpm-build\
+	python-devel python-setuptools python-pip python2-flake8 pylint\
+	python2-devel python-kitchen openssl-devel libffi-devel gcc\
+	python-oslo-serialization python-pep8 ansible krb5-workstation
+
+	# Dnf package manager
+	sudo dnf install -y git git-review wget gcc make rpm-build\
+	python-devel python-setuptools python-pip python2-flake8 pylint\
+	python2-devel python-kitchen openssl-devel libffi-devel gcc\
+	python-oslo-serialization python-pep8 ansible krb5-workstation
+
+Once the development packages have been installed, go ahead and clone the paws
+and ws git repos. From a terminal, run the following command.
+
+.. code:: bash
+
+	git clone git@github.com:rhpit/paws.git
+	git clone git@github.com:rhpit/ws.git
+
+We recommend you running in a Python virtual environment so from your terminal 
+run the following commands.
+
+Create a python virtual environment, activate it and install required libs:
+
+.. code:: bash
+
+	# Switch directories to where you cloned paws git
+	$ cd paws
+
+	virtualenv -p /usr/bin/python2.7 venv_paws
+	source venv_paws/bin/activate
+	pip install -r requirements.txt --upgrade
 
 
-### Devel packages
+Build
+------
 
-You might need to have these packages in your system, othwerise proceed with 
-the command below to install them:
+Now that your environment is setup to build paws, lets go through the basics
+on building/installing paws from source.
 
-```
-sudo dnf install -y git git-review wget gcc make rpm-build python-devel \
-python-setuptools python-pip python2-flake8 pylint python2-devel \
-python-kitchen openssl-devel libffi-devel gcc python-oslo-serialization \
-python-pep8 ansible krb5-workstation
-```
+At the root of paws git folder there is a Makefile. From your terminal run the
+following command to see available options by paws.
 
-### Python virtual environment
+.. code:: bash
 
-we recommend you running this application in a separated python virtual 
-environment to avoid any library conflict. Create a python virtual environment, 
-activate it and install required libs:
+	$ make
 
-```
-virtualenv -p /usr/bin/python2.7 venv_paws
-source venv_paws/bin/activate
-pip install -r requirements.txt --upgrade
-```
+Here are some of the common ones used by paws developers/contributors.
 
-### code check and analyze
+**Documentation**
+
+From your terminal run the following command to build paws sphinx documentation.
+
+.. code:: bash
+
+	$ make doc
+
+A separated paws-doc folder will be created at same root as paws folder and you
+can open the full documentation locally in html format at 
+file:///home/user/git/paws-doc/html/index.html
+
+**Build RPM**
+
+From your terminal run the following command to build paws RPM.
+
+.. code:: bash
+
+	$ make rpm
+
+From the console output you will see something similar as below stating where
+the RPM was generated. From there you can go ahead and install it.
+
+.. code:: bash
+
+	# Yum package manager
+	Wrote: /home/cloud-user/paws/rpmbuild/RPMS/noarch/paws-0.3.4-0.noarch.rpm
+	sudo yum install -y /home/cloud-user/paws/rpmbuild/RPMS/noarch/paws-0.3.4-0.noarch.rpm
+
+	# Dnf package manager
+	Wrote: /home/fedora/paws/rpmbuild/RPMS/noarch/paws-0.3.4-0.noarch.rpm
+	sudo dnf install -y /home/fedora/paws/rpmbuild/RPMS/noarch/paws-0.3.4-0.noarch.rpm
+
+**Code check**
 
 Before any commit make sure your code changes are following the code standard
 of this project running the command:
 
-```
-cd paws-imgsrv
-make codecheck
-```
+.. code:: bash
 
+	cd paws
+	make codecheck
 
-* running on libvirt
+**Eclipse pydev**
 
-install -y virt-install virt-manager virt-viewer libvirt libvirt-devel
+on eclipse and pydev fixing unresolved imports or to link source code to 
+correct path double check:
 
-see win.sh script
+* venv_paws in Python interpreter and project root folder as external libraries
 
-* on eclipse and pydev ( fixing unresolved imports or to link source code to correct path ) 
-
-- pydev add venv_paws in Python interpreter and project root folder as external libraries 
-- project-->properties-->pydev-pythonpath-->external libraries --> add source folder, add the PARENT FOLDER of the project. 
-  force workspace build clean-up: Project -> Clean -> Clean all projects
+* clean all / build projects 
   
-see screenshots: pydev_confg_{1,2,3,4}.png
+see screenshots:
+
+.. image:: _static/pydev_conf_1.png
+	:width: 40%
+
+
+.. image:: _static/pydev_conf_2.png
+	:width: 40%
+
+
+.. image:: _static/pydev_conf_3.png
+	:width: 40%
+
+
+.. image:: _static/pydev_conf_4.png
+	:width: 40%
+
+
+
+
+
+

@@ -19,8 +19,7 @@ Application
 -----------
 
 PAWS is distributed as RPM package compatible with YUM and DNF package manager systems and the repos are available in Fedora Copr project 
-https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/
-and below follow the steps to install PAWS for each of supported platform: 
+https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/ below follow the steps to install PAWS for each of supported OS: 
 
 CentOS
 ++++++
@@ -35,7 +34,7 @@ CentOS
 Fedora
 ++++++
 
-Replace version at repo url depending of your Fedora version. 
+Replace version from repo url to match with your Fedora version. 
 
 .. code-block:: bash
 
@@ -45,19 +44,18 @@ Replace version at repo url depending of your Fedora version.
 Red Hat Enterprise Linux
 ++++++++++++++++++++++++
 
+On RHEL you need to have a valid subscription and enable repos below. EPEL is optional.
+
 .. code-block:: bash
 
-	# Subscribe to Red Hat Network (https://mojo.redhat.com/docs/DOC-97363)
 	sudo subscription-manager register
 	sudo subscription-manager attach
 	sudo subscription-manager repos --enable rhel-7-<variant>-rpms
 	sudo subscription-manager repos --enable rhel-7-<variant>-optional-rpms
 	sudo subscription-manager repos --enable rhel-7-<variant>-extras-rpms
 	sudo subscription-manager repos --enable rhel-7-<variant>-openstack-8-tools-rpms
-	sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-	sudo curl -o /etc/yum.repos.d/paws.repo http://download-node-02.eng.bos.redhat.com/rcm-guest/pit/paws/latest/x86_64/os/paws.repo
+	sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
 	sudo yum install -y paws
-
 
 .. attention::
 
@@ -83,84 +81,7 @@ To use paws in a container, you will need to have docker installed and running
 on your system. Please see the following link for details to setup your system
 with docker: https://docs.docker.com/engine/installation/
 
-CentOS
-++++++
-
-Pull down the paws-centos image:
-
-.. code-block:: bash
-
-	$ docker pull docker-registry.engineering.redhat.com/paws/paws-centos:latest
-
-.. figure:: _static/docker_pull_paws-centos.png
-	:scale: 100%
-
-You can view the image by the following command:
-
-.. code-block:: bash
-
-	$ docker images
-
-.. figure:: _static/docker_images_paws-centos.png
-	:scale: 100%
-
-Next start the container:
-
-.. code-block:: bash
-
-	$ docker run --name paws -it docker-registry.engineering.redhat.com/paws/paws-centos /bin/bash
-
-.. figure:: _static/docker_run_paws-centos.png
-	:scale: 100%
-
-This will run the /bin/bash command inside a new container based on the paws-fedora
-image. We gave the -it option to allow us to have a terminal prompt into the
-container. This will allow us to run paws commands inside.
-
-You now have a container running with paws fully installed and ready to
-use!
-
-Fedora
-++++++
-
-Pull down the paws-fedora image:
-
-.. code-block:: bash
-
-	$ docker pull docker-registry.engineering.redhat.com/paws/paws-fedora:latest
-
-.. figure:: _static/docker_pull_paws-fedora.png
-	:scale: 100%
-
-You can view the image by the following command:
-
-.. code-block:: bash
-
-	$ docker images
-
-.. figure:: _static/docker_images_paws-fedora.png
-	:scale: 100%
-
-Next start the container:
-
-.. code-block:: bash
-
-	$ docker run --name paws -it docker-registry.engineering.redhat.com/paws/paws-fedora /bin/bash
-
-.. figure:: _static/docker_run_paws-fedora.png
-	:scale: 100%
-
-This will run the /bin/bash command inside a new container based on the paws-fedora
-image. We gave the -it option to allow us to have a terminal prompt into the
-container. This will allow us to run paws commands inside.
-
-You now have a container running with paws fully installed and ready to
-use!
-
-Red Hat Enterprise Linux
-++++++++++++++++++++++++
-
-No paws image is available for Red Hat Enterprise Linux at the moment.
+this doc will be updated soon.
 
 ----
 

@@ -1,4 +1,4 @@
-AUTHORS
+Authors
 --------
 
 PAWS is developed and maintained by contributors.

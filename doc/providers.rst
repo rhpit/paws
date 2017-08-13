@@ -18,13 +18,13 @@ http://www.openstack.org
 PAWS is integrated with Openstack and able to provision, configure and manage
 Windows virtual machines running on public or private clouds.
 
-Path: /usr/share/paws/credentials.yaml
+Path: /home/$USER/paws/credentials.yaml
 
 .. code:: yaml
 
 	credentials:
 	  - provider: openstack
-	    os_auth_url: http://dashboard.centralci.eng.rdu2.redhat.com:5000/v2.0
+	    os_auth_url: http://my-openstack.com:5000/v2.0
 	    os_username: paws
 	    os_password: ********
 	    os_project_name: paws
@@ -51,7 +51,7 @@ Path: /usr/share/paws/credentials.yaml
 +------------------+------------------------+------------------------+
 
 
-Path: /usr/share/paws/resources.yaml
+Path: /home/$USER/paws/resources.yaml
 
 .. code:: yaml
 
@@ -167,6 +167,100 @@ Path: /usr/share/paws/resources.yaml
 	created by paws for this server.
 
 
+single network
+^^^^^^^^^^^^^^
+
+An Openstack tenant which has a single network connected to a public network.
+
+.. image:: _static/osp_single_networks.png
+   :width: 400px
+   :height: 500px
+
+You can find your Openstacks network topology by accessing the following link
+with your credentials http://ip/dashboard/project/network_topology/
+
+Example resources.yaml:
+
+.. code:: yaml
+
+	resources:
+	- name: PAWS_WIN2012_R2
+	  provider: openstack
+	  count: 2
+	  image: win-2012-r2
+	  flavor: 4
+	  network: 10.8.172.0/22
+	  keypair: paws
+	  ssh_private_key: /home/ecerquei/.ssh/paws
+	  administrator_password: my_password@2016
+
+.. note::
+	*E.g. Looking at the network topology image above, you will see a router
+	is connected to the 10.8.172.0/22 external network. This external
+	network can be used as the network name in your resources.yaml.*
+
+
+multiple networks
+^^^^^^^^^^^^^^^^^
+
+A Openstack tenant which has multiple networks connected to a
+public network.
+
+.. image:: _static/osp_multiple_networks.png
+   :width: 400px
+   :height: 500px
+
+You can find your Openstacks network topology by accessing the following link
+with your credentials http://ip/dashboard/project/network_topology/
+
+Example resources.yaml:
+
+.. code:: yaml
+
+   resources:
+      - name: MY_WINDOWS_VM
+        count: 1
+        image: win-2012-r2
+        flavor: 4
+        network: network_name
+        floating_ip_pools: 192.186.1.0/22
+        keypair: my_key_pair
+        ssh_private_key: /home/user/.ssh/id_rsa
+        administrator_password: my_password@2016
+
+In this example we want to highlight on two keys that will need to be set
+correctly if your Openstack tenant has multiple networks connected to the
+same public network. For information about all other keys, please reference
+to the descriptions above.
+
+.. note::
+	(REQUIRED)
+	**- network:** The network name should define which internal network you
+	want the instance to be created on. It should not be the name of the
+	external network to attach too.
+
+		*E.g. Looking at the network topology image above, we will want to
+		give the name of one of the internal networks to use. In this case we
+		will give idm-ad-domain.*
+
+	**- floating_ip_pools:** The name of the external network to use to create
+	the floating IP for the provisioned instance.
+
+		*E.g. Looking at the network topology image above, we will want to give
+		the floating_ip_pools a value of 10.8.176.0/22. Since this is the
+		external network connected to one of the internal networks in the
+		image.*
+
+.. attention::
+	If your Openstack has multiple networks connected to the same external
+	network, it is REQUIRED that you set the floating_ip_pools key. This key
+	tells paws which external network to use to create the floating IP.
+
+	Setting both network and floating_ip_pools for a single network connected
+	to an external network will work as well.
+
+----
+
 Libvirt
 -------
 
@@ -175,20 +269,24 @@ http://www.libvirt.org
 PAWS is integrated with Libvirt and able to provision, configure and manage
 Windows virtual machines running locally.
 
+`PAWS Image Service <https://github.com/rhpit/paws-imgsrv>`_ is an internal
+repository for Windows QCOW images. If you have your own QCOW Windows images
+ready to run on Libvirt you only need to configure your paws files.
+
 To run PAWS with libvirt you need to create **credentials.yaml** and
 **resources.yaml** see below details for these two files and a sample.
 
 To configure your machine to run PAWS with libvirt follow
 the section `Running Windows on VM <libvirt.html>`_
 
-path: /usr/share/paws/credentials.yaml
+path: /home/$USER/paws/credentials.yaml
 
 .. code:: yaml
 
 	credentials:
 	  - provider: libvirt
 	    qemu_instance: qemu:///system
-	    imgsrv_url: http://imgsrv.usersys.redhat.com
+	    imgsrv_url: http://imgsrv.url.com
 
 
 +------------------+------------------------+----------------------------------+
@@ -202,14 +300,14 @@ path: /usr/share/paws/credentials.yaml
 |                  | for QEMU driver to use | for more information             |
 |                  |                        | https://libvirt.org/drvqemu.html |
 +------------------+------------------------+----------------------------------+
-| imgsrv_url       | URL to retrieve the    | http://imgsrv.usersys.redhat.com |
+| imgsrv_url       | URL to retrieve the    | http://imgsrv.url.com            |
 |                  | pre-configured Windows | or for dev purpose, if running   |
 |                  | image for Libvirt      | IMGSRV locally you can use       |
 |                  |                        | http://127.0.0.1:5000            |
 +------------------+------------------------+----------------------------------+
 
 
-path: /usr/share/paws/resources.yaml
+path: /home/$USER/paws/resources.yaml
 
 .. code:: yaml
 
