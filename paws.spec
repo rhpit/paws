@@ -43,7 +43,8 @@ configuring Windows services for test on hybrid Linux and Windows environment
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 # manpage
 %{__mkdir_p} %{buildroot}/%{_mandir}/man1
-cp ../paws.1 %{buildroot}/%{_mandir}/man1
+
+cp paws.1 %{buildroot}/%{_mandir}/man1
 # cli auto completion
 %{__mkdir_p} %{buildroot}/%{_datadir}/bash-completion/completions
 cp config/paws_completion %{buildroot}%{_datadir}/bash-completion/completions/paws

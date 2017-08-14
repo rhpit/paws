@@ -97,6 +97,7 @@ tarball: doc
 	@cp config/ansible.cfg $(RPMTOP)/SOURCES/ansible.cfg
 	cd $(RPMTOP)/SOURCES/ && tar -xf $(TARBALL)
 	cd $(RPMTOP)/SOURCES/ && cp version.txt paws/paws/version.txt
+	cd $(RPMTOP)/SOURCES/ && cp paws.1 paws/paws.1
 	cd $(RPMTOP)/SOURCES/ && tar -czf $(TARBALL) $(NAME)
 	@echo -e "$(OK_COLOR)tarball created at $(RPMTOP)/SOURCES/$(TARBALL)$(NO_COLOR)"
 	@echo
@@ -119,7 +120,6 @@ test: prep
 doc: prep set-version
 	make -C doc/ doc
 	make -C doc/ man
-	cp $(MANPAGE) paws.1
 	cp $(MANPAGE) $(RPMTOP)/SOURCES/
 	cp $(MANPAGE) $(RPMTOP)/BUILD/paws.1
 	@echo -e "$(OK_COLOR)html doc saved at: ../paws-doc/html/index.html$(NO_COLOR)"
