@@ -12,20 +12,21 @@ BuildArch:		noarch
 
 BuildRequires:	python-setuptools
 Requires:		ansible
-Requires:		redhat-release
-Requires:		python-novaclient
-Requires:		python-glanceclient
-Requires:		python-keystoneclient
-Requires:		python-pip
 Requires:		redhat-rpm-config
 Requires:		python-click
 Requires:		bash-completion
-Requires:		python-devel
-Requires:		gcc
-Requires:		libffi-devel
-Requires:		openssl-devel
+#Requires:		python-devel
+#Requires:		gcc
+#Requires:		libffi-devel
+#Requires:		openssl-devel
+#Requires:		redhat-release
+#Requires:		python-pip
 Requires:		openssl
+# required by PAWS providers
 Requires:		libvirt-python
+Requires:		python-novaclient
+Requires:		python-glanceclient
+Requires:		python-keystoneclient
 
 %global debug_package %{nil}
 
