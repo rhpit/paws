@@ -23,5 +23,5 @@ https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/
 Docker hub
 ^^^^^^^^^^
 
-https://hub.docker.com/r/eduardomcerqueira/centos/
+https://hub.docker.com/r/eduardomcerqueira/paws/
 
