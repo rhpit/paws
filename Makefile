@@ -65,6 +65,11 @@ help:
 	@echo -e "\t$(WARN_COLOR)copr-upstream$(NO_COLOR) generate srpm and send to build in upstream copr-fedora"
 	@echo -e "\t$(WARN_COLOR)all$(NO_COLOR)           clean test doc rpm"
 	@echo -e "\t$(WARN_COLOR)dev$(NO_COLOR)           clean, rpm and install PAWS locally"
+	@echo -e "\t$(OK_COLOR)--- docker ---$(NO_COLOR)"
+	@echo -e "\t$(WARN_COLOR)build-centos$(NO_COLOR)  build paws-centos docker image"
+	@echo -e "\t$(WARN_COLOR)build-fedora$(NO_COLOR)  build paws-fedora docker images"
+	@echo -e "\t$(WARN_COLOR)push-centos$(NO_COLOR)   push paws-centos docker image to hub.docker.com"	
+	@echo -e "\t$(WARN_COLOR)push-fedora$(NO_COLOR)   push paws-fedora docker images to hub.docker.com"
 	@echo -e "$(NO_COLOR)"
 
 all: clean test rpm
@@ -185,3 +190,15 @@ endif
 	@echo 
 	paws --version
 	@echo
+
+build-centos:
+	@make -C scripts/dockerfiles build-centos
+		
+build-fedora:
+	@make -C scripts/dockerfiles build-fedora
+				
+push-centos:
+	@make -C scripts/dockerfiles push-centos
+
+push-fedora:
+	@make -C scripts/dockerfiles push-fedora
