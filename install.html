@@ -134,11 +134,57 @@ provision/teardown resources in a cloud infrastructure.</p>
 <p>To use paws in a container, you will need to have docker installed and running
 on your system. Please see the following link for details to setup your system
 with docker: <a class="reference external" href="https://docs.docker.com/engine/installation/">https://docs.docker.com/engine/installation/</a></p>
-<p>this doc will be updated soon.</p>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">Make sure docker service is running and if you are running a Linux distro
+that has SELINUX make sure to manage it too otherwise it can cause
+permissions denied errors while running paws container.</p>
+</div>
+<p>PAWS docker images are based on official Centos and Fedora images and you can
+pull from at <a class="reference external" href="https://hub.docker.com/r/eduardomcerqueira/paws/">https://hub.docker.com/r/eduardomcerqueira/paws/</a> or running the
+commands below.</p>
+<p>You will notice the commands below are mounting the folder
+<strong>/home/ecerquei/github/ws/</strong> from host into the container. This folder contains
+the WS scripts that you will see at next section on <a class="reference external" href="guide.html">getting started</a></p>
+<div class="section" id="id4">
+<h3>Centos<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-centos-latest
+sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-centos-latest /bin/bash
+</pre></div>
+</div>
+</div>
+<div class="section" id="fedora-latest">
+<h3>Fedora latest<a class="headerlink" href="#fedora-latest" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-latest
+sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-latest /bin/bash
+</pre></div>
+</div>
+</div>
+<div class="section" id="fedora-26">
+<h3>Fedora 26<a class="headerlink" href="#fedora-26" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-26
+sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-26 /bin/bash
+</pre></div>
+</div>
+</div>
+<div class="section" id="fedora-25">
+<h3>Fedora 25<a class="headerlink" href="#fedora-25" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-25
+sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-25 /bin/bash
+</pre></div>
+</div>
+</div>
+<div class="section" id="fedora-24">
+<h3>Fedora 24<a class="headerlink" href="#fedora-24" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-24
+sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-24 /bin/bash
+</pre></div>
+</div>
 <hr class="docutils" />
 <p>You are now ready to begin using paws! To get started please navigate to the
 side bar on the left to see the <a class="reference external" href="guide.html">getting started</a>
 guide.</p>
+</div>
 </div>
 </div>
 
@@ -179,7 +225,14 @@ guide.</p>
 <li class="toctree-l3"><a class="reference internal" href="#id3">Red Hat Enterprise Linux</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#container">Container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#container">Container</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Centos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fedora-latest">Fedora latest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fedora-26">Fedora 26</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fedora-25">Fedora 25</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fedora-24">Fedora 24</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.html">Getting Started</a></li>
@@ -226,7 +279,7 @@ guide.</p>
       &copy;2017, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7+</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
