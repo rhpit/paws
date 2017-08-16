@@ -81,7 +81,7 @@ class Paws(object):
             # Run paws task
             task.run()
         except Exception as ex:
-            if ex.message():
+            if ex.message:
                 self.log.error(ex)
         except PawsPreTaskError:
             result = 1
