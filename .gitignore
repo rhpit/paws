@@ -2,3 +2,7 @@
 /rpmbuild/
 /paws.1
 /TODO.txt
+/dist/
+/build/
+/paws.egg-info/
+/.settings/
