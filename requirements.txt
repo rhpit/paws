@@ -1,0 +1,11 @@
+# main packages needed by paws core
+paramiko
+pywinrm
+click
+shade
+ansible
+# paws providers
+python-novaclient
+python-glanceclient
+python-keystoneclient
+libvirt-python
