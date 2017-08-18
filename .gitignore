@@ -1,3 +1,6 @@
+# IDE
+.idea
+
 /venv_paws/
 /rpmbuild/
 /paws.1
