@@ -113,6 +113,26 @@ the RPM was generated. From there you can go ahead and install it.
 	Wrote: /home/fedora/paws/rpmbuild/RPMS/noarch/paws-0.3.4-0.noarch.rpm
 	sudo dnf install -y /home/fedora/paws/rpmbuild/RPMS/noarch/paws-0.3.4-0.noarch.rpm
 
+**pip**
+
+For development we recommend installing PAWS by pip as the main reason you
+can isolate the application running into a python virtual environment like
+example:
+
+.. code:: bash
+
+	virtualenv -p /usr/bin/python2.7 venv
+	source venv/bin/activate
+	(venv) pip install /home/user/git/paws/dist/paws-0.3.8.tar.gz
+	
+The install command above is using the local tar.gz built previously by running
+**make pip** command. It also could be installed from a pypi-test repo running:
+
+.. code:: bash
+
+	 pip install --index-url https://test.pypi.org/simple/ paws
+	 
+
 **Code check**
 
 Before any commit make sure your code changes are following the code standard

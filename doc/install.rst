@@ -81,7 +81,59 @@ To use paws in a container, you will need to have docker installed and running
 on your system. Please see the following link for details to setup your system
 with docker: https://docs.docker.com/engine/installation/
 
-this doc will be updated soon.
+.. attention::
+
+   Make sure docker service is running and if you are running a Linux distro
+   that has SELINUX make sure to manage it too otherwise it can cause 
+   permissions denied errors while running paws container.
+
+PAWS docker images are based on official Centos and Fedora images and you can 
+pull from at https://hub.docker.com/r/eduardomcerqueira/paws/ or running the 
+commands below.
+
+You will notice the commands below are mounting the folder 
+**/home/ecerquei/github/ws/** from host into the container. This folder contains
+the WS scripts that you will see at next section on `getting started <guide.html>`_ 
+
+Centos
+++++++
+
+.. code-block:: bash
+
+	sudo docker pull eduardomcerqueira/paws:0.3.8-centos-latest
+	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-centos-latest /bin/bash 
+
+Fedora latest
++++++++++++++
+
+.. code-block:: bash
+
+	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-latest
+	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-latest /bin/bash
+
+Fedora 26
++++++++++
+
+.. code-block:: bash
+
+	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-26
+	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-26 /bin/bash
+
+Fedora 25
++++++++++
+
+.. code-block:: bash
+
+	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-25
+	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-25 /bin/bash
+
+Fedora 24
++++++++++
+
+.. code-block:: bash
+
+	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-24
+	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-24 /bin/bash
 
 ----
 
