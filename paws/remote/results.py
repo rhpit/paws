@@ -58,6 +58,10 @@ class ResultsBase(object):
 
         LOG.debug("Ansible call %s!", status)
 
+        if self.callback.contacted and self.callback.\
+                contacted[0]['success'] is False:
+            LOG.error(self.callback.contacted[0]['results']['msg'])
+
     def quit(self):
         """Quit paws based on results of Ansible call."""
         if self.result != 0:
