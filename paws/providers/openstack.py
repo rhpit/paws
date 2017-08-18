@@ -24,6 +24,7 @@ from time import sleep
 from uuid import uuid4
 
 from novaclient.client import Client as nclient
+from novaclient.v2 import networks
 from novaclient.exceptions import ClientException, NotFound
 from glanceclient.v2.client import Client as gclient
 from keystoneclient.v2_0.client import Client as kclient
@@ -35,7 +36,7 @@ from paws.exceptions import NovaPasswordError, SSHError
 from paws.util import cleanup, file_mgmt, get_ssh_conn, update_resources_paws
 from paws.util.decorators import retry
 from paws.remote.prep import WinPrep
-from paws.remote.results import CloudModuleResults
+from paws.remote.results import CloudModuleResults, GenModuleResults
 from paws.remote.driver import Ansible
 
 """
@@ -355,6 +356,7 @@ class Nova(object):
             auth_url=self.user_cred['OS_AUTH_URL'],
             project_name=self.user_cred['OS_PROJECT_NAME']
         )
+        self.neutron = networks.NeutronManager(self.nova)
 
     @retry(NovaPasswordError, tries=20)
     def get_password(self, server_name, keypair):
@@ -393,25 +395,12 @@ class Nova(object):
         """Delete a server."""
         self.nova.servers.delete(instance_id)
 
-    def image_exist(self, image):
-        """Check to see if image exists in tenant.
-
-        :param image: Image to use to create vm.
-        """
-        try:
-            try:
-                self.nova.images.find(name=image)
-            except NotFound:
-                self.nova.images.find(id=image)
-        except NotFound:
-            LOG.error("Image: %s does not exist!", image)
-            raise ClientException(1)
-
     def flavor_exist(self, flavor):
         """Verify flavor exists in tenant.
 
         :param flavor: Size of vm to create.
         """
+        LOG.debug('Checking openstack flavor %s' % flavor)
         try:
             self.nova.flavors.find(id=flavor)
         except ClientException:
@@ -423,8 +412,9 @@ class Nova(object):
 
         :param network: Network to create vms on.
         """
+        LOG.debug('Checking openstack network %s' % network)
         try:
-            self.nova.networks.find(label=network)
+            self.neutron.find_network(network)
         except ClientException:
             LOG.error("Network: %s does not exist!", network)
             raise ClientException(1)
@@ -434,6 +424,7 @@ class Nova(object):
 
         :param keypair: SSH keypair.
         """
+        LOG.debug('Checking openstack keypair %s' % keypair)
         try:
             self.nova.keypairs.find(name=keypair)
         except ClientException:
@@ -686,6 +677,22 @@ class Glance(object):
             paws_images.append(image)
         return paws_images
 
+    def image_exist(self, image_name):
+        """Check to see if image exists in tenant.
+
+        :param image_name: name of image declared in resources.yaml
+        """
+        LOG.debug('Checking openstack image %s' % image_name)
+        try:
+            all_images = self.get_images()
+            for image in all_images:
+                if image_name in image['name']:
+                    return True
+            raise Exception
+        except Exception:
+            LOG.error("Image: %s does not exist!", image_name)
+            raise ClientException(1)
+
 
 class Util(object):
     """
@@ -730,7 +737,7 @@ class Util(object):
 
         # Get credentials by file
         if _creds_file:
-            LOG.info("Openstack providers credentials are set by a credentials"
+            LOG.debug("Openstack providers credentials are set by a credentials"
                      " file.")
             cdata = file_mgmt('r', credential_file)
 
@@ -837,7 +844,7 @@ class Util(object):
                     break
 
         # Write resources.paws
-        if _rlist.len() > 0:
+        if len(_rlist) > 0:
             file_mgmt('w', resources_paws, {"resources": _rlist})
             LOG.debug("Successfully created %s", resources_paws)
 
@@ -1181,11 +1188,11 @@ class Conductor(object):
         try:
             LOG.debug("Checking openstack keys are valid")
 
-            # Create nova class instance
+            # Create nova and glance client instance
             nova = Nova(credentials)
-
+            glance = Glance(credentials)
             for res in resource:
-                nova.image_exist(res['image'])
+                glance.image_exist(res['image'])
                 nova.flavor_exist(str(res['flavor']))
                 nova.network_exist(res['network'])
                 nova.keypair_exist(res['keypair'])
