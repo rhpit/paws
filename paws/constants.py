@@ -116,8 +116,9 @@ LINE = "*" * 45
 PAWS_TASK_MODULES_PATH = "paws.tasks."
 
 # Documentation links
-GROUP_HELP = "https://rhpit.github.io/paws/create_group.html"
-LIBVIRT_AUTH_HELP = "https://rhpit.github.io/paws/providers.html#libvirt"
+DOC = "https://rhpit.github.io/paws"
+GROUP_HELP = "%s/create_group.html" % DOC
+LIBVIRT_AUTH_HELP = "%s/providers.html#libvirt" % DOC
 
 # Register a new supported provider to PAWS
 PROVIDERS = [{'name': 'openstack',
