@@ -80,6 +80,7 @@ help:
 	@echo -e "\t$(WARN_COLOR)build-fedora$(NO_COLOR)  build paws-fedora docker images"
 	@echo -e "\t$(WARN_COLOR)push-centos$(NO_COLOR)   push paws-centos docker image to hub.docker.com"	
 	@echo -e "\t$(WARN_COLOR)push-fedora$(NO_COLOR)   push paws-fedora docker images to hub.docker.com"
+	@echo -e "\t$(WARN_COLOR)clean-images$(NO_COLOR)  delete all paws tagged images"
 	@echo -e "$(NO_COLOR)"
 
 all: clean test rpm
@@ -200,6 +201,7 @@ endif
 	paws --version
 	@echo
 
+# Docker tasks
 build-centos:
 	@make -C scripts/dockerfiles build-centos
 		
@@ -212,19 +214,23 @@ push-centos:
 push-fedora:
 	@make -C scripts/dockerfiles push-fedora
 
-pip: clean doc
+clean-images:
+	@make -C scripts/dockerfiles clean-paws-images
+
+# pip tasks
+pip: clean
 	@python setup.py sdist
-	@echo -e "$(OK_COLOR)pip tar.gz created at dist/$(NAME)-$(VERSION).tar.gz$(NO_COLOR)"
+	@echo -e "$(OK_COLOR)pip tar.gz created at dist/$(NAME)-cli-$(VERSION).tar.gz$(NO_COLOR)"
 	@echo
-		
+
+# requires credential in ~/.pypirc		
 pypi-test: pip
-	@twine upload --repository-url testpypi dist/*
+	@python setup.py sdist upload -r pypitest
 	@echo -e "$(OK_COLOR)check https://test.pypi.org/project/paws/#files$(NO_COLOR)"
 	@echo
-		
+
+# requires credential in ~/.pypirc		
 pypi: pip
-	@twine upload --repository-url pypi dist/*
+	@python setup.py sdist upload -r pypi
 	@echo -e "$(OK_COLOR)check https://pypi.org/project/paws/#files$(NO_COLOR)"
 	@echo
-		
-	

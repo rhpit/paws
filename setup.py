@@ -36,13 +36,11 @@ def get_version():
         return "dev"
 
 setup(
-    name='paws',
+    name='paws-cli',
     version=get_version(),
-    description='Paws is a Linux based tool to provision Windows systems and \
-configure Windows services with a simpler way to test hybrid environments \
-(Linux and Windows)',
-    long_description='Paws is a Linux based tool to provision Windows systems and \
-configure Windows services with a simpler way to test hybrid environments \
+    description='tool to provision Windows and configure Windows services', 
+    long_description='Paws is a Linux based tool to provision Windows systems \
+and configure Windows services with a simpler way to test hybrid environments \
 (Linux and Windows)',
     classifiers=['Development Status :: 4 - Beta',
                  'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
