@@ -21,18 +21,17 @@ default: help
 ############################################
 # GLOBAL VARIABLES
 ############################################
-# set version and release variables before run any build
-VERSION=0.3.8
-RELEASE=0
+# set version and release into paws/version.txt before to run any build
+VERSION=$(shell cat paws/version.txt)
 NAME=paws
 MANPAGE=../paws-doc/man/paws.1
 PWD=$(shell bash -c "pwd -P")
 RPMDIST=$(shell rpm --eval '%dist')
 RPMTOP=$(PWD)/rpmbuild
 SPEC=$(NAME).spec
-TARBALL=$(NAME)-$(VERSION)-$(RELEASE).tar.gz
-SRPM=$(NAME)-$(VERSION)-$(RELEASE).src.rpm
-RPM=$(NAME)-$(VERSION)-$(RELEASE).noarch.rpm
+TARBALL=$(NAME)-$(VERSION).tar.gz
+SRPM=$(NAME)-$(VERSION).src.rpm
+RPM=$(NAME)-$(VERSION).noarch.rpm
 # for dev phony
 DIST=$(shell bash -c "uname -r")
 BRANCH=$(shell git symbolic-ref --short HEAD)
@@ -53,18 +52,29 @@ help:
 	@echo
 	@echo -e "Usage: $(WARN_COLOR) make target$(NO_COLOR) where $(WARN_COLOR)target$(NO_COLOR) is one of following:"
 	@echo
+	@echo -e "\t$(OK_COLOR)--- code ---$(NO_COLOR)"	
 	@echo -e "\t$(WARN_COLOR)clean$(NO_COLOR)         clean temp files from local workspace"
+	@echo -e "\t$(WARN_COLOR)codecheck$(NO_COLOR)     run code checkers pep8 and pylint"
+	@echo -e "\t$(WARN_COLOR)test$(NO_COLOR)          run unit tests locally"
+				
+	@echo -e "\t$(OK_COLOR)--- doc ---$(NO_COLOR)"	
 	@echo -e "\t$(WARN_COLOR)doc$(NO_COLOR)           generate sphinx doc html and man pages"
 	@echo -e "\t$(WARN_COLOR)gh-pages$(NO_COLOR)      publish html doc to github pages"
-	@echo -e "\t$(WARN_COLOR)codecheck$(NO_COLOR)     run code checkers pep8 and pylint"
+
+	@echo -e "\t$(OK_COLOR)--- pip ---$(NO_COLOR)"	
+	@echo -e "\t$(WARN_COLOR)pip$(NO_COLOR)           build source codes and generate tar.gz file"
+	@echo -e "\t$(WARN_COLOR)pypi-test$(NO_COLOR)     upload tar.gz to pypi-test"
+	@echo -e "\t$(WARN_COLOR)pypi$(NO_COLOR)          upload tar.gz to pypi"
+
+	@echo -e "\t$(OK_COLOR)--- rpm ---$(NO_COLOR)"	
 	@echo -e "\t$(WARN_COLOR)rpm$(NO_COLOR)           build source codes and generate rpm file"
-	@echo -e "\t$(WARN_COLOR)test$(NO_COLOR)          run unit tests locally"
 	@echo -e "\t$(WARN_COLOR)tarball$(NO_COLOR)       generate tarball of project"
 	@echo -e "\t$(WARN_COLOR)srpm$(NO_COLOR)          generate srpm of project"
 	@echo -e "\t$(WARN_COLOR)copr-dev$(NO_COLOR)      generate srpm and send to build in copr-devel internal Red Hat"
 	@echo -e "\t$(WARN_COLOR)copr-upstream$(NO_COLOR) generate srpm and send to build in upstream copr-fedora"
 	@echo -e "\t$(WARN_COLOR)all$(NO_COLOR)           clean test doc rpm"
 	@echo -e "\t$(WARN_COLOR)dev$(NO_COLOR)           clean, rpm and install PAWS locally"
+
 	@echo -e "\t$(OK_COLOR)--- docker ---$(NO_COLOR)"
 	@echo -e "\t$(WARN_COLOR)build-centos$(NO_COLOR)  build paws-centos docker image"
 	@echo -e "\t$(WARN_COLOR)build-fedora$(NO_COLOR)  build paws-fedora docker images"
@@ -80,17 +90,17 @@ prep:
 	@echo
 
 set-version:
-	@echo $(VERSION)-$(RELEASE) > $(RPMTOP)/SOURCES/version.txt
-	@cp $(RPMTOP)/SOURCES/version.txt $(RPMTOP)/BUILD/version.txt
-	@echo -e "$(OK_COLOR)created $(RPMTOP)/SOURCES/version.txt$(NO_COLOR)"
+	@cp paws/version.txt $(RPMTOP)/SOURCES/version.txt
+	@cp paws/version.txt $(RPMTOP)/BUILD/version.txt
+	@echo -e "$(OK_COLOR)set version $(VERSION) to $(RPMTOP)/SOURCES/version.txt$(NO_COLOR)"
 	@echo
 
 clean:
+	$(RM) -r dist build paws.egg-info
 	$(RM) $(NAME)*.tar.gz
 	$(RM) -r rpmbuild build doc/build paws.egg-info 
-	$(RM) -r version.txt paws/version.txt
 	@find -name '*.py[co]' -delete
-	@echo -e "$(OK_COLOR)deleted rpmbuild workdir$(NO_COLOR)"
+	@echo -e "$(OK_COLOR)deleted rpmbuild, dist and build$(NO_COLOR)"
 	make clean -C doc/
 	@echo
 	
@@ -101,7 +111,6 @@ tarball: doc
 	
 	@cp config/ansible.cfg $(RPMTOP)/SOURCES/ansible.cfg
 	cd $(RPMTOP)/SOURCES/ && tar -xf $(TARBALL)
-	cd $(RPMTOP)/SOURCES/ && cp version.txt paws/paws/version.txt
 	cd $(RPMTOP)/SOURCES/ && cp paws.1 paws/paws.1
 	cd $(RPMTOP)/SOURCES/ && tar -czf $(TARBALL) $(NAME)
 	@echo -e "$(OK_COLOR)tarball created at $(RPMTOP)/SOURCES/$(TARBALL)$(NO_COLOR)"
@@ -183,7 +192,7 @@ ifneq ("$(wildcard /usr/bin/paws)","")
 	sudo $(PKGMNGR) remove paws -y > /dev/null
 endif
 	sudo $(PKGMNGR) install $(shell bash -c "find $(RPMTOP)/RPMS/ \
-	-name '$(NAME)-$(VERSION)-$(RELEASE)*'") -y > /dev/null
+	-name '$(NAME)-$(VERSION)*'") -y > /dev/null
 # install pip modules
 	sudo pip install -r requirements.txt > /dev/null
 	sudo chown -R $(LOGNAME):$(LOGNAME) /usr/share/paws
@@ -202,3 +211,20 @@ push-centos:
 
 push-fedora:
 	@make -C scripts/dockerfiles push-fedora
+
+pip: clean doc
+	@python setup.py sdist
+	@echo -e "$(OK_COLOR)pip tar.gz created at dist/$(NAME)-$(VERSION).tar.gz$(NO_COLOR)"
+	@echo
+		
+pypi-test: pip
+	@twine upload --repository-url testpypi dist/*
+	@echo -e "$(OK_COLOR)check https://test.pypi.org/project/paws/#files$(NO_COLOR)"
+	@echo
+		
+pypi: pip
+	@twine upload --repository-url pypi dist/*
+	@echo -e "$(OK_COLOR)check https://pypi.org/project/paws/#files$(NO_COLOR)"
+	@echo
+		
+	
