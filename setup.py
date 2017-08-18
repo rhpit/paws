@@ -23,7 +23,7 @@ Python build distribution for PAWS
 from setuptools import setup
 from os.path import exists
 
-VERSION = "../rpmbuild/SOURCES/version.txt"
+VERSION = "paws/version.txt"
 
 def get_version():
     """Get version and release"""
@@ -33,25 +33,29 @@ def get_version():
             version = version_file.read()
             return version
     else:
-        return "0"
+        return "dev"
 
 setup(
     name='paws',
     version=get_version(),
-    description='PAWS is a command line tool to provision, install and \
-configure Windows systems anyone who needs to perform some actions with a \
-Windows system or test on hybrid environment ( Linux and Windows )',
-    long_description="see https://rhpit.github.io/paws/",
+    description='Paws is a Linux based tool to provision Windows systems and \
+configure Windows services with a simpler way to test hybrid environments \
+(Linux and Windows)',
+    long_description='Paws is a Linux based tool to provision Windows systems and \
+configure Windows services with a simpler way to test hybrid environments \
+(Linux and Windows)',
     classifiers=['Development Status :: 4 - Beta',
-                 'License :: OSI Approved :: GPL License',
+                 'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
                  'Programming Language :: Python :: 2.7',
                  'Topic :: Software Development :: Quality Assurance',
                  ],
-    keywords='Provision Automation Windows Quality Assurance',
+    keywords='Provision Automation Windows Quality Assurance Tests Hybrid',
     url='https://rhpit.github.io/paws/',
-    author='Eduardo Cerqueira, Ryan Williams',
-    author_email='eduardomcerqueira@gmail.com, rwilliams5262@gmail.com',
-    platforms='RHEL >= 7.2, Fedora >= 24, CentOS >= 7.2',
+    author='Eduardo Cerqueira,Ryan Williams',
+    author_email='eduardomcerqueira@gmail.com,rwilliams5262@gmail.com',
+    maintainer='Eduardo Cerqueira,Ryan Williams',
+    maintainer_email='eduardomcerqueira@gmail.com,rwilliams5262@gmail.com',
+    platforms='RHEL >= 7.2 Fedora >= 24 CentOS >= 7.2',
     license='GPL',
     include_package_data=True,
     zip_safe=False,
@@ -62,9 +66,19 @@ Windows system or test on hybrid environment ( Linux and Windows )',
               'paws.tasks',
               'paws.util'
     ],
+    install_requires=['paramiko',
+                      'pywinrm',
+                      'click',
+                      'shade', 
+                      'ansible',
+                      'python-novaclient',
+                      'python-glanceclient',
+                      'python-keystoneclient'],
     test_suite="nose.collector",
     tests_require="nose",
     entry_points={'console_scripts': ['paws=paws.cli:paws']}
 )
 
+print "-" * 80
 print "Python build target complete"
+print "-" * 80
