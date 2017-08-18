@@ -107,7 +107,9 @@ def run(args, task):
               help="Show version and exit.")
 @click.pass_context
 def paws(ctx=None, userdir=None, verbose=None):
-    """PAWS command-line interface"""
+    """PAWS - Provision Automated Windows and Services
+       https://rhpit.github.io/paws
+    """
     # Custom ansible.cfg
     environ['ANSIBLE_CONFIG'] = DEFAULT_USERDIR
     ctx.obj = {}
