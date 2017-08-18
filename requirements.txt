@@ -8,4 +8,4 @@ ansible
 python-novaclient
 python-glanceclient
 python-keystoneclient
-libvirt-python
+#libvirt-python
