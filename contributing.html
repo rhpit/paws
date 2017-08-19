@@ -64,15 +64,15 @@ can find these at the <a class="reference external" href="install.html#dependenc
 packages are dependencies that paws would install when installing by repository.
 From a terminal, run the following command based on your operating system.</p>
 <div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Yum package manager</span>
-<span class="n">sudo</span> <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">git</span><span class="o">-</span><span class="n">review</span> <span class="n">wget</span> <span class="n">gcc</span> <span class="n">make</span> <span class="n">rpm</span><span class="o">-</span><span class="n">build</span>\
+<span class="n">sudo</span> <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">gcc</span> <span class="n">make</span> <span class="n">rpm</span><span class="o">-</span><span class="n">build</span>\
 <span class="n">python</span><span class="o">-</span><span class="n">devel</span> <span class="n">python</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">python</span><span class="o">-</span><span class="n">pip</span> <span class="n">python2</span><span class="o">-</span><span class="n">flake8</span> <span class="n">pylint</span>\
-<span class="n">python2</span><span class="o">-</span><span class="n">devel</span> <span class="n">python</span><span class="o">-</span><span class="n">kitchen</span> <span class="n">openssl</span><span class="o">-</span><span class="n">devel</span> <span class="n">libffi</span><span class="o">-</span><span class="n">devel</span> <span class="n">gcc</span>\
+<span class="n">python</span><span class="o">-</span><span class="n">kitchen</span> <span class="n">openssl</span><span class="o">-</span><span class="n">devel</span> <span class="n">libffi</span><span class="o">-</span><span class="n">devel</span>\
 <span class="n">python</span><span class="o">-</span><span class="n">oslo</span><span class="o">-</span><span class="n">serialization</span> <span class="n">python</span><span class="o">-</span><span class="n">pep8</span> <span class="n">ansible</span> <span class="n">krb5</span><span class="o">-</span><span class="n">workstation</span>
 
 <span class="c1"># Dnf package manager</span>
-<span class="n">sudo</span> <span class="n">dnf</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">git</span><span class="o">-</span><span class="n">review</span> <span class="n">wget</span> <span class="n">gcc</span> <span class="n">make</span> <span class="n">rpm</span><span class="o">-</span><span class="n">build</span>\
+<span class="n">sudo</span> <span class="n">dnf</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">gcc</span> <span class="n">make</span> <span class="n">rpm</span><span class="o">-</span><span class="n">build</span>\
 <span class="n">python</span><span class="o">-</span><span class="n">devel</span> <span class="n">python</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">python</span><span class="o">-</span><span class="n">pip</span> <span class="n">python2</span><span class="o">-</span><span class="n">flake8</span> <span class="n">pylint</span>\
-<span class="n">python2</span><span class="o">-</span><span class="n">devel</span> <span class="n">python</span><span class="o">-</span><span class="n">kitchen</span> <span class="n">openssl</span><span class="o">-</span><span class="n">devel</span> <span class="n">libffi</span><span class="o">-</span><span class="n">devel</span> <span class="n">gcc</span>\
+<span class="n">python</span><span class="o">-</span><span class="n">kitchen</span> <span class="n">openssl</span><span class="o">-</span><span class="n">devel</span> <span class="n">libffi</span><span class="o">-</span><span class="n">devel</span>\
 <span class="n">python</span><span class="o">-</span><span class="n">oslo</span><span class="o">-</span><span class="n">serialization</span> <span class="n">python</span><span class="o">-</span><span class="n">pep8</span> <span class="n">ansible</span> <span class="n">krb5</span><span class="o">-</span><span class="n">workstation</span>
 </pre></div>
 </div>
@@ -90,7 +90,7 @@ $ cd paws
 
 virtualenv -p /usr/bin/python2.7 venv_paws
 source venv_paws/bin/activate
-pip install -r requirements.txt --upgrade
+pip install -r requirements-dev.txt --upgrade
 </pre></div>
 </div>
 </div>
@@ -128,6 +128,20 @@ the RPM was generated. From there you can go ahead and install it.</p>
 <span class="n">sudo</span> <span class="n">dnf</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">fedora</span><span class="o">/</span><span class="n">paws</span><span class="o">/</span><span class="n">rpmbuild</span><span class="o">/</span><span class="n">RPMS</span><span class="o">/</span><span class="n">noarch</span><span class="o">/</span><span class="n">paws</span><span class="o">-</span><span class="mf">0.3</span><span class="o">.</span><span class="mi">4</span><span class="o">-</span><span class="mf">0.</span><span class="n">noarch</span><span class="o">.</span><span class="n">rpm</span>
 </pre></div>
 </div>
+<p><strong>pip</strong></p>
+<p>For development we recommend installing PAWS by pip as the main reason you
+can isolate the application running into a python virtual environment like
+example:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">virtualenv</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python2</span><span class="o">.</span><span class="mi">7</span> <span class="n">venv</span>
+<span class="n">source</span> <span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
+<span class="p">(</span><span class="n">venv</span><span class="p">)</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">git</span><span class="o">/</span><span class="n">paws</span><span class="o">/</span><span class="n">dist</span><span class="o">/</span><span class="n">paws</span><span class="o">-</span><span class="mf">0.3</span><span class="o">.</span><span class="mf">8.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+<p>The install command above is using the local tar.gz built previously by running
+<strong>make pip</strong> command. It also could be installed from a pypi-test repo running:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">url</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">test</span><span class="o">.</span><span class="n">pypi</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">simple</span><span class="o">/</span> <span class="n">paws</span>
+</pre></div>
+</div>
 <p><strong>Code check</strong></p>
 <p>Before any commit make sure your code changes are following the code standard
 of this project running the command:</p>
@@ -135,6 +149,28 @@ of this project running the command:</p>
 <span class="n">make</span> <span class="n">codecheck</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="new-release">
+<h2>New release<a class="headerlink" href="#new-release" title="Permalink to this headline">¶</a></h2>
+<p>List of actions that need to be performed for a new release:</p>
+<ol class="arabic simple">
+<li>update paws/version.txt</li>
+<li>update version and release variables in Makefile and paws.spec</li>
+<li>make codecheck – fix if needed</li>
+<li>commit your changes</li>
+<li>make doc ( access locally and double check before update upstream doc )</li>
+<li>make gh-pages – if needed</li>
+<li>update docker images running</li>
+<li>make build-centos</li>
+<li>make build-fedora</li>
+<li>make push-centos</li>
+<li>make push-fedora</li>
+<li>make copr-dev</li>
+<li>make copr-upstream</li>
+</ol>
+</div>
+<div class="section" id="ide">
+<h2>IDE<a class="headerlink" href="#ide" title="Permalink to this headline">¶</a></h2>
 <p><strong>Eclipse pydev</strong></p>
 <p>on eclipse and pydev fixing unresolved imports or to link source code to
 correct path double check:</p>
@@ -189,6 +225,8 @@ correct path double check:</p>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#setup-your-local-environment">Setup your local environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#build">Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#new-release">New release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ide">IDE</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
@@ -228,7 +266,7 @@ correct path double check:</p>
       &copy;2017, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7+</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |

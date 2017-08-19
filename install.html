@@ -44,7 +44,7 @@
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>PAWS is only supported in Linux systems and currently can be installed as
-regular application based on RPM or container.</p>
+regular application based on <strong>RPM</strong>, <strong>PIP</strong> or <strong>container</strong>.</p>
 <div class="section" id="support-matrix">
 <h2>Support matrix<a class="headerlink" href="#support-matrix" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="colwidths-given docutils">
@@ -79,24 +79,77 @@ regular application based on RPM or container.</p>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>PAWS when installed by RPM runs automatically a post task to install
+some extra python pip modules to your system. They must be handled by pip
+because at this current date some of them are not distributed by RPM
+and others are outdated when installed by RP,M like the case of
+python-novaclient that by RPM the latest version is 3.3.1
+and by pip it is 9.1.0</p>
+<p>At this link you can see all pip modules that will be installed during
+post task: <a class="reference external" href="https://github.com/rhpit/paws/raw/master/requirements.txt">https://github.com/rhpit/paws/raw/master/requirements.txt</a></p>
+<p>Ansible requires two additional python packages to be installed in order
+to communicate with Windows systems.</p>
+<p><strong>pywinrm</strong>: This package is used for Windows remote management.
+At this time there is no RPM available.</p>
+<p><a class="reference external" href="https://pypi.python.org/pypi/pywinrm">https://pypi.python.org/pypi/pywinrm</a></p>
+<p><strong>shade</strong>: This package is required by Ansible to
+provision/teardown resources in a cloud infrastructure.</p>
+<p><a class="reference external" href="https://pypi.python.org/pypi/shade">https://pypi.python.org/pypi/shade</a></p>
+<p><a class="reference external" href="http://docs.openstack.org/infra/shade/">http://docs.openstack.org/infra/shade/</a></p>
+<p class="last"><a class="reference external" href="http://docs.ansible.com/ansible/list_of_cloud_modules.html#openstack">http://docs.ansible.com/ansible/list_of_cloud_modules.html#openstack</a></p>
+</div>
 </div>
 <div class="section" id="application">
 <h2>Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h2>
-<p>PAWS is distributed as RPM package compatible with YUM and DNF package manager systems and the repos are available in Fedora Copr project
-<a class="reference external" href="https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/">https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/</a> below follow the steps to install PAWS for each of supported OS:</p>
+<p><strong>Installing by PIP</strong></p>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p>PAWS pip package name is <strong>paws-cli</strong> [1] and not only paws. It is because
+the project name paws [2] is already been used by other project with no
+relation with this project.</p>
+<p>[1] <a class="reference external" href="https://pypi.python.org/pypi/paws-cli">https://pypi.python.org/pypi/paws-cli</a></p>
+<p class="last">[2] <a class="reference external" href="https://pypi.python.org/pypi/paws">https://pypi.python.org/pypi/paws</a></p>
+</div>
+<p>Using pip the installation is basically running one command, <em>exception may
+occur if you are running a minimal OS version or don’t have python-pip and
+others required packages installed in your system</em>, installing packages required:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Yum package manager</span>
+<span class="n">sudo</span> <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">gcc</span> <span class="n">make</span> <span class="n">python</span><span class="o">-</span><span class="n">devel</span> <span class="n">python</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">python</span><span class="o">-</span><span class="n">pip</span> \
+<span class="n">openssl</span><span class="o">-</span><span class="n">devel</span> <span class="n">libffi</span><span class="o">-</span><span class="n">devel</span> <span class="n">redhat</span><span class="o">-</span><span class="n">rpm</span><span class="o">-</span><span class="n">config</span>
+
+<span class="c1"># Dnf package manager</span>
+<span class="n">sudo</span> <span class="n">dnf</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">gcc</span> <span class="n">make</span> <span class="n">python</span><span class="o">-</span><span class="n">devel</span> <span class="n">python</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">python</span><span class="o">-</span><span class="n">pip</span> \
+<span class="n">openssl</span><span class="o">-</span><span class="n">devel</span> <span class="n">libffi</span><span class="o">-</span><span class="n">devel</span> <span class="n">redhat</span><span class="o">-</span><span class="n">rpm</span><span class="o">-</span><span class="n">config</span>
+</pre></div>
+</div>
+<p>installing paws-cli</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo pip install paws-cli
+</pre></div>
+</div>
+<p><strong>Installing by RPM</strong></p>
+<p>RPM is available at <a class="reference external" href="https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/">https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/</a>
+Below follow the steps to install PAWS for each of supported OS</p>
 <div class="section" id="id1">
 <h3>CentOS<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo yum install -y centos-release-openstack-liberty
-sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
+sudo yum install -y centos-release-openstack-liberty
 sudo yum install -y paws
 </pre></div>
 </div>
 </div>
 <div class="section" id="id2">
 <h3>Fedora<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<p>Replace version from repo url to match with your Fedora version.</p>
+<p>Replace version from repo url to match with your Fedora version or just use copr that does it automatically for you:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/fedora-24/eduardocerqueira-paws-fedora-24.repo
+sudo dnf install -y paws
+</pre></div>
+</div>
+<p>or by copr</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo dnf install dnf-plugins-core -y
+sudo dnf copr <span class="nb">enable</span> eduardocerqueira/paws -y
 sudo dnf install -y paws
 </pre></div>
 </div>
@@ -113,19 +166,6 @@ sudo subscription-manager repos --enable rhel-7-&lt;variant&gt;-openstack-8-tool
 sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
 sudo yum install -y paws
 </pre></div>
-</div>
-<div class="admonition attention">
-<p class="first admonition-title">Attention</p>
-<p>Ansible requires two additional python packages to be installed in order
-to communicate with Windows systems.</p>
-<p><strong>pywinrm</strong>: This package is used for Windows remote management.
-At this time there is no RPM available.</p>
-<p><em>https://pypi.python.org/pypi/pywinrm</em></p>
-<p><strong>shade</strong>: This package is required by Ansible to
-provision/teardown resources in a cloud infrastructure.</p>
-<p class="last"><em>https://pypi.python.org/pypi/shade</em>
-<em>http://docs.openstack.org/infra/shade/</em>
-<em>http://docs.ansible.com/ansible/list_of_cloud_modules.html#openstack</em></p>
 </div>
 </div>
 </div>
@@ -279,7 +319,7 @@ guide.</p>
       &copy;2017, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7+</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |

@@ -31,15 +31,15 @@ From a terminal, run the following command based on your operating system.
 .. code:: bash
 
 	# Yum package manager
-	sudo yum install -y git git-review wget gcc make rpm-build\
+	sudo yum install -y git gcc make rpm-build\
 	python-devel python-setuptools python-pip python2-flake8 pylint\
-	python2-devel python-kitchen openssl-devel libffi-devel gcc\
+	python-kitchen openssl-devel libffi-devel\
 	python-oslo-serialization python-pep8 ansible krb5-workstation
 
 	# Dnf package manager
-	sudo dnf install -y git git-review wget gcc make rpm-build\
+	sudo dnf install -y git gcc make rpm-build\
 	python-devel python-setuptools python-pip python2-flake8 pylint\
-	python2-devel python-kitchen openssl-devel libffi-devel gcc\
+	python-kitchen openssl-devel libffi-devel\
 	python-oslo-serialization python-pep8 ansible krb5-workstation
 
 Once the development packages have been installed, go ahead and clone the paws
@@ -62,7 +62,7 @@ Create a python virtual environment, activate it and install required libs:
 
 	virtualenv -p /usr/bin/python2.7 venv_paws
 	source venv_paws/bin/activate
-	pip install -r requirements.txt --upgrade
+	pip install -r requirements-dev.txt --upgrade
 
 
 Build
@@ -113,6 +113,26 @@ the RPM was generated. From there you can go ahead and install it.
 	Wrote: /home/fedora/paws/rpmbuild/RPMS/noarch/paws-0.3.4-0.noarch.rpm
 	sudo dnf install -y /home/fedora/paws/rpmbuild/RPMS/noarch/paws-0.3.4-0.noarch.rpm
 
+**pip**
+
+For development we recommend installing PAWS by pip as the main reason you
+can isolate the application running into a python virtual environment like
+example:
+
+.. code:: bash
+
+	virtualenv -p /usr/bin/python2.7 venv
+	source venv/bin/activate
+	(venv) pip install /home/user/git/paws/dist/paws-0.3.8.tar.gz
+	
+The install command above is using the local tar.gz built previously by running
+**make pip** command. It also could be installed from a pypi-test repo running:
+
+.. code:: bash
+
+	 pip install --index-url https://test.pypi.org/simple/ paws
+	 
+
 **Code check**
 
 Before any commit make sure your code changes are following the code standard
@@ -122,6 +142,28 @@ of this project running the command:
 
 	cd paws
 	make codecheck
+
+New release
+------------
+
+List of actions that need to be performed for a new release:
+
+1. update paws/version.txt
+2. update version and release variables in Makefile and paws.spec
+3. make codecheck -- fix if needed
+4. commit your changes
+5. make doc ( access locally and double check before update upstream doc )
+6. make gh-pages -- if needed
+7. update docker images running
+8. make build-centos
+9. make build-fedora
+10. make push-centos
+11. make push-fedora
+12. make copr-dev
+13. make copr-upstream
+
+IDE
+----
 
 **Eclipse pydev**
 
@@ -148,9 +190,3 @@ see screenshots:
 
 .. image:: _static/pydev_conf_4.png
 	:width: 40%
-
-
-
-
-
-
