@@ -737,8 +737,7 @@ class Util(object):
 
         # Get credentials by file
         if _creds_file:
-            LOG.debug("Openstack providers credentials are set by a credentials"
-                     " file.")
+            LOG.debug("Openstack credentials are set by file.")
             cdata = file_mgmt('r', credential_file)
 
             pos = next(index for index, key in enumerate(cdata['credentials'])

@@ -1,22 +1,11 @@
 virtualenv
 # need for pip build and distribution
 setuptools
-twine
 wheel
 # need for code check, tests and documentation
 pep8
 pylint
 pytest
 sphinx
-# main packages needed by paws core
-paramiko
-pywinrm
-click
-shade
-ansible
-#git+https://github.com/ansible/ansible.git@devel
-# paws providers
-python-novaclient
-python-glanceclient
-python-keystoneclient
-libvirt-python
+# main libs from requirements.txt
+-r requirements.txt
