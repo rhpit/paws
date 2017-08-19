@@ -12,12 +12,10 @@
 FROM centos:latest
 
 # Install paws copr repository
-RUN curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/\
-coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
+RUN curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
 
 # Install EPEL repository for paws dependencies
-RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest\
--7.noarch.rpm
+RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 # Install repository to access openstack packages
 RUN yum install -y centos-release-openstack-liberty

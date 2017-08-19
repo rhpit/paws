@@ -2,7 +2,7 @@ Installation
 ============
 
 PAWS is only supported in Linux systems and currently can be installed as 
-regular application based on RPM or container. 
+regular application based on **RPM**, **PIP** or **container**. 
 
 Support matrix
 --------------
@@ -15,14 +15,18 @@ Support matrix
 	"`Fedora <http://www.fedoraproject.org>`_", "24, 25, 26", "Yes", "Yes"
 	"`Red Hat Enterprise Linux <https://www.redhat.com/en/technologies/linux-platforms>`_", "7.2, 7.3, 7.4", "Yes", "No"
 
-Application
------------
-
-PAWS is distributed as **RPM** compatible with YUM and DNF and **PIP** python
-package.
-
 .. attention::
 
+	PAWS when installed by RPM runs automatically a post task to install 
+	some extra python pip modules to your system. They must be handled by pip
+	because at this current date some of them are not distributed by RPM 
+	and others are outdated when installed by RP,M like the case of 
+	python-novaclient that by RPM the latest version is 3.3.1 
+	and by pip it is 9.1.0 
+
+	At this link you can see all pip modules that will be installed during
+	post task: https://github.com/rhpit/paws/raw/master/requirements.txt
+		 
 	Ansible requires two additional python packages to be installed in order
 	to communicate with Windows systems.
 
@@ -37,6 +41,9 @@ package.
 	*https://pypi.python.org/pypi/shade*
 	*http://docs.openstack.org/infra/shade/*
 	*http://docs.ansible.com/ansible/list_of_cloud_modules.html#openstack*
+
+Application
+-----------
 
 **Installing by PIP**
 
@@ -70,15 +77,10 @@ installing paws-cli
 
 	sudo pip install paws-cli
 
-  
 
 **Installing by RPM**
 
 RPM is available at https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/ 
-You will notice after install rpm we recommend running a pip to install some 
-python libraries needed by PAWS providers. It is because those libraries are 
-outdated by rpm and newest versions are provided by pip.
-
 Below follow the steps to install PAWS for each of supported OS
 
 CentOS
@@ -90,8 +92,6 @@ CentOS
 	sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 	sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
 	sudo yum install -y paws
-	
-	sudo pip install python-novaclient python-glanceclient python-keystoneclient --upgrade
 
 Fedora
 ++++++
@@ -102,8 +102,15 @@ Replace version from repo url to match with your Fedora version.
 
 	sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/fedora-24/eduardocerqueira-paws-fedora-24.repo
 	sudo dnf install -y paws
+	
+or by copr
 
-	sudo pip install python-novaclient python-glanceclient python-keystoneclient --upgrade
+.. code-block:: bash
+
+	sudo dnf install dnf-plugins-core -y
+	sudo dnf copr enable eduardocerqueira/paws -y
+	sudo dnf install -y paws
+
 
 Red Hat Enterprise Linux
 ++++++++++++++++++++++++
@@ -120,8 +127,6 @@ On RHEL you need to have a valid subscription and enable repos below. EPEL is op
 	sudo subscription-manager repos --enable rhel-7-<variant>-openstack-8-tools-rpms
 	sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
 	sudo yum install -y paws
-
-	sudo pip install python-novaclient python-glanceclient python-keystoneclient --upgrade
 
 
 Container
