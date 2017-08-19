@@ -40,6 +40,7 @@ help:
 	@echo -e "\t$(WARN_COLOR)build-fedora$(NO_COLOR)         build paws-fedora docker images"
 	@echo -e "\t$(WARN_COLOR)push-centos$(NO_COLOR)          push paws-centos docker image to hub.docker.com"	
 	@echo -e "\t$(WARN_COLOR)push-fedora$(NO_COLOR)          push paws-fedora docker images to hub.docker.com"
+	@echo -e "\t$(WARN_COLOR)clean-paws-images$(NO_COLOR)    delete all paws tagged images"
 	@echo -e "$(NO_COLOR)"
 
 build-centos:
@@ -80,3 +81,8 @@ push-fedora:
 	@sudo docker push eduardomcerqueira/paws:$(VERSION)-fedora-26
 	@echo -e "$(OK_COLOR)push paws-fedora-latest:$(VERSION) docker image to hub.docker.com$(NO_COLOR)"
 	@sudo docker push eduardomcerqueira/paws:$(VERSION)-fedora-latest
+
+clean-paws-images:
+	#TODO: throwing error when no paws image is found, treat the return for warn message
+	@sudo docker images |grep "paws" | awk '{print $1":($VERSION)"}' | xargs sudo docker rmi	
+		

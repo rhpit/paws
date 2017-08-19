@@ -13,7 +13,6 @@ BuildArch:		noarch
 BuildRequires:	python-setuptools
 Requires:		python-pip
 Requires:		redhat-rpm-config
-Requires:		python-click
 Requires:		bash-completion
 Requires:		python-devel
 Requires:		gcc
@@ -52,6 +51,10 @@ cp config/paws_completion %{buildroot}%{_datadir}/bash-completion/completions/pa
 %doc doc/authors.rst
 %doc %{_mandir}/man1/paws.1.gz
 %{_datadir}/bash-completion/completions/paws
+
+%post
+# install pip modules required by PAWS and outdated when installed by rpm
+pip install -U -r https://github.com/rhpit/paws/raw/master/requirements.txt > /dev/null
 
 %changelog
 * Wed Aug 08 2017 Eduardo Cerqueira <eduardomcerqueira@gmail.com>

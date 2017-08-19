@@ -112,7 +112,6 @@ tarball: doc
 	--files-from /proc/self/fd/0 \
 	-czf $(RPMTOP)/SOURCES/$(TARBALL) $(SPEC)
 	
-	@cp config/ansible.cfg $(RPMTOP)/SOURCES/ansible.cfg
 	cd $(RPMTOP)/SOURCES/ && tar -xf $(TARBALL)
 	cd $(RPMTOP)/SOURCES/ && cp paws.1 paws/paws.1
 	cd $(RPMTOP)/SOURCES/ && tar -czf $(TARBALL) $(NAME)
