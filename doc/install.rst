@@ -15,7 +15,7 @@ Support matrix
 	"`Fedora <http://www.fedoraproject.org>`_", "24, 25, 26", "Yes", "Yes"
 	"`Red Hat Enterprise Linux <https://www.redhat.com/en/technologies/linux-platforms>`_", "7.2, 7.3, 7.4", "Yes", "No"
 
-.. attention::
+.. note::
 
 	PAWS when installed by RPM runs automatically a post task to install 
 	some extra python pip modules to your system. They must be handled by pip
@@ -33,14 +33,17 @@ Support matrix
 	**pywinrm**: This package is used for Windows remote management.
 	At this time there is no RPM available.
 
-	*https://pypi.python.org/pypi/pywinrm*
+	https://pypi.python.org/pypi/pywinrm
 
 	**shade**: This package is required by Ansible to
 	provision/teardown resources in a cloud infrastructure.
 
-	*https://pypi.python.org/pypi/shade*
-	*http://docs.openstack.org/infra/shade/*
-	*http://docs.ansible.com/ansible/list_of_cloud_modules.html#openstack*
+	https://pypi.python.org/pypi/shade
+	
+	http://docs.openstack.org/infra/shade/
+	
+	http://docs.ansible.com/ansible/list_of_cloud_modules.html#openstack
+
 
 Application
 -----------
@@ -96,7 +99,7 @@ CentOS
 Fedora
 ++++++
 
-Replace version from repo url to match with your Fedora version. 
+Replace version from repo url to match with your Fedora version or just use copr that does it automatically for you:
 
 .. code-block:: bash
 
