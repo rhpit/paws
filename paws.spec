@@ -11,22 +11,17 @@ Source0:		https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/tarball/
 BuildArch:		noarch
 
 BuildRequires:	python-setuptools
-Requires:		ansible
+Requires:		python-pip
 Requires:		redhat-rpm-config
 Requires:		python-click
 Requires:		bash-completion
-#Requires:		python-devel
-#Requires:		gcc
-#Requires:		libffi-devel
-#Requires:		openssl-devel
-#Requires:		redhat-release
-#Requires:		python-pip
+Requires:		python-devel
+Requires:		gcc
+Requires:		libffi-devel
+Requires:		openssl-devel
 Requires:		openssl
-# required by PAWS providers
-Requires:		libvirt-python
-Requires:		python-novaclient
-Requires:		python-glanceclient
-Requires:		python-keystoneclient
+# git is needed to download ws.git repo
+Requires:		git
 
 %global debug_package %{nil}
 

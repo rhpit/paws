@@ -21,17 +21,19 @@ default: help
 ############################################
 # GLOBAL VARIABLES
 ############################################
-# set version and release into paws/version.txt before to run any build
+# set version into paws/version.txt before to run any build
+# release is managed by separated variable due build diff between spec and pip
 VERSION=$(shell cat paws/version.txt)
+RELEASE=0
 NAME=paws
 MANPAGE=../paws-doc/man/paws.1
 PWD=$(shell bash -c "pwd -P")
 RPMDIST=$(shell rpm --eval '%dist')
 RPMTOP=$(PWD)/rpmbuild
 SPEC=$(NAME).spec
-TARBALL=$(NAME)-$(VERSION).tar.gz
-SRPM=$(NAME)-$(VERSION).src.rpm
-RPM=$(NAME)-$(VERSION).noarch.rpm
+TARBALL=$(NAME)-$(VERSION)-$(RELEASE).tar.gz
+SRPM=$(NAME)-$(VERSION)-$(RELEASE).src.rpm
+RPM=$(NAME)-$(VERSION)-$(RELEASE).noarch.rpm
 # for dev phony
 DIST=$(shell bash -c "uname -r")
 BRANCH=$(shell git symbolic-ref --short HEAD)
