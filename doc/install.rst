@@ -91,9 +91,9 @@ CentOS
 
 .. code-block:: bash
 
-	sudo yum install -y centos-release-openstack-liberty
 	sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 	sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
+	sudo yum install -y centos-release-openstack-liberty
 	sudo yum install -y paws
 
 Fedora

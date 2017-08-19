@@ -31,15 +31,15 @@ From a terminal, run the following command based on your operating system.
 .. code:: bash
 
 	# Yum package manager
-	sudo yum install -y git git-review wget gcc make rpm-build\
+	sudo yum install -y git gcc make rpm-build\
 	python-devel python-setuptools python-pip python2-flake8 pylint\
-	python2-devel python-kitchen openssl-devel libffi-devel gcc\
+	python-kitchen openssl-devel libffi-devel\
 	python-oslo-serialization python-pep8 ansible krb5-workstation
 
 	# Dnf package manager
-	sudo dnf install -y git git-review wget gcc make rpm-build\
+	sudo dnf install -y git gcc make rpm-build\
 	python-devel python-setuptools python-pip python2-flake8 pylint\
-	python2-devel python-kitchen openssl-devel libffi-devel gcc\
+	python-kitchen openssl-devel libffi-devel\
 	python-oslo-serialization python-pep8 ansible krb5-workstation
 
 Once the development packages have been installed, go ahead and clone the paws
@@ -62,7 +62,7 @@ Create a python virtual environment, activate it and install required libs:
 
 	virtualenv -p /usr/bin/python2.7 venv_paws
 	source venv_paws/bin/activate
-	pip install -r requirements.txt --upgrade
+	pip install -r requirements-dev.txt --upgrade
 
 
 Build
@@ -143,6 +143,28 @@ of this project running the command:
 	cd paws
 	make codecheck
 
+New release
+------------
+
+List of actions that need to be performed for a new release:
+
+1. update paws/version.txt
+2. update version and release variables in Makefile and paws.spec
+3. make codecheck -- fix if needed
+4. commit your changes
+5. make doc ( access locally and double check before update upstream doc )
+6. make gh-pages -- if needed
+7. update docker images running
+8. make build-centos
+9. make build-fedora
+10. make push-centos
+11. make push-fedora
+12. make copr-dev
+13. make copr-upstream
+
+IDE
+----
+
 **Eclipse pydev**
 
 on eclipse and pydev fixing unresolved imports or to link source code to 
@@ -168,9 +190,3 @@ see screenshots:
 
 .. image:: _static/pydev_conf_4.png
 	:width: 40%
-
-
-
-
-
-
