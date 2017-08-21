@@ -159,6 +159,7 @@ Centos
 .. code-block:: bash
 
 	sudo docker pull eduardomcerqueira/paws:0.3.8-centos-latest
+	cd ~ && git clone https://github.com/rhpit/ws.git paws
 	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-centos-latest /bin/bash 
 
 Fedora latest
@@ -167,6 +168,7 @@ Fedora latest
 .. code-block:: bash
 
 	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-latest
+	cd ~ && git clone https://github.com/rhpit/ws.git paws
 	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-latest /bin/bash
 
 Fedora 26
@@ -175,6 +177,7 @@ Fedora 26
 .. code-block:: bash
 
 	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-26
+	cd ~ && git clone https://github.com/rhpit/ws.git paws
 	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-26 /bin/bash
 
 Fedora 25
@@ -183,6 +186,7 @@ Fedora 25
 .. code-block:: bash
 
 	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-25
+	cd ~ && git clone https://github.com/rhpit/ws.git paws
 	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-25 /bin/bash
 
 Fedora 24
@@ -191,6 +195,7 @@ Fedora 24
 .. code-block:: bash
 
 	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-24
+	cd ~ && git clone https://github.com/rhpit/ws.git paws
 	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-24 /bin/bash
 
 ----

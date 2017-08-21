@@ -22,7 +22,7 @@ Constants used throughout paws.
 
 from os.path import expanduser, join
 
-DEFAULT_USERDIR = join(expanduser('~'), 'paws')
+DEFAULT_USERDIR = join(expanduser('~'), 'ws')
 
 # CLI definitions
 TASK_ARGS = {

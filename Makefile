@@ -23,8 +23,8 @@ default: help
 ############################################
 # set version into paws/version.txt before to run any build
 # release is managed by separated variable due build diff between spec and pip
-VERSION=$(shell cat paws/version.txt)
-RELEASE=1
+VERSION=0.3.8
+RELEASE=0
 NAME=paws
 MANPAGE=../paws-doc/man/paws.1
 PWD=$(shell bash -c "pwd -P")
@@ -82,6 +82,7 @@ help:
 	@echo -e "\t$(WARN_COLOR)build-fedora$(NO_COLOR)  build paws-fedora docker images"
 	@echo -e "\t$(WARN_COLOR)push-centos$(NO_COLOR)   push paws-centos docker image to hub.docker.com"	
 	@echo -e "\t$(WARN_COLOR)push-fedora$(NO_COLOR)   push paws-fedora docker images to hub.docker.com"
+	@echo -e "\t$(WARN_COLOR)push-all$(NO_COLOR)      build and push all docker images to hub.docker.com"
 	@echo -e "\t$(WARN_COLOR)clean-images$(NO_COLOR)  delete all paws tagged images"
 	@echo -e "$(NO_COLOR)"
 
@@ -215,13 +216,16 @@ push-centos:
 push-fedora:
 	@make -C scripts/dockerfiles push-fedora
 
+push-all:
+	@make -C scripts/dockerfiles push-all
+
 clean-images:
 	@make -C scripts/dockerfiles clean-paws-images
 
 # pip tasks
 pip: clean
 	@python setup.py sdist
-	@echo -e "$(OK_COLOR)pip tar.gz created at dist/$(NAME)-cli-$(VERSION).tar.gz$(NO_COLOR)"
+	@echo -e "$(OK_COLOR)pip tar.gz created at dist/$(NO_COLOR)"
 	@echo
 
 # requires credential in ~/.pypirc		

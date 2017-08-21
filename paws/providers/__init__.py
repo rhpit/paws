@@ -190,14 +190,16 @@ class Provider(object):
             # Read resources.yaml filtered by provider
             res = self.get_resources_by_provider(
                 self.topology_file, provider_name)
+            LOG.debug('read resources.yaml for %s' % provider_name)
             # Read resources.paws filtered by provider
             res_paws = self.get_resources_by_provider(
                 self.resources_paws, provider_name)
             # Read credentials filtered by provider
             creds = self.get_creds_by_provider(self.credentials, provider_name)
+            LOG.debug('read credentials for %s' % provider_name)
             prov_files = {'res': res, 'res_paws': res_paws, 'creds': creds}
-
             # create an instance of provider name class
             inst = self.get_instance(provider_name)
             call_method = getattr(inst, action)
+            LOG.debug('executing %s' % action)
             call_method(prov_files)
