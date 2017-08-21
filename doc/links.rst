@@ -25,3 +25,13 @@ Docker hub
 
 https://hub.docker.com/r/eduardomcerqueira/paws/
 
+Pypi
+^^^^
+
+https://pypi.org/project/paws-cli/
+
+https://pypi.python.org/pypi/paws-cli
+
+Test environment
+
+https://testpypi.python.org/pypi/paws-cli/

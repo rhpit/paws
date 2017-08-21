@@ -12,7 +12,7 @@ single paws call.
 	:header: "Argument", "Default", "Required", "Description"
 	:widths: 100, 100, 100, 100
 
-	"-ud, --userdir", "/usr/share/paws", "Yes", "User directory where files
+	"-ud, --userdir", "/usr/user/ws", "Yes", "User directory where files
 	used by paws are stored."
 	"-n, --name", "", "Yes", "Group template filename."
 	"-v, --verbose", "", "No", "Enable to have verbose logging."

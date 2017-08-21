@@ -150,8 +150,11 @@ pull from at https://hub.docker.com/r/eduardomcerqueira/paws/ or running the
 commands below.
 
 You will notice the commands below are mounting the folder 
-**/home/ecerquei/github/ws/** from host into the container. This folder contains
+**/home/user/ws/** from host into the container. This folder contains
 the WS scripts that you will see at next section on `getting started <guide.html>`_ 
+
+PS: By default PAWS searches for /home/user/ws as folder for userdir where
+scripts should be saved. see `userdir <tasks.html?highlight=userdir>`_
 
 Centos
 ++++++
@@ -159,8 +162,8 @@ Centos
 .. code-block:: bash
 
 	sudo docker pull eduardomcerqueira/paws:0.3.8-centos-latest
-	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-centos-latest /bin/bash 
+	cd ~ && git clone https://github.com/rhpit/ws.git ws
+	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-centos-latest /bin/bash 
 
 Fedora latest
 +++++++++++++
@@ -169,7 +172,7 @@ Fedora latest
 
 	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-latest
 	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-latest /bin/bash
+	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-latest /bin/bash
 
 Fedora 26
 +++++++++
@@ -178,7 +181,7 @@ Fedora 26
 
 	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-26
 	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-26 /bin/bash
+	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-26 /bin/bash
 
 Fedora 25
 +++++++++
@@ -187,7 +190,7 @@ Fedora 25
 
 	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-25
 	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-25 /bin/bash
+	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-25 /bin/bash
 
 Fedora 24
 +++++++++
@@ -196,7 +199,7 @@ Fedora 24
 
 	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-24
 	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-24 /bin/bash
+	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-24 /bin/bash
 
 ----
 
