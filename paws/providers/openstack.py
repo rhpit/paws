@@ -24,7 +24,7 @@ from time import sleep
 from uuid import uuid4
 
 from novaclient.client import Client as nclient
-from novaclient.v2 import networks
+from novaclient.v2 import networks, images, flavors
 from novaclient.exceptions import ClientException, NotFound
 from glanceclient.v2.client import Client as gclient
 from keystoneclient.v2_0.client import Client as kclient
@@ -36,7 +36,7 @@ from paws.exceptions import NovaPasswordError, SSHError
 from paws.util import cleanup, file_mgmt, get_ssh_conn, update_resources_paws
 from paws.util.decorators import retry
 from paws.remote.prep import WinPrep
-from paws.remote.results import CloudModuleResults, GenModuleResults
+from paws.remote.results import CloudModuleResults
 from paws.remote.driver import Ansible
 
 """
@@ -357,6 +357,8 @@ class Nova(object):
             project_name=self.user_cred['OS_PROJECT_NAME']
         )
         self.neutron = networks.NeutronManager(self.nova)
+        self.images = images.GlanceManager(self.nova)
+        self.flavors = flavors.FlavorManager(self.nova)
 
     @retry(NovaPasswordError, tries=20)
     def get_password(self, server_name, keypair):
@@ -402,9 +404,22 @@ class Nova(object):
         """
         LOG.debug('Checking openstack flavor %s' % flavor)
         try:
-            self.nova.flavors.find(id=flavor)
+            #self.nova.flavors.find(id=flavor)
+            self.flavors.find(id=flavor)
         except ClientException:
             LOG.error("Flavor: %s size does not exist!", flavor)
+            raise ClientException(1)
+
+    def image_exist(self, image_name):
+        """Check to see if image exists in tenant.
+
+        :param image_name: name of image declared in resources.yaml
+        """
+        LOG.debug('Checking openstack image %s' % image_name)
+        try:
+            self.images.find_image(image_name)
+        except ClientException:
+            LOG.error("Image: %s does not exist!", image_name)
             raise ClientException(1)
 
     def network_exist(self, network):
@@ -676,22 +691,6 @@ class Glance(object):
                 continue
             paws_images.append(image)
         return paws_images
-
-    def image_exist(self, image_name):
-        """Check to see if image exists in tenant.
-
-        :param image_name: name of image declared in resources.yaml
-        """
-        LOG.debug('Checking openstack image %s' % image_name)
-        try:
-            all_images = self.get_images()
-            for image in all_images:
-                if image_name in image['name']:
-                    return True
-            raise Exception
-        except Exception:
-            LOG.error("Image: %s does not exist!", image_name)
-            raise ClientException(1)
 
 
 class Util(object):
@@ -1176,7 +1175,7 @@ class Conductor(object):
     """Conductor which acts like a 'train conductor'. This class will inspect
     files, keys, etc before starting paws tasks 'passengers'.
     """
-
+    
     @staticmethod
     def valid_openstack_keys(resource, credentials):
         """Verify openstack keys values are valid.
@@ -1186,12 +1185,10 @@ class Conductor(object):
         """
         try:
             LOG.debug("Checking openstack keys are valid")
-
-            # Create nova and glance client instance
+            # Create instance of nova client
             nova = Nova(credentials)
-            glance = Glance(credentials)
             for res in resource:
-                glance.image_exist(res['image'])
+                nova.image_exist(res['image'])
                 nova.flavor_exist(str(res['flavor']))
                 nova.network_exist(res['network'])
                 nova.keypair_exist(res['keypair'])

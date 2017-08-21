@@ -111,7 +111,7 @@ def paws(ctx=None, userdir=None, verbose=None):
        https://rhpit.github.io/paws
     """
     # Custom ansible.cfg
-    environ['ANSIBLE_CONFIG'] = DEFAULT_USERDIR
+    environ['ANSIBLE_CONFIG'] = join(DEFAULT_USERDIR, 'ansible.cfg')
     ctx.obj = {}
     ctx.obj['userdir'] = userdir
     ctx.obj['verbose'] = verbose

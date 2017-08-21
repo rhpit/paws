@@ -190,3 +190,11 @@ see screenshots:
 
 .. image:: _static/pydev_conf_4.png
 	:width: 40%
+
+If you are seeing the error **module (setup) is missing interpreter line** when
+running PAWS from your Eclipse IDE maybe for debug purpose you need to change
+the path for **Working directory** to anything else out of your source code.
+
+.. image:: _static/eclipse_debug_config_path.png
+	:width: 40%
+	
