@@ -107,7 +107,7 @@ class GenModuleResults(ResultsBase):
             for item in self.callback.contacted:
                 try:
                     if 'results' in item and item['results']['changed'] \
-                    and 'rc' in item['results']:
+                            and 'rc' in item['results']:
                         LOG.info("** %s **", item['host'])
 
                         # Standard output

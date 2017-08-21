@@ -404,7 +404,6 @@ class Nova(object):
         """
         LOG.debug('Checking openstack flavor %s' % flavor)
         try:
-            #self.nova.flavors.find(id=flavor)
             self.flavors.find(id=flavor)
         except ClientException:
             LOG.error("Flavor: %s size does not exist!", flavor)
@@ -1175,7 +1174,7 @@ class Conductor(object):
     """Conductor which acts like a 'train conductor'. This class will inspect
     files, keys, etc before starting paws tasks 'passengers'.
     """
-    
+
     @staticmethod
     def valid_openstack_keys(resource, credentials):
         """Verify openstack keys values are valid.
