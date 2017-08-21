@@ -94,15 +94,14 @@ prep:
 	@echo
 
 set-version:
-	@cp paws/version.txt $(RPMTOP)/SOURCES/version.txt
 	@cp paws/version.txt $(RPMTOP)/BUILD/version.txt
 	@echo -e "$(OK_COLOR)set version $(VERSION) to $(RPMTOP)/SOURCES/version.txt$(NO_COLOR)"
 	@echo
 
 clean:
-	$(RM) -r dist build paws.egg-info
+	$(RM) -r dist build paws_cli.egg-info
 	$(RM) $(NAME)*.tar.gz
-	$(RM) -r rpmbuild build doc/build paws.egg-info 
+	$(RM) -r rpmbuild build doc/build 
 	@find -name '*.py[co]' -delete
 	@echo -e "$(OK_COLOR)deleted rpmbuild, dist and build$(NO_COLOR)"
 	make clean -C doc/
