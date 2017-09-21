@@ -32,10 +32,17 @@ from pprint import pformat
 from ansible.errors import AnsibleRuntimeError
 from ansible.executor.playbook_executor import PlaybookExecutor
 from ansible.executor.task_queue_manager import TaskQueueManager
-from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
 from ansible.playbook.play import Play
-from ansible.vars import VariableManager
+
+try:
+    # supports ansible < 2.4
+    from ansible.inventory import Inventory
+    from ansible.vars import VariableManager
+except ImportError:
+    # supports ansible > 2.4
+    from ansible.inventory.manager import InventoryManager as Inventory
+    from ansible.vars.manager import VariableManager
 
 from paws.constants import ANSIBLE_INVENTORY_FILENAME, LINE
 from paws.constants import PROVISION_YAML, WIN_EXEC_YAML
@@ -61,11 +68,11 @@ class Ansible(object):
         :type userdir: str
         """
         self.userdir = userdir
-        self.variable_manager = VariableManager()
         self.loader = DataLoader()
         self.callback = PawsCallbackBase()
         self.ansible_inventory = join(self.userdir, ANSIBLE_INVENTORY_FILENAME)
         self.inventory = None
+        self.variable_manager = None
 
         # Module options
         self.module_options = namedtuple(
@@ -77,7 +84,8 @@ class Ansible(object):
                         "become_user",
                         "check",
                         "remote_user",
-                        "private_key_file"]
+                        "private_key_file",
+                        "diff"]
         )
 
         # Playbook options
@@ -94,17 +102,29 @@ class Ansible(object):
                         "listhosts",
                         "syntax",
                         "remote_user",
-                        "private_key_file"]
+                        "private_key_file",
+                        "diff"]
         )
 
     def set_inventory(self):
         """Instantiate the inventory class with the inventory file in-use."""
-        self.inventory = Inventory(
-            loader=self.loader,
-            variable_manager=self.variable_manager,
-            host_list=self.ansible_inventory
-        )
-        self.variable_manager.set_inventory(self.inventory)
+        try:
+            # supports ansible < 2.4
+            self.variable_manager = VariableManager()
+            self.inventory = Inventory(
+                loader=self.loader,
+                variable_manager=self.variable_manager,
+                host_list=self.ansible_inventory
+            )
+        except TypeError:
+            # supports ansible > 2.4
+            self.variable_manager = VariableManager(loader=self.loader)
+            self.inventory = Inventory(
+                loader=self.loader,
+                sources=self.ansible_inventory
+            )
+        finally:
+            self.variable_manager.set_inventory(self.inventory)
 
     def create_hostfile(self, tp_file=None, tp_obj=None):
         """Create Ansible inventory file to replace default (/etc/ansible/hosts).
@@ -237,7 +257,8 @@ class Ansible(object):
             listhosts=False,
             syntax=False,
             remote_user=remote_user,
-            private_key_file=private_key_file
+            private_key_file=private_key_file,
+            diff=False
         )
 
         # Set additional variables for use by playbook
@@ -341,7 +362,8 @@ class Ansible(object):
             become_user=become_user,
             check=False,
             remote_user=remote_user,
-            private_key_file=private_key_file
+            private_key_file=private_key_file,
+            diff=False
         )
 
         # Load the play
