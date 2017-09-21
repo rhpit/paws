@@ -21,14 +21,13 @@ Package containing paws task modules.
 """
 
 from logging import getLogger
-from os.path import exists, join, splitext
-from paws.constants import GROUP_SECTIONS
-from paws.util import CalcTime, file_mgmt
+from os.path import join, splitext
+from paws.util import TimeMixin
 
 LOG = getLogger(__name__)
 
 
-class Tasks(object):
+class Tasks(TimeMixin):
     """Parent tasks class inherited by child tasks classes."""
 
     def __init__(self, args):
@@ -41,4 +40,3 @@ class Tasks(object):
         self.topology = args.topology
         self.topology_file = join(self.userdir, self.topology)
         self.resources_paws = join(splitext(self.topology_file)[0] + ".paws")
-        self.rtime = CalcTime()

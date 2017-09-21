@@ -26,13 +26,13 @@ import re
 
 from paws.constants import GROUP_SECTIONS, PAWS_TASK_MODULES_PATH, GROUP_SCHEMA
 from paws.constants import TASK_ARGS, GROUP_REQUIRED, GROUP_HELP
-from paws.util import CalcTime, file_mgmt, check_file
+from paws.util import TimeMixin, file_mgmt, check_file
 from paws.util.decorators import handle_pre_tasks
 
 LOG = getLogger(__name__)
 
 
-class Group(object):
+class Group(TimeMixin):
     """Group.
 
     The main group class. This class will run a paws group file (YAML)
@@ -52,7 +52,6 @@ class Group(object):
         """Constructor."""
         self.args = args
         self.groupdata = self.load()
-        self.rtime = CalcTime()
         self.header_pos = 0
         self.vars_pos = 0
         self.tasks_pos = 0
@@ -202,7 +201,7 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, k))
             LOG.info("START: Group")
 
             # Save the start time
-            self.rtime.start()
+            self.start()
 
             for item in self.tasklist:
                 task = item['task'].lower()
@@ -258,8 +257,7 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, k))
     def post_tasks(self):
         """Perform any necessary post task actions."""
         # Save end time
-        self.rtime.end()
+        self.end()
 
-        # Calculate elapsed time
-        hours, minutes, seconds = self.rtime.delta()
-        LOG.info("END: Group, TIME: %dh:%dm:%ds", hours, minutes, seconds)
+        LOG.info("END: Group, TIME: %dh:%dm:%ds",
+                 self.hours, self.minutes, self.seconds)

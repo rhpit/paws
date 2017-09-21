@@ -66,7 +66,7 @@ class Teardown(Tasks):
             LOG.info("START: %s", self.__class__.__name__)
 
             # Save start time
-            self.rtime.start()
+            self.start()
 
             # Run provider action
             self.provider.run_action(self.__class__.__name__.lower())
@@ -83,11 +83,10 @@ class Teardown(Tasks):
     def post_tasks(self):
         """Perform any necessary post task actions."""
         # Save end time
-        self.rtime.end()
+        self.end()
 
         # Log system resources details to console
         log_resources(self.resources_paws, "deleted")
 
-        # Calculate elapsed time
-        hours, minutes, seconds = self.rtime.delta()
-        LOG.info("END: Teardown, TIME: %dh:%dm:%ds", hours, minutes, seconds)
+        LOG.info("END: Teardown, TIME: %dh:%dm:%ds",
+                 self.hours, self.minutes, self.seconds)

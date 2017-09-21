@@ -74,7 +74,7 @@ class Show(Tasks):
             LOG.info("START: %s", self.__class__.__name__)
 
             # Save start time
-            self.rtime.start()
+            self.start()
 
             # Run provider action
             self.provider.run_action(self.__class__.__name__.lower())
@@ -95,9 +95,8 @@ class Show(Tasks):
     def post_tasks(self):
         """Perform any necessary post task actions."""
         # Save end time
-        self.rtime.end()
+        self.end()
 
-        # Calculate elapsed time
-        hours, minutes, seconds = self.rtime.delta()
-        LOG.info("END: Show, TIME: %dh:%dm:%ds", hours, minutes, seconds)
+        LOG.info("END: Show, TIME: %dh:%dm:%ds",
+                 self.hours, self.minutes, self.seconds)
         return True

@@ -103,7 +103,7 @@ class Winsetup(Tasks):
         LOG.info("START: Winsetup")
 
         # Save start time
-        self.rtime.start()
+        self.start()
 
         # Get systems
         self.get_systems()
@@ -185,12 +185,11 @@ class Winsetup(Tasks):
     def post_tasks(self):
         """Perform any necessary post task actions."""
         # Save end time
-        self.rtime.end()
+        self.end()
 
         # Clean up run time files
         if not self.args.verbose:
             cleanup([self.winsetup_yaml], self.userdir)
 
-        # Calculate elapsed time
-        hours, minutes, seconds = self.rtime.delta()
-        LOG.info("END: Winsetup, TIME: %dh:%dm:%ds", hours, minutes, seconds)
+        LOG.info("END: Winsetup, TIME: %dh:%dm:%ds",
+                 self.hours, self.minutes, self.seconds)

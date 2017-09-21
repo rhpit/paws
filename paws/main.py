@@ -29,10 +29,10 @@ from paws import Logging
 from paws.constants import LINE
 from paws.exceptions import ProvisionError, PawsPreTaskError, SSHError
 from paws.exceptions import ShowError
-from paws.util import CalcTime
+from paws.util import TimeMixin
 
 
-class Paws(object):
+class Paws(TimeMixin):
     """Paws class."""
 
     def __init__(self, task, task_module, args):
@@ -46,7 +46,6 @@ class Paws(object):
         self.task_module = task_module
         self.args = args
         self.log = Logging(self.args.verbose).logger
-        self.rtime = CalcTime()
 
     def run(self):
         """Run a paws task."""
@@ -55,7 +54,7 @@ class Paws(object):
 
         try:
             # Save start time
-            self.rtime.start()
+            self.start()
 
             # Log commands options
             self.log.info("Begin paws execution")
@@ -99,13 +98,10 @@ class Paws(object):
             result = 1
         finally:
             # Save stop time
-            self.rtime.end()
-
-            # Calculate total run time duration
-            hours, minutes, seconds = self.rtime.delta()
+            self.end()
 
             self.log.info("End paws execution in %dh:%dm:%ds",
-                          hours, minutes, seconds)
+                          self.hours, self.minutes, self.seconds)
 
             raise SystemExit(result)
 

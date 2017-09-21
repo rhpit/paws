@@ -42,16 +42,18 @@ from paws.util.decorators import retry
 LOG = getLogger(__name__)
 
 
-class CalcTime(object):
-    """
-    A class to save a start and end time which will calculate the delta
-    between the two.
+class TimeMixin(object):
+    """A time mixin class.
+
+    This class will save a start and end time to calculate the time delta
+    between the two points.
     """
 
-    def __init__(self):
-        """Constructor."""
-        self.start_time = None
-        self.end_time = None
+    start_time = None
+    end_time = None
+    hours = 0
+    minutes = 0
+    seconds = 0
 
     def start(self):
         """Save the start time."""
@@ -61,18 +63,12 @@ class CalcTime(object):
         """Save the end time."""
         self.end_time = time()
 
-    def delta(self):
-        """Calculate time delta between start and end times.
-
-        :return: Hours, minutes, seconds
-        """
-        elapsed = self.end_time - self.start_time
-        hours = elapsed // 3600
-        elapsed = elapsed - 3600 * hours
-        minutes = elapsed // 60
-        seconds = elapsed - 60 * minutes
-
-        return hours, minutes, seconds
+        # calculate time delta
+        delta = self.end_time - self.start_time
+        self.hours = delta // 3600
+        delta = delta - 3600 * self.hours
+        self.minutes = delta // 60
+        self.seconds = delta - 60 * self.minutes
 
 
 class Namespace(object):
