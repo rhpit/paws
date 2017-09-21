@@ -131,7 +131,7 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, k))
         for task in self.groupdata['tasks']:
             if 'args' in task:
                 for arg in task['args']:
-                    if arg['powershell']:
+                    if 'powershell' in arg and arg['powershell']:
                         file_path = join(self.args.userdir, arg['powershell'])
                         error_msg = "check args in task name %s" \
                             % (task['name'])
