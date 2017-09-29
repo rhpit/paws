@@ -86,7 +86,8 @@ class WinPrep(object):
             # TODO: need move update_resources_paws
             update_resources_paws(self.resources_paws, resources_paws)
 
-    def ipconfig_release(self, server):
+    @staticmethod
+    def ipconfig_release(server):
         """Release the Windows IPv4 address for all adapters.
 
         To take a snapshot of a Windows server you need to release all IPv4
@@ -119,7 +120,8 @@ class WinPrep(object):
 
         LOG.debug("Successfully released all IPv4 addr for %s" % server_name)
 
-    def rearm_server(self, server):
+    @staticmethod
+    def rearm_server(server):
         """Extend the Windows rearm count.
 
         Windows only allows X amount of days to use their software in the

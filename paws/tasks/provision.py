@@ -18,16 +18,14 @@
 
 """Provision task."""
 
-from logging import getLogger
 from os.path import join
 from ansible.errors import AnsibleRuntimeError
+
 from paws.exceptions import NovaPasswordError, ProvisionError, SSHError
+from paws.providers import Provider
 from paws.tasks import Tasks
 from paws.util import cleanup, log_resources
 from paws.util.decorators import handle_pre_tasks
-from paws.providers import Provider
-
-LOG = getLogger(__name__)
 
 
 class Provision(Tasks):
@@ -66,7 +64,7 @@ class Provision(Tasks):
         corresponding provider.
         """
         try:
-            LOG.info("START: %s", self.__class__.__name__)
+            self.logger.info("START: %s", self.__class__.__name__)
 
             # Save start time
             self.start()
@@ -82,7 +80,7 @@ class Provision(Tasks):
         except (AnsibleRuntimeError, NovaPasswordError, SSHError):
             raise ProvisionError
         except KeyboardInterrupt:
-            LOG.warning("CTRL+C detected, interrupting execution")
+            self.logger.warning("CTRL+C detected, interrupting execution")
             raise ProvisionError
 
     def post_tasks(self):
@@ -93,5 +91,5 @@ class Provision(Tasks):
         # Log system resources details to console
         log_resources(self.resources_paws, "provisioned")
 
-        LOG.info("END: Provision, TIME: %dh:%dm:%ds",
-                 self.hours, self.minutes, self.seconds)
+        self.logger.info("END: Provision, TIME: %dh:%dm:%ds",
+                         self.hours, self.minutes, self.seconds)

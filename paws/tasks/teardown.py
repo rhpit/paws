@@ -18,18 +18,14 @@
 
 """Teardown task."""
 
-from logging import getLogger
 from os.path import join
-
 from ansible.errors import AnsibleRuntimeError
 
 from paws.constants import GET_OPS_FACTS_YAML
+from paws.providers import Provider
 from paws.tasks import Tasks
 from paws.util import cleanup, log_resources
 from paws.util.decorators import handle_pre_tasks
-from paws.providers import Provider
-
-LOG = getLogger(__name__)
 
 
 class Teardown(Tasks):
@@ -63,7 +59,7 @@ class Teardown(Tasks):
         corresponding provider.
         """
         try:
-            LOG.info("START: %s", self.__class__.__name__)
+            self.logger.info("START: %s", self.__class__.__name__)
 
             # Save start time
             self.start()
@@ -88,5 +84,5 @@ class Teardown(Tasks):
         # Log system resources details to console
         log_resources(self.resources_paws, "deleted")
 
-        LOG.info("END: Teardown, TIME: %dh:%dm:%ds",
-                 self.hours, self.minutes, self.seconds)
+        self.logger.info("END: Teardown, TIME: %dh:%dm:%ds",
+                         self.hours, self.minutes, self.seconds)

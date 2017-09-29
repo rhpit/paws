@@ -19,20 +19,18 @@
 """Group task."""
 
 from importlib import import_module
-from logging import getLogger
-from os.path import join
 from time import sleep
+
 import re
+from os.path import join
 
 from paws.constants import GROUP_SECTIONS, PAWS_TASK_MODULES_PATH, GROUP_SCHEMA
 from paws.constants import TASK_ARGS, GROUP_REQUIRED, GROUP_HELP
-from paws.util import TimeMixin, file_mgmt, check_file
+from paws.util import LoggerMixin, TimeMixin, file_mgmt, check_file
 from paws.util.decorators import handle_pre_tasks
 
-LOG = getLogger(__name__)
 
-
-class Group(TimeMixin):
+class Group(LoggerMixin, TimeMixin):
     """Group.
 
     The main group class. This class will run a paws group file (YAML)
@@ -75,7 +73,7 @@ class Group(TimeMixin):
         """Group validation function, check group schema and content of each
         individual key based on regex rules specified in GROUP_REQUIRED"""
 
-        LOG.debug("Group validating")
+        self.logger.debug("Group validating")
         _help = "Please refer to %s to setup your group file" % GROUP_HELP
         _req = "Required section:"
         _rule = "Validation rules:"
@@ -83,8 +81,8 @@ class Group(TimeMixin):
         # 1st validation, for key elements from group schema
         for kst, vst in self.groupdata.items():
             if not vst or vst is None:
-                LOG.error("%s %s is missing from group" % (_req, kst))
-                LOG.error(_help)
+                self.logger.error("%s %s is missing from group" % (_req, kst))
+                self.logger.error(_help)
                 raise SystemExit(1)
 
         # 2nd validation, for items required
@@ -94,26 +92,25 @@ class Group(TimeMixin):
                 if krnd == kdnd:
                     # level 2
                     for elem in vrnd:
-                        for k, v in elem.iteritems():
+                        for key, value in elem.iteritems():
                             # key must exist
-                            if k not in vdnd:
-                                LOG.error("%s %s is missing from %s" %
-                                          (_req, k, krnd))
-                                LOG.error(_help)
+                            if key not in vdnd:
+                                self.logger.error("%s %s is missing from %s" %
+                                                  (_req, key, krnd))
+                                self.logger.error(_help)
                                 raise SystemExit(1)
                             # key must exist
-                            if not vdnd[k]:
-                                LOG.error("%s check content of %s in %s. \
-A topology file is required." %
-                                          (_rule, k, krnd))
-                                LOG.error(_help)
+                            if not vdnd[key]:
+                                self.logger.error("%s check content of %s in %s. \
+A topology file is required." % (_rule, key, krnd))
+                                self.logger.error(_help)
                                 raise SystemExit(1)
                             # checking content based on regex rules
-                            pattern = re.compile(v)
-                            if pattern.match(vdnd[k]) is None:
-                                LOG.error("%s check file name and extension \
-in %s %s. Expected .yaml or .yml" % (_rule, krnd, k))
-                                LOG.error(_help)
+                            pattern = re.compile(value)
+                            if pattern.match(vdnd[key]) is None:
+                                self.logger.error("%s check file name and extension \
+in %s %s. Expected .yaml or .yml" % (_rule, krnd, key))
+                                self.logger.error(_help)
                                 raise SystemExit(1)
 
         # 3rd validation, check files exist in disk
@@ -162,7 +159,8 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, k))
 
         return results
 
-    def group_normalize(self, data):
+    @staticmethod
+    def group_normalize(data):
         """Normalize data to group yaml schema"""
         g_normalized = GROUP_SCHEMA
 
@@ -198,24 +196,28 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, k))
         """The main method for group. This method will run a ordered list of
         paws tasks."""
         try:
-            LOG.info("START: Group")
+            self.logger.info("START: Group")
 
             # Save the start time
             self.start()
 
             for item in self.tasklist:
                 task = item['task'].lower()
-                LOG.info("Running: %s (task=%s)" % (item['name'], task))
+                self.logger.info(
+                    "Running: %s (task=%s)" % (item['name'], task)
+                )
 
                 # Wait
                 if task == 'wait':
                     try:
                         duration = item['duration']
-                        LOG.info("Delaying %ss" % duration)
+                        self.logger.info("Delaying %ss" % duration)
                         sleep(int(duration))
                         continue
                     except KeyError:
-                        LOG.warning("Delay duration was not set! Skipping..")
+                        self.logger.warning(
+                            "Delay duration was not set! Skipping.."
+                        )
                         continue
 
                 if 'args' in item:
@@ -248,10 +250,10 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, k))
             # Run post tasks
             self.post_tasks()
         except ImportError:
-            LOG.error("Unable to import %s module" % task)
+            self.logger.error("Unable to import %s module" % task)
             raise SystemExit(1)
         except AttributeError:
-            LOG.error("Unable to create task %s object" % task)
+            self.logger.error("Unable to create task %s object" % task)
             raise SystemExit(1)
 
     def post_tasks(self):
@@ -259,5 +261,5 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, k))
         # Save end time
         self.end()
 
-        LOG.info("END: Group, TIME: %dh:%dm:%ds",
-                 self.hours, self.minutes, self.seconds)
+        self.logger.info("END: Group, TIME: %dh:%dm:%ds",
+                         self.hours, self.minutes, self.seconds)

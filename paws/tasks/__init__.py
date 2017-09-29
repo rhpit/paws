@@ -20,14 +20,12 @@
 Package containing paws task modules.
 """
 
-from logging import getLogger
 from os.path import join, splitext
-from paws.util import TimeMixin
 
-LOG = getLogger(__name__)
+from paws.util import LoggerMixin, TimeMixin
 
 
-class Tasks(TimeMixin):
+class Tasks(LoggerMixin, TimeMixin):
     """Parent tasks class inherited by child tasks classes."""
 
     def __init__(self, args):

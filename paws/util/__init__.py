@@ -21,21 +21,22 @@ Utility package contains common classes, functons, etc to be used throughout
 paws.
 """
 
-from json import load as json_load
+import inspect
 from json import dump as json_dump
-from logging import getLogger
-from os import getenv, remove, listdir
-from os.path import join, exists, splitext
+from json import load as json_load
+from logging import DEBUG, INFO, getLogger, Formatter, StreamHandler
 from socket import error, timeout
-from subprocess import Popen, PIPE
-from time import sleep, time
+from subprocess import Popen
+from time import time
+
+from os import remove, listdir
+from os.path import join, exists, splitext
+from paramiko import SSHClient, AutoAddPolicy
+from paramiko.ssh_exception import SSHException
 from yaml import dump as yaml_dump
 from yaml import load as yaml_load
 
-from paramiko import SSHClient, AutoAddPolicy
-from paramiko.ssh_exception import SSHException
-
-from paws.constants import SSH_IGNORE_ERROR, TASK_ARGS, LINE
+from paws.constants import LINE
 from paws.exceptions import SSHError
 from paws.util.decorators import retry
 
@@ -69,6 +70,55 @@ class TimeMixin(object):
         delta = delta - 3600 * self.hours
         self.minutes = delta // 60
         self.seconds = delta - 60 * self.minutes
+
+
+class LoggerMixin(object):
+    """A logger mixin class.
+
+    This class will provide an easy interface for other classes and functions
+    to utilize the paws logger.
+    """
+
+    @classmethod
+    def create_logger(cls, name, verbose):
+        """Create logger.
+
+        :param name: Logger name.
+        :type name: str
+        :param verbose: Verbosity level.
+        :type verbose: int
+        """
+        # get logger
+        logger = getLogger(name)
+
+        # skip creating logger if handler exists
+        if len(logger.handlers) > 0:
+            return
+
+        # determine log formatting
+        if verbose >= 1:
+            log_level = DEBUG
+            console = ("%(asctime)s %(levelname)s "
+                       "[%(name)s.%(funcName)s:%(lineno)d] %(message)s")
+        else:
+            log_level = INFO
+            console = ("%(message)s")
+
+        # create stream handler
+        handler = StreamHandler()
+
+        # configure handler
+        handler.setLevel(log_level)
+        handler.setFormatter(Formatter(console, datefmt='%Y-%m-%d %H:%M:%S'))
+
+        # configure logger
+        logger.setLevel(log_level)
+        logger.addHandler(handler)
+
+    @property
+    def logger(self):
+        """Return paws logger."""
+        return getLogger(inspect.getmodule(inspect.stack()[1][0]).__name__)
 
 
 class Namespace(object):

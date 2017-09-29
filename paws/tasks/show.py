@@ -21,19 +21,15 @@ provider in user and based on machines pre-defined within a YAML file and
 resulting at message displayed at console output.
 """
 
-from logging import getLogger
 from os.path import join
-
 from ansible.errors import AnsibleRuntimeError
 
 from paws.constants import GET_OPS_FACTS_YAML
 from paws.exceptions import NovaPasswordError, ShowError, SSHError
+from paws.providers import Provider
 from paws.tasks import Tasks
 from paws.util import cleanup, log_resources
 from paws.util.decorators import handle_pre_tasks
-from paws.providers import Provider
-
-LOG = getLogger(__name__)
 
 
 class Show(Tasks):
@@ -71,7 +67,7 @@ class Show(Tasks):
         to user console with resource information.
         """
         try:
-            LOG.info("START: %s", self.__class__.__name__)
+            self.logger.info("START: %s", self.__class__.__name__)
 
             # Save start time
             self.start()
@@ -89,7 +85,7 @@ class Show(Tasks):
         except (AnsibleRuntimeError, NovaPasswordError, SSHError):
             raise ShowError
         except KeyboardInterrupt:
-            LOG.warning("CTRL+C detected, interrupting execution")
+            self.logger.warning("CTRL+C detected, interrupting execution")
             raise ShowError
 
     def post_tasks(self):
@@ -97,6 +93,6 @@ class Show(Tasks):
         # Save end time
         self.end()
 
-        LOG.info("END: Show, TIME: %dh:%dm:%ds",
-                 self.hours, self.minutes, self.seconds)
+        self.logger.info("END: Show, TIME: %dh:%dm:%ds",
+                         self.hours, self.minutes, self.seconds)
         return True

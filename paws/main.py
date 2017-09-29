@@ -22,17 +22,17 @@ Main class
 
 from importlib import import_module
 
-from novaclient.exceptions import ClientException
 from ansible.errors import AnsibleRuntimeError
+from novaclient.exceptions import ClientException
 
-from paws import Logging
+from paws import __name__ as __paws_name__
 from paws.constants import LINE
 from paws.exceptions import ProvisionError, PawsPreTaskError, SSHError
 from paws.exceptions import ShowError
-from paws.util import TimeMixin
+from paws.util import LoggerMixin, TimeMixin
 
 
-class Paws(TimeMixin):
+class Paws(LoggerMixin, TimeMixin):
     """Paws class."""
 
     def __init__(self, task, task_module, args):
@@ -45,7 +45,9 @@ class Paws(TimeMixin):
         self.task = task
         self.task_module = task_module
         self.args = args
-        self.log = Logging(self.args.verbose).logger
+
+        # create logger
+        self.create_logger(__paws_name__, self.args.verbose)
 
     def run(self):
         """Run a paws task."""
@@ -57,13 +59,13 @@ class Paws(TimeMixin):
             self.start()
 
             # Log commands options
-            self.log.info("Begin paws execution")
-            self.log.debug(LINE)
-            self.log.debug("Paws options".center(45))
-            self.log.debug(LINE)
+            self.logger.info("Begin paws execution")
+            self.logger.debug(LINE)
+            self.logger.debug("Paws options".center(45))
+            self.logger.debug(LINE)
             for key, value in vars(self.args).items():
-                self.log.debug("%s: %s", key, value)
-            self.log.debug(LINE)
+                self.logger.debug("%s: %s", key, value)
+            self.logger.debug(LINE)
 
             # Import paws task
             module = import_module(self.task_module)
@@ -81,7 +83,7 @@ class Paws(TimeMixin):
             task.run()
         except Exception as ex:
             if ex.message:
-                self.log.error(ex)
+                self.logger.error(ex)
         except PawsPreTaskError:
             result = 1
         except (AnsibleRuntimeError, ClientException, SSHError, SystemExit,
@@ -93,15 +95,15 @@ class Paws(TimeMixin):
             self.teardown_resources()
             result = 1
         except KeyboardInterrupt:
-            self.log.warning("CRTL+C detected, interrupting execution")
+            self.logger.warning("CRTL+C detected, interrupting execution")
             task.post_tasks()
             result = 1
         finally:
             # Save stop time
             self.end()
 
-            self.log.info("End paws execution in %dh:%dm:%ds",
-                          self.hours, self.minutes, self.seconds)
+            self.logger.info("End paws execution in %dh:%dm:%ds",
+                             self.hours, self.minutes, self.seconds)
 
             raise SystemExit(result)
 

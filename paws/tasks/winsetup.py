@@ -18,7 +18,6 @@
 
 """Winsetup task."""
 
-from logging import getLogger
 from os.path import join, exists, isfile
 
 from paws.constants import ADMIN, WIN_EXEC_YAML, LINE
@@ -29,9 +28,6 @@ from paws.remote.results import GenModuleResults
 from paws.tasks import Tasks
 from paws.util import cleanup, get_ssh_conn, file_mgmt
 from paws.util.decorators import handle_pre_tasks
-
-
-LOG = getLogger(__name__)
 
 
 class Winsetup(Tasks):
@@ -68,7 +64,9 @@ class Winsetup(Tasks):
 
         # Verify PowerShell script exists
         if not exists(self.pshell):
-            LOG.error("PowerShell script: %s does not exist!", self.pshell)
+            self.logger.error(
+                "PowerShell script: %s does not exist!", self.pshell
+            )
             raise SystemExit(1)
 
     def get_systems(self):
@@ -90,9 +88,9 @@ class Winsetup(Tasks):
             self.resources = res['resources']
 
         if self.resources.__len__() == 0:
-            LOG.error("Systems given do not map to any active resources.")
-            LOG.error("Given resources  : %s" % self.resources)
-            LOG.error("Active resources : %s" % _active)
+            self.logger.error("Supplied systems do not map to active systems.")
+            self.logger.error("Given resources  : %s" % self.resources)
+            self.logger.error("Active resources : %s" % _active)
             raise SystemExit(1)
 
     def run(self):
@@ -100,7 +98,7 @@ class Winsetup(Tasks):
         systems to configure based on input, verify SSH connections with
         remote systems and then execute PowerShell script against them.
         """
-        LOG.info("START: Winsetup")
+        self.logger.info("START: Winsetup")
 
         # Save start time
         self.start()
@@ -156,11 +154,12 @@ class Winsetup(Tasks):
 
             # Test if remote machine is ready for SSH connection
             try:
-                LOG.info("Attempting to establish SSH connection to %s",
-                         sut_ip)
-                LOG.info(LINE)
-                LOG.info("This could take several minutes to complete.")
-                LOG.info(LINE)
+                self.logger.info(
+                    "Attempting to establish SSH connection to %s", sut_ip
+                )
+                self.logger.info(LINE)
+                self.logger.info("This could take several minutes to finish.")
+                self.logger.info(LINE)
 
                 get_ssh_conn(
                     sut_ip,
@@ -169,7 +168,9 @@ class Winsetup(Tasks):
                     sut_ssh_key
                 )
             except SSHError:
-                LOG.error("Unable to establish SSH connection to %s", sut_ip)
+                self.logger.error(
+                    "Unable to establish SSH connection to %s", sut_ip
+                )
                 raise SystemExit(1)
 
             # Playbook call - run PowerShell script on Windows resources
@@ -191,5 +192,5 @@ class Winsetup(Tasks):
         if not self.args.verbose:
             cleanup([self.winsetup_yaml], self.userdir)
 
-        LOG.info("END: Winsetup, TIME: %dh:%dm:%ds",
-                 self.hours, self.minutes, self.seconds)
+        self.logger.info("END: Winsetup, TIME: %dh:%dm:%ds",
+                         self.hours, self.minutes, self.seconds)
