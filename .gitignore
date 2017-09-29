@@ -3,6 +3,9 @@
 .pydevproject
 .project
 
+# Python
+*.pyc
+
 /venv_paws/
 /rpmbuild/
 /paws.1
