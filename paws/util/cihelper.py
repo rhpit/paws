@@ -49,6 +49,7 @@ class CIHelper(object):
 
     def get_credentials(self):
         """Load credentials.yaml same used in PAWS"""
+        # TODO: fix me
         creds = Util(self.creds_file)
         return creds.get_credentials(self.creds_file)
 

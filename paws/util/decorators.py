@@ -20,11 +20,9 @@
 Decorator functions to use in PAWS
 """
 
+from functools import wraps
 from logging import getLogger
 from time import sleep
-from functools import wraps
-
-from paws.exceptions import PawsPreTaskError
 
 LOG = getLogger(__name__)
 
@@ -74,21 +72,3 @@ def retry(exception_to_check, tries=4, delay=10, backoff=1, logger=LOG):
         return f_retry  # true decorator
 
     return deco_retry
-
-
-def handle_pre_tasks(func):
-    """A decorator which will handle all exceptions raised in any paws
-    pre_tasks methods.
-    """
-    def func_wrapper(*args, **kwargs):
-        """Wrapper function."""
-        try:
-            func(*args, **kwargs)
-        except KeyboardInterrupt:
-            LOG.warning("CTRL+C detected, interrupting execution")
-            raise PawsPreTaskError
-        except Exception as ex:
-            LOG.error(ex)
-            raise PawsPreTaskError
-        return func
-    return func_wrapper

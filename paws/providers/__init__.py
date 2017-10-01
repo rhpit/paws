@@ -15,21 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Paws providers."""
 
 import importlib
-from logging import getLogger
-from os.path import exists
+
 from paws.constants import PROVIDERS
-from paws.util import file_mgmt
-
-"""
-Providers for PAWS
-"""
-
-LOG = getLogger(__name__)
+from paws.util import cleanup, LoggerMixin, Namespace
 
 
-class Provider(object):
+class Provider(LoggerMixin):
     """ Provider
 
     It is the main class for Provider module. This module manage
@@ -72,30 +66,36 @@ class Provider(object):
 
     """
 
-    def __init__(self, args):
-        self.topology_file = args.topology_file
-        self.resources_paws = args.resources_paws
-        self.credentials = args.credential_file
-        self.provider_list = self.get_provider()
-        self.args = args
+    def __init__(self, userdir, resources, credentials, resources_paws_file,
+                 verbose):
+        """Constructor.
 
-    def is_valid(self):
-        """ Verify if provider given is supported by PAWS
-
-        :return result of validation
-        :rtype Boolean
+        :param userdir: User directory.
+        :type userdir: str
+        :param resources: System resources.
+        :type resources: dict
+        :param credentials: Provider credentials.
+        :type credentials: dict
+        :param resources_paws_file: Resources.paws file name.
+        :type resources_paws_file: str
+        :param verbose: Verbosity level.
+        :type verbose: int
         """
-        if self.provider_list not in PROVIDERS:
-            return False
+        self.userdir = userdir
+        self.resources = resources
+        self.credentials = credentials
+        self.resources_paws_file = resources_paws_file
+        self.verbose = verbose
+
+        self.provider_list = self.get_provider()
 
     def get_provider(self):
         """ Get provider from all elements declared in resources.yaml or
         topology file and return a list with non-duplicated elements
 
-        :return list with providers extracted from topology file
-        :rtype set
+        :return: list with providers extracted from topology file
+        :rtype: set
         """
-        self.resources = file_mgmt('r', self.topology_file)
         provider_list = set()
 
         for resource in self.resources['resources']:
@@ -103,43 +103,34 @@ class Provider(object):
 
         return provider_list
 
-    @staticmethod
-    def get_resources_by_provider(res_file, provider):
+    def get_resources_by_provider(self, provider):
         """Get system resources by provider name from a given file.
         Open the file and search for all system resources defined by
         the provider passed as parameter
 
-        :param res_file: file usually resources.yaml or resources.paws
-        :type res_file: str
         :param provider: name of registered provider supported by PAWS
         :type provider: str
-        :return res: content from resources.yaml and .paws files
-        :rtype res: list contains one or more lists of dicts
+        :return: content from resources.yaml and .paws files
+        :rtype: list contains one or more lists of dicts
         """
         resource_list = []
-        if exists(res_file):
-            resources = file_mgmt('r', res_file)
-            for elem in resources['resources']:
-                if provider in elem['provider']:
-                    resource_list.append(elem)
 
+        for elem in self.resources['resources']:
+            if provider in elem['provider']:
+                resource_list.append(elem)
         return resource_list
 
-    @staticmethod
-    def get_creds_by_provider(creds_file, provider):
+    def get_creds_by_provider(self, provider):
         """Get credentials by provider name from a given file.
         Open the file and search by provider passed as parameter
 
-        :param creds_file: credentials.yaml
-        :type creds_file: str
         :param provider: name of registered provider supported by PAWS
         :type provider: str
-        :return res: content from credentials.yaml
-        :rtype res: dict
+        :return: content from credentials.yaml
+        :rtype: dict
         """
-        if exists(creds_file):
-            creds = file_mgmt('r', creds_file)
-            for elem in creds['credentials']:
+        if self.credentials:
+            for elem in self.credentials['credentials']:
                 if provider in elem['provider']:
                     return elem
 
@@ -159,22 +150,16 @@ class Provider(object):
             if provider_name in provider['name']:
                 return provider
 
-    def get_instance(self, provider_name):
-        """Based on dynamic object creation technique this method uses
-        python native importlib module to create objects based on
-        parameters passed as string type
+    def get_provider_class(self, name):
+        """Get the provider class.
 
-        :param provider_name: name of provider
+        :param name: Provider class name.
         :type name: str
-        :return instance: object of provider class
-        :rtype instace: object
         """
-
-        prov_info = self.get_provider_info_by_name(provider_name)
+        prov_info = self.get_provider_info_by_name(name)
         my_module = importlib.import_module(prov_info['module'])
         klass = getattr(my_module, prov_info['class'])
-        instance = klass(self.args)
-        return instance
+        return klass
 
     def run_action(self, action):
         """ Read resources.yaml and get the providers from all element
@@ -187,19 +172,37 @@ class Provider(object):
         :type action: str
         """
         for provider_name in self.provider_list:
-            # Read resources.yaml filtered by provider
-            res = self.get_resources_by_provider(
-                self.topology_file, provider_name)
-            LOG.debug('read resources.yaml for %s' % provider_name)
-            # Read resources.paws filtered by provider
-            res_paws = self.get_resources_by_provider(
-                self.resources_paws, provider_name)
-            # Read credentials filtered by provider
-            creds = self.get_creds_by_provider(self.credentials, provider_name)
-            LOG.debug('read credentials for %s' % provider_name)
-            prov_files = {'res': res, 'res_paws': res_paws, 'creds': creds}
-            # create an instance of provider name class
-            inst = self.get_instance(provider_name)
-            call_method = getattr(inst, action)
-            LOG.debug('executing %s' % action)
-            call_method(prov_files)
+            # create new namespace
+            namespace = Namespace(dict())
+
+            # set attributes for namespace
+            namespace.userdir = self.userdir
+            namespace.resources_paws_file = self.resources_paws_file
+            namespace.verbose = self.verbose
+
+            # get resources by provider
+            namespace.resources = self.get_resources_by_provider(provider_name)
+
+            # get provider credentials for resources
+            namespace.credentials = self.get_creds_by_provider(provider_name)
+
+            # get provider class
+            klass = self.get_provider_class(provider_name)
+
+            # create instance
+            inst = klass(namespace)
+
+            # run provider's garbage collector
+            # TODO: what about multiple resources? we should or not
+            # delete self.resources_paws ?
+            # in a case that resources.paws exists and the provider running
+            # is different then what described in resources.paws maybe the
+            # providers should be responsible to preserve data and then append
+            # new data into the file ? if resources.paws doesn't exist than
+            # it is fine to just create and add new data to it?
+            cleanup(inst.garbage_collector(), self.userdir)
+
+            self.logger.debug('Executing %s.' % action)
+
+            # call method
+            return getattr(inst, action)()

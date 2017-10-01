@@ -26,12 +26,12 @@ from os.path import join
 
 from paws.constants import GROUP_SECTIONS, PAWS_TASK_MODULES_PATH, GROUP_SCHEMA
 from paws.constants import TASK_ARGS, GROUP_REQUIRED, GROUP_HELP
-from paws.util import LoggerMixin, TimeMixin, file_mgmt, check_file
-from paws.util.decorators import handle_pre_tasks
+from paws.core import PawsTask
+from paws.util import check_file, file_mgmt, Namespace
 
 
-class Group(LoggerMixin, TimeMixin):
-    """Group.
+class Group(PawsTask):
+    """Paws group task.
 
     The main group class. This class will run a paws group file (YAML)
     formatted which contains a list of paws tasks to run. Groups are helpful
@@ -46,17 +46,54 @@ class Group(LoggerMixin, TimeMixin):
     _vars_name = GROUP_SECTIONS[1]
     _tasks_name = GROUP_SECTIONS[2]
 
-    def __init__(self, args):
-        """Constructor."""
-        self.args = args
+    def __init__(self, userdir, group, verbose=0, **kwargs):
+        """Constructor.
+
+        :param userdir: User directory.
+        :type userdir: str
+        :param group: Group content.
+        :type group: dict
+        :param verbose: Verbosity level.
+        :type verbose: int
+        :param kwargs: Extra key:value data.
+        :type kwargs: dict
+
+        Usage:
+
+            -- CLI --
+
+        .. code-block: bash
+
+            $ paws <options> group <options>
+
+            -- API --
+
+        .. code-block:: python
+
+            from paws.tasks import Group
+
+            group = Group(
+                userdir,
+                group
+            )
+            group.run()
+        """
+        super(Group, self).__init__(userdir, verbose)
+        self.group = group
+
+        try:
+            if isinstance(kwargs['args'], Namespace):
+                self.args = kwargs['args']
+        except KeyError:
+            self.args = Namespace(kwargs)
+
         self.groupdata = self.load()
         self.header_pos = 0
         self.vars_pos = 0
         self.tasks_pos = 0
         self.tasklist = []
 
-    @handle_pre_tasks
-    def pre_tasks(self):
+    def pre_run(self):
         """Perform any necessary pre task actions."""
         # Group validation
         self.validation()
@@ -117,10 +154,10 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, key))
         for kvar, vvar in self.groupdata['vars'].items():
             if kvar and not vvar:
                 raise IOError("check %s, %s declared with empty value"
-                              % (join(self.args.userdir, self.args.name),
+                              % (join(self.userdir, self.args.name),
                                  kvar))
 
-            file_path = join(self.args.userdir, vvar)
+            file_path = join(self.userdir, vvar)
             error_msg = "check %s in %s" % (kvar, self.args.name)
             check_file(file_path, error_msg)
 
@@ -129,7 +166,7 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, key))
             if 'args' in task:
                 for arg in task['args']:
                     if 'powershell' in arg and arg['powershell']:
-                        file_path = join(self.args.userdir, arg['powershell'])
+                        file_path = join(self.userdir, arg['powershell'])
                         error_msg = "check args in task name %s" \
                             % (task['name'])
                         check_file(file_path, error_msg)
@@ -177,10 +214,7 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, key))
 
     def load(self):
         """Load paws group content."""
-        _filename = join(self.args.userdir, self.args.name)
-        _gdata = file_mgmt('r', _filename)
-        _group_yaml = self.group_normalize(_gdata['group'])
-        return _group_yaml
+        return self.group_normalize(self.group['group'])
 
     def set_task_attr(self, args):
         """Set task attributes."""
@@ -195,8 +229,11 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, key))
     def run(self):
         """The main method for group. This method will run a ordered list of
         paws tasks."""
+        # pre run tasks
+        self.pre_run()
+
         try:
-            self.logger.info("START: Group")
+            self.logger.info("START: %s", self.name)
 
             # Save the start time
             self.start()
@@ -229,16 +266,34 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, key))
                     self.set_task_attr(self.map_task_args(args))
 
                 # Import task module
-                module = import_module(PAWS_TASK_MODULES_PATH + task)
+                pmodule = import_module(PAWS_TASK_MODULES_PATH + task)
 
                 # Get task class
-                task_cls = getattr(module, task.title())
+                task_cls = getattr(pmodule, task.title())
+
+                # read files
+                _vars = self.groupdata['vars']
+                try:
+                    credentials = file_mgmt(
+                        'r',
+                        join(self.userdir, _vars['credentials'])
+                    )
+                except (AttributeError, IOError):
+                    credentials = None
+
+                resources = file_mgmt(
+                    'r',
+                    join(self.userdir, _vars['topology'])
+                )
 
                 # Create object from task class
-                task = task_cls(self.args)
-
-                # Run pre tasks
-                task.pre_tasks()
+                task = task_cls(
+                    self.userdir,
+                    resources,
+                    credentials,
+                    self.verbose,
+                    args=self.args
+                )
 
                 # Run task
                 task.run()
@@ -246,20 +301,15 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, key))
                 if 'args' in item:
                     # Delete task arguments values from memory
                     self.del_task_attr(self.map_task_args(args))
-
-            # Run post tasks
-            self.post_tasks()
         except ImportError:
             self.logger.error("Unable to import %s module" % task)
             raise SystemExit(1)
         except AttributeError:
             self.logger.error("Unable to create task %s object" % task)
             raise SystemExit(1)
+        finally:
+            # save end time
+            self.end()
 
-    def post_tasks(self):
-        """Perform any necessary post task actions."""
-        # Save end time
-        self.end()
-
-        self.logger.info("END: Group, TIME: %dh:%dm:%ds",
-                         self.hours, self.minutes, self.seconds)
+            self.logger.info("END: Group, TIME: %dh:%dm:%ds",
+                             self.hours, self.minutes, self.seconds)

@@ -24,8 +24,8 @@ from logging import getLogger
 
 from paws.constants import ADMINISTRATOR, ADMINISTRADOR_PWD
 from paws.remote.results import GenModuleResults
-from paws.util import file_mgmt, update_resources_paws, get_ssh_conn
 from paws.util import exec_cmd_by_ssh
+from paws.util import update_resources_paws, get_ssh_conn
 
 LOG = getLogger(__name__)
 
@@ -33,22 +33,22 @@ LOG = getLogger(__name__)
 class WinPrep(object):
     """WinPrep class."""
 
-    def __init__(self, ansible, resources_paws):
+    def __init__(self, ansible, resources, resources_paws_file):
         """Constructor."""
         self.ansible = ansible
-        self.resources_paws = resources_paws
+        self.resources = resources
+        self.resources_paws_file = resources_paws_file
 
     def set_administrator_password(self):
         """Set Windows Administrator account password.
 
         Password is pre-defined within resources elment within topology file.
         """
-        resources_paws = file_mgmt('r', self.resources_paws)
         _list_vm = []
         _counter = 0
 
         # Check if any resources need to set Administrator password
-        for win in resources_paws['resources']:
+        for win in self.resources['resources']:
             if ADMINISTRADOR_PWD in win:
                 _list_vm.append(win['name'])
 
@@ -57,7 +57,7 @@ class WinPrep(object):
             LOG.debug("Skip setting password for Administrator account")
             return True
 
-        for elem in resources_paws["resources"]:
+        for elem in self.resources["resources"]:
             if elem["name"] in _list_vm:
                 LOG.info("Set Administrator password on %s:%s",
                          elem['name'], elem['public_v4'])
@@ -82,9 +82,10 @@ class WinPrep(object):
 
         # Update Ansible host file and resources.paws
         if _counter > 0:
-            self.ansible.create_hostfile(tp_obj=resources_paws)
+            self.ansible.create_hostfile(tp_obj=self.resources)
             # TODO: need move update_resources_paws
-            update_resources_paws(self.resources_paws, resources_paws)
+            update_resources_paws(self.resources_paws_file, self.resources)
+        return self.resources
 
     @staticmethod
     def ipconfig_release(server):

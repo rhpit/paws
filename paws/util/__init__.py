@@ -92,7 +92,7 @@ class LoggerMixin(object):
         logger = getLogger(name)
 
         # skip creating logger if handler exists
-        if len(logger.handlers) > 0:
+        if logger.handlers.__len__() > 0:
             return
 
         # determine log formatting
@@ -292,13 +292,15 @@ def file_mgmt(operation, file_path, content=None, cfg_parser=None):
                 with open(file_path) as f_raw:
                     return yaml_load(f_raw)
             else:
+                content = ''
                 # text
                 with open(file_path) as f_raw:
                     if cfg_parser is not None:
                         # Config parser file
-                        return cfg_parser.readfp(f_raw)
+                        content = cfg_parser.readfp(f_raw)
                     else:
-                        return f_raw.read()
+                        content = f_raw.read()
+                return content
         else:
             raise IOError("%s file not found!" % file_path)
     elif operation in ['w', 'write']:
@@ -334,11 +336,11 @@ def update_resources_paws(resources_paws_path, resources_paws_content):
     LOG.debug("Successfully updated %s", resources_paws_path)
 
 
-def log_resources(resources_paws_path, action):
+def log_resources(resources_paws, action):
     """Log paws resources to console."""
     # case when resources.paws was not created maybe because nothing was
     # provisioned.
-    if not exists(resources_paws_path):
+    if not resources_paws:
         if 'deleted' in action:
             return True
         LOG.info(LINE)
@@ -347,14 +349,12 @@ def log_resources(resources_paws_path, action):
         LOG.info(LINE)
         return True
 
-    fcontent = file_mgmt('r', resources_paws_path)
-
     msg = "System Resources (%s)" % action
     LOG.info(LINE)
     LOG.info(msg.center(45))
     LOG.info(LINE)
 
-    for index, resource in enumerate(fcontent['resources']):
+    for index, resource in enumerate(resources_paws['resources']):
         index += 1
         LOG.info("%s.", index)
         LOG.info("    Name         : %s", resource['name'])

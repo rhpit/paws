@@ -22,6 +22,10 @@ Constants used throughout paws.
 
 from os.path import expanduser, join
 
+from paws import __name__ as __paws_name__
+
+PAWS_NAME = __paws_name__
+
 DEFAULT_USERDIR = join(expanduser('~'), 'ws')
 
 # CLI definitions
@@ -130,3 +134,6 @@ PROVIDERS = [{'name': 'openstack',
 
 # Libvirt vm definition saved temporally to be imported during creation
 LIBVIRT_OUTPUT = '.output.xml'
+
+# Resources paws file name
+RESOURCES_PAWS = 'resources.paws'

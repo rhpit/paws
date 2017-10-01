@@ -15,26 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-"""
-Package containing paws task modules.
-"""
-
-from os.path import join, splitext
-
-from paws.util import LoggerMixin, TimeMixin
-
-
-class Tasks(LoggerMixin, TimeMixin):
-    """Parent tasks class inherited by child tasks classes."""
-
-    def __init__(self, args):
-        """Constructor.
-
-        Defines all common attributes.
-        """
-        self.args = args
-        self.userdir = args.userdir
-        self.topology = args.topology
-        self.topology_file = join(self.userdir, self.topology)
-        self.resources_paws = join(splitext(self.topology_file)[0] + ".paws")
+"""Paws tasks package."""
+from .group import Group
+from .provision import Provision
+from .show import Show
+from .teardown import Teardown
+from .winsetup import Winsetup

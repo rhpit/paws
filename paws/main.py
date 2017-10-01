@@ -22,14 +22,14 @@ Main class
 
 from importlib import import_module
 
+from os.path import join
 from ansible.errors import AnsibleRuntimeError
 from novaclient.exceptions import ClientException
 
-from paws import __name__ as __paws_name__
-from paws.constants import LINE
+from paws.constants import LINE, PAWS_NAME
 from paws.exceptions import ProvisionError, PawsPreTaskError, SSHError
 from paws.exceptions import ShowError
-from paws.util import LoggerMixin, TimeMixin
+from paws.util import LoggerMixin, TimeMixin, file_mgmt
 
 
 class Paws(LoggerMixin, TimeMixin):
@@ -39,15 +39,18 @@ class Paws(LoggerMixin, TimeMixin):
         """Constructor.
 
         :param task: Name of paws task to call
+        :type task: str
         :param task_module: Paws task absolute path
+        :type task_module: str
         :param args: Paws task options (Python namespace object)
+        :type args: object
         """
         self.task = task
         self.task_module = task_module
         self.args = args
 
         # create logger
-        self.create_logger(__paws_name__, self.args.verbose)
+        self.create_logger(PAWS_NAME, self.args.verbose)
 
     def run(self):
         """Run a paws task."""
@@ -68,36 +71,55 @@ class Paws(LoggerMixin, TimeMixin):
             self.logger.debug(LINE)
 
             # Import paws task
-            module = import_module(self.task_module)
+            pmodule = import_module(self.task_module)
 
             # Get the class attribute
-            task_cls = getattr(module, self.task.title())
+            task_cls = getattr(pmodule, self.task.title())
 
             # Create an object from the class
-            task = task_cls(self.args)
+            if self.task.lower() == 'group':
+                # read files
+                group = file_mgmt('r', join(self.args.userdir, self.args.name))
 
-            # Run paws pre tasks
-            task.pre_tasks()
+                # create task object
+                task = task_cls(
+                    self.args.userdir,
+                    group,
+                    self.args.verbose,
+                    args=self.args
+                )
+            else:
+                # read files
+                try:
+                    credentials = file_mgmt(
+                        'r',
+                        join(self.args.userdir, self.args.credentials)
+                    )
+                except (AttributeError, IOError):
+                    credentials = None
 
-            # Run paws task
+                resources = file_mgmt(
+                    'r',
+                    join(self.args.userdir, self.args.topology)
+                )
+
+                # create task object
+                task = task_cls(
+                    self.args.userdir,
+                    resources,
+                    credentials,
+                    self.args.verbose,
+                    args=self.args
+                )
+
+            # run task
             task.run()
+        except (AnsibleRuntimeError, ClientException, SSHError, SystemExit,
+                ShowError, ProvisionError, PawsPreTaskError):
+            result = 1
         except Exception as ex:
             if ex.message:
                 self.logger.error(ex)
-        except PawsPreTaskError:
-            result = 1
-        except (AnsibleRuntimeError, ClientException, SSHError, SystemExit,
-                ShowError):
-            task.post_tasks()
-            result = 1
-        except ProvisionError:
-            task.post_tasks()
-            self.teardown_resources()
-            result = 1
-        except KeyboardInterrupt:
-            self.logger.warning("CRTL+C detected, interrupting execution")
-            task.post_tasks()
-            result = 1
         finally:
             # Save stop time
             self.end()
@@ -106,17 +128,3 @@ class Paws(LoggerMixin, TimeMixin):
                              self.hours, self.minutes, self.seconds)
 
             raise SystemExit(result)
-
-    def teardown_resources(self):
-        """Teardown system resources when applicable."""
-        from paws.tasks.teardown import Teardown
-        teardown = Teardown(self.args)
-
-        try:
-            # Run pre tasks
-            teardown.pre_tasks()
-
-            # Run task
-            teardown.run()
-        except (AnsibleRuntimeError, KeyboardInterrupt, SystemExit):
-            teardown.post_tasks()

@@ -15,33 +15,30 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Openstack provider."""
 
 from logging import getLogger
-from os import getenv
-from os.path import join, exists
-from re import search, IGNORECASE
 from time import sleep
 from uuid import uuid4
 
-from novaclient.client import Client as nclient
-from novaclient.v2 import networks, images, flavors
-from novaclient.exceptions import ClientException, NotFound
+from os import getenv
+from os.path import join, exists
+from re import search, IGNORECASE
 from glanceclient.v2.client import Client as gclient
 from keystoneclient.v2_0.client import Client as kclient
+from novaclient.client import Client as nclient
+from novaclient.exceptions import ClientException, NotFound
+from novaclient.v2 import networks, images, flavors
 
 from paws.constants import ADMIN, GET_OPS_FACTS_YAML, ADMINISTRADOR_PWD, LINE
 from paws.constants import OPENSTACK_ENV_VARS, PROVISION_RESOURCE_KEYS
 from paws.constants import PROVISION_YAML, TEARDOWN_YAML, ADMINISTRATOR
 from paws.exceptions import NovaPasswordError, SSHError
-from paws.util import cleanup, file_mgmt, get_ssh_conn, update_resources_paws
-from paws.util.decorators import retry
+from paws.remote.driver import Ansible
 from paws.remote.prep import WinPrep
 from paws.remote.results import CloudModuleResults
-from paws.remote.driver import Ansible
-
-"""
-Openstack provider module
-"""
+from paws.util import cleanup, file_mgmt, get_ssh_conn, update_resources_paws
+from paws.util.decorators import retry
 
 LOG = getLogger(__name__)
 
@@ -49,17 +46,28 @@ LOG = getLogger(__name__)
 class Openstack(object):
     """ Openstack Provider """
 
+    __provider_name__ = 'openstack'
+
     def __init__(self, args):
-        self.provider_name = 'openstack'
-        self.args = args.args
-        self.resources_paws = args.resources_paws
+        self.userdir = args.userdir
+        self.resources = args.resources
+        self.credentials = args.credentials
+        self.resources_paws_file = args.resources_paws_file
+        self.verbose = args.verbose
+
+        # create objects
+        self.conductor = Conductor(self.resources, self.credentials)
+        self.ansible = Ansible(self.userdir)
         self.util = Util(self)
-        self.credential_file = args.credential_file
-        self.conductor = Conductor()
-        self.ansible = Ansible(args.userdir)
-        self.credential = None
-        self.res_paws = None
-        self.res = None
+
+        self.provision_yaml = object
+        self.teardown_yaml = object
+        self.resources_paws = None
+
+    @property
+    def name(self):
+        """Return provider name."""
+        return self.__provider_name__
 
     def garbage_collector(self):
         """Garbage collector method. it knows which files to collect for this
@@ -70,9 +78,10 @@ class Openstack(object):
         :rtypr garbage: list
         """
         garbage = [self.ansible.ansible_inventory,
-                   join(self.args.userdir, TEARDOWN_YAML),
-                   join(self.args.userdir, PROVISION_YAML),
-                   join(self.args.userdir, GET_OPS_FACTS_YAML)]
+                   join(self.userdir, TEARDOWN_YAML),
+                   join(self.userdir, PROVISION_YAML),
+                   join(self.userdir, GET_OPS_FACTS_YAML),
+                   join(self.userdir, self.resources_paws_file)]
 
         return garbage
 
@@ -80,98 +89,85 @@ class Openstack(object):
         """Clean files genereated by paws for Openstack provider. It will only
         clean generated files when in non verbose mode.
         """
-        if not self.args.verbose:
+        if not self.verbose:
             cleanup(self.garbage_collector())
 
-    def provision(self, res):
-        """ Provision system resource(s) in Openstack provider
+    def provision(self):
+        """Provision system resource(s) in Openstack provider."""
+        # get provider credentials. This is only needed if no credentials
+        # were set by file. It will then check for credentials by env vars.
+        self.credentials = self.util.get_credentials()
 
-        :param res: content of resources file. For Openstack it is expected
-        to have the content of resources.yaml but the parameter might have
-        both files
-        :type res: list of dict
-        """
-        # set resources
-        self.res = res['res']
-
-        # Check/get Openstack credentials
-        self.credential = self.get_credential(self.credential_file)
-
-        # Create empty inventory file for localhost calls
+        # create inventory for localhost calls
         self.ansible.create_hostfile()
 
-        # Resources key check
-        self.conductor.resource_keys_exist(PROVISION_RESOURCE_KEYS, self.res)
+        # resources key check
+        self.conductor.resource_keys_exist()
 
-        # Resources openstack key check
-        self.conductor.valid_openstack_keys(self.res, self.credential)
+        # resources provider key check
+        self.conductor.credentials = self.credentials
+        self.conductor.valid_openstack_keys()
 
-        # Create playbook to provision resources
-        provision_playbook = ProvisionYAML(self).create()
+        # create provision playbook
+        self.provision_yaml = ProvisionYAML(self.userdir, self.resources)
+        self.provision_yaml.create()
 
-        # Playbook call - provision resources
+        # provision resources
         self.ansible.run_playbook(
-            provision_playbook,
-            extra_vars=self.credential,
+            self.provision_yaml.playbook,
+            extra_vars=self.credentials,
             results_class=CloudModuleResults
         )
 
-        # TODO: generate_resources_paws move out from Openstack module
-        # Create resources.paws
-        res = self.util.generate_resources_paws(self.ansible, self.res,
-                                                self.resources_paws)
+        # craft resources paws data structure
+        self.resources_paws = self.util.generate_resources_paws()
 
-        if res['resources'].__len__() > 0:
-            for elem in res['resources']:
+        if self.resources_paws['resources'].__len__() > 0:
+            for elem in self.resources_paws['resources']:
                 # Get the default admin username and password
                 elem = self.util.get_admin_password(elem)
 
             # Update resources paws file with admin username and password
-            update_resources_paws(self.resources_paws, res)
+            update_resources_paws(
+                self.resources_paws_file,
+                self.resources_paws
+            )
 
             # Create updated inventory file
-            self.ansible.create_hostfile(tp_obj=res)
+            self.ansible.create_hostfile(tp_obj=self.resources_paws)
 
         # Set Administrator account password
-        win_prep = WinPrep(self.ansible, self.resources_paws)
-        win_prep.set_administrator_password()
-
-        # Load updated resources.paws into memory
-        res = file_mgmt('r', self.resources_paws)
+        win_prep = WinPrep(
+            self.ansible,
+            self.resources_paws,
+            self.resources_paws_file
+        )
+        self.resources_paws = win_prep.set_administrator_password()
 
         # Create snapshot
-        self.snapshots(res, task="provision")
+        self.snapshots(self.resources_paws, task="provision")
 
         self.clean_files()
 
-    def teardown(self, res):
-        """ Teardown system resource(s) in Openstack provider
+        return self.resources_paws
 
-        :param res: content of resources file. For Openstack it is expected
-        to have the content of resources.yaml but the parameter might have
-        both files
-        :type res: list of dict
-        """
-        # set resources (yaml and paws)
-        self.res = res['res']
-        self.res_paws = res['res_paws']
+    def teardown(self):
+        """ Teardown system resource(s) in Openstack provider."""
+        # get provider credentials. This is only needed if no credentials
+        # were set by file. It will then check for credentials by env vars.
+        self.credentials = self.util.get_credentials()
 
-        # Create empty inventory file for localhost calls
+        # create inventory for localhost calls
         self.ansible.create_hostfile()
-
-        # Check/get Openstack credentials
-        self.credential = self.get_credential(self.credential_file)
 
         # Get instances facts from provider
         GetServerFacts(self).get_facts()
 
-        # Create or update/override resources.paws
-        self.res_paws = self.util.generate_resources_paws(
-            self.ansible, self.res,
-            self.resources_paws)
+        # craft resources paws data structure
+        self.resources_paws = self.util.generate_resources_paws()
 
         # Update username/password
-        for elem in self.res_paws['resources']:
+        for elem in self.resources_paws['resources']:
             if ADMINISTRADOR_PWD in elem:
                 elem['win_username'] = ADMINISTRATOR
                 elem['win_password'] = elem[ADMINISTRADOR_PWD]
@@ -180,51 +176,45 @@ class Openstack(object):
                 elem['win_password'] = 'undefined'
 
         # Create playbook to teardown resources
-        teardown_yaml = TeardownYAML(self).create()
+        self.teardown_yaml = TeardownYAML(self.userdir, self.resources_paws)
+        self.teardown_yaml.create()
 
         # Create updated inventory file
-        self.ansible.create_hostfile(tp_obj=self.res_paws)
+        self.ansible.create_hostfile(tp_obj=self.resources_paws)
 
         # Create snapshot
-        self.snapshots(self.res_paws, task="teardown")
+        self.snapshots(self.resources_paws, task="teardown")
 
         # Playbook call - teardown resources
         self.ansible.run_playbook(
-            teardown_yaml,
-            extra_vars=self.credential,
+            self.teardown_yaml.playbook,
+            extra_vars=self.credentials,
             results_class=CloudModuleResults
         )
 
         self.clean_files()
 
-    def show(self, res):
-        """ Show system resource(s) in Openstack provider
+        return self.resources_paws
 
-        :param res: content of resources file. For Openstack it is expected
-        to have the content of resources.yaml but the parameter might have
-        both files
-        :type res: list of dict
-        """
-        # set resources
-        self.res = res['res']
+    def show(self):
+        """ Show system resource(s) in Openstack provider"""
+        # get provider credentials. This is only needed if no credentials
+        # were set by file. It will then check for credentials by env vars.
+        self.credentials = self.util.get_credentials()
 
-        # Create empty inventory file for localhost calls
+        # create inventory for localhost calls
         self.ansible.create_hostfile()
-
-        # Check/get Openstack credentials
-        self.credential = self.get_credential(self.credential_file)
 
         # Get instances facts from provider
         GetServerFacts(self).get_facts()
 
-        # Create resources.paws
-        res = self.util.generate_resources_paws(self.ansible, self.res,
-                                                self.resources_paws)
+        # craft resources paws data structure
+        self.resources_paws = self.util.generate_resources_paws()
 
-        if res['resources'].__len__() > 0:
-            for elem in res['resources']:
-                # password is defined up-front in resources.yaml
+        if self.resources_paws['resources'].__len__() > 0:
+            for elem in self.resources_paws['resources']:
                 if ADMINISTRADOR_PWD in elem:
+                    # password is defined up-front in resources.yaml
                     elem['win_username'] = ADMINISTRATOR
                     elem['win_password'] = elem[ADMINISTRADOR_PWD]
                 else:
@@ -232,17 +222,15 @@ class Openstack(object):
                     # get default password and user ADMIN
                     elem = self.util.get_admin_password(elem)
 
-            # Update resources paws file with administrator password
-            update_resources_paws(self.resources_paws, res)
+            # Update resources paws file with admin username and password
+            update_resources_paws(
+                self.resources_paws_file,
+                self.resources_paws
+            )
 
         self.clean_files()
 
-    def get_credential(self, credential_file):
-        """It is a wrapper for get_credentails function from Openstack Util
-        class. The reason for this method is to facilitate the re-usability
-        by others methods and the data transfer object transparency passed
-        by self"""
-        return self.util.get_credentials(credential_file)
+        return self.resources_paws
 
     def snapshots(self, resources, task):
         """Handles creating and deleting snapshots of instances provisioned.
@@ -315,7 +303,7 @@ class Openstack(object):
             except KeyError:
                 clean = True
 
-            nova = Nova(self.credential)
+            nova = Nova(self.credentials)
 
             # Create snapshot
             snapshot_id = ""
@@ -325,7 +313,7 @@ class Openstack(object):
 
             # Clean old snapshots for instance
             if clean:
-                glance = Glance(self.credential)
+                glance = Glance(self.credentials)
                 paws_images = glance.get_images_by_paws()
 
                 if paws_images.__len__() == 0:
@@ -535,7 +523,7 @@ class Nova(object):
         }
 
         # Rearm server and release IPv4 connections
-        win_prep = WinPrep(ansible, None)
+        win_prep = WinPrep(ansible, None, None)
         # win_prep.rearm_server(server)
         win_prep.ipconfig_release(server)
 
@@ -659,7 +647,7 @@ class Glance(object):
                         image.owner != owner_id:
                     self.images.append(image.name)
 
-            if len(self.images) == 0:
+            if self.images.__len__() == 0:
                 raise Exception("can't find Windows image")
 
             LOG.info("Available Windows images")
@@ -680,9 +668,9 @@ class Glance(object):
     def get_images_by_paws(self):
         """Get all available images authored by paws."""
         paws_images = []
-        images = self.get_images()
+        _images = self.get_images()
 
-        for image in images:
+        for image in _images:
             try:
                 if getattr(image, "author") != "paws":
                     continue
@@ -700,8 +688,7 @@ class Util(object):
     def __init__(self, args):
         self.args = args
 
-    @staticmethod
-    def get_credentials(credential_file):
+    def get_credentials(self):
         """
         Check for Openstack credentials from file or user env variables
         credentials.json file is optional but if it exists at userdir
@@ -714,65 +701,36 @@ class Util(object):
         """
         help_msg = "Please refer to documentation on how to set your "\
             "providers credentials."
-        _creds_file = False
-        _creds_env_vars = False
-        _creds = {}
-        _creds_file = True if exists(credential_file) else False
+        _creds = dict()
 
         LOG.debug("Getting Openstack credentials.")
 
-        # Credentials exist in form of environment variables?
-        for var in OPENSTACK_ENV_VARS:
-            if getenv(var) is not None:
-                _creds_env_vars = True
+        if self.args.credentials:
+            # credentials were set by file and already loaded
+            LOG.debug('Openstack credentials are set by file.')
 
-        # Exit if either credential type does not exist
-        if _creds_env_vars is False and _creds_file is False:
-            LOG.error("Unable to find credentials from either a credentials "
-                      "file or environment variables.")
-            LOG.error(help_msg)
-            raise SystemExit(1)
-
-        # Get credentials by file
-        if _creds_file:
-            LOG.debug("Openstack credentials are set by file.")
-            cdata = file_mgmt('r', credential_file)
-
-            pos = next(index for index, key in enumerate(cdata['credentials'])
-                       if 'openstack' in key['provider'])
-
-            try:
-                # Verify credential keys are set correctly and not empty
-                for key in OPENSTACK_ENV_VARS:
-                    key = key.lower()
-                    if key not in cdata['credentials'][pos]:
-                        LOG.error("Required credentials key: %s is missing!" %
-                                  key)
-                        LOG.error(help_msg)
-                        raise SystemExit(1)
-                    elif cdata['credentials'][pos][key] == "":
-                        LOG.error("Credentials key: %s is not set properly!" %
-                                  key)
-                        LOG.error(help_msg)
-                        raise SystemExit(1)
-                    _creds[key.upper()] = cdata['credentials'][pos][key]
-                return _creds
-            except KeyError:
-                LOG.error("Unable to read credentials file properly.")
-                LOG.error(help_msg)
-                raise SystemExit(1)
-
-        # Get credentials by environment variables
-        if _creds_env_vars:
-            LOG.info("Openstack providers credentials are set by environment"
-                     " variables.")
-            for var in OPENSTACK_ENV_VARS:
-                _creds[var] = getenv(var)
-                if _creds[var] is None:
-                    LOG.error("Environment variable: %s does not exist!" % var)
+            for key in OPENSTACK_ENV_VARS:
+                key = key.lower()
+                if key not in self.args.credentials:
+                    LOG.error('Provider credential %s is missing.' % key)
                     LOG.error(help_msg)
                     raise SystemExit(1)
-            return _creds
+                elif self.args.credentials[key] == '':
+                    LOG.error('Provider credential %s not set properly.' % key)
+                    LOG.error(help_msg)
+                    raise SystemExit(1)
+                _creds[key.upper()] = self.args.credentials[key]
+        else:
+            # credentials were set by environment variables
+            LOG.debug('Openstack credentials are set by env vars.')
+
+            for key in OPENSTACK_ENV_VARS:
+                _creds[key] = getenv(key)
+                if _creds[key] is None:
+                    LOG.error('Env var %s does not exist.' % key)
+                    LOG.error(help_msg)
+                    raise SystemExit(1)
+        return _creds
 
     @staticmethod
     def gen_res_list(servers, rlist):
@@ -787,8 +745,7 @@ class Util(object):
             rlist.append(sut)
         return rlist
 
-    @staticmethod
-    def generate_resources_paws(ansible, resources, resources_paws):
+    def generate_resources_paws(self):
         """
         Read Ansible callback resultset to get elements from vm provisioned.
         Complement the data from resources.yaml matching the vm provisioned to
@@ -801,12 +758,11 @@ class Util(object):
             keypair [resources.yaml]
             ssh_private_key [resources.yaml]
         """
-        LOG.debug("Generating %s" % resources_paws)
-        results = ansible.callback.contacted
+        LOG.debug("Generating %s" % self.args.resources_paws_file)
         _rlist = []
 
         # Generate list of resources from Ansible openstack server facts
-        for item in results:
+        for item in self.args.ansible.callback.contacted:
             if 'ansible_facts' in item['results']:
                 # count == 1
                 child = item['results']['ansible_facts']
@@ -824,7 +780,7 @@ class Util(object):
         # Resources are complemented with their data by matching metadata key
         # (element) which refers to resource elements inside topology file
         for elem in _rlist:
-            for curr_elem in resources:
+            for curr_elem in self.args.resources:
                 if elem['element'] == curr_elem['name']:
                     elem['keypair'] = curr_elem['keypair']
                     try:
@@ -841,9 +797,13 @@ class Util(object):
                     break
 
         # Write resources.paws
-        if len(_rlist) > 0:
-            file_mgmt('w', resources_paws, {"resources": _rlist})
-            LOG.debug("Successfully created %s", resources_paws)
+        if _rlist.__len__() > 0:
+            file_mgmt(
+                'w',
+                self.args.resources_paws_file,
+                {"resources": _rlist}
+            )
+            LOG.debug("Successfully created %s", self.args.resources_paws_file)
 
         return {"resources": _rlist}
 
@@ -854,7 +814,7 @@ class Util(object):
         Paws uses Nova client to retrieve the password
         """
         # Create nova object
-        nova = Nova(self.args.credential)
+        nova = Nova(self.args.credentials)
 
         LOG.info("Attempting to establish SSH connection to %s",
                  elem['public_v4'])
@@ -902,18 +862,16 @@ class ProvisionYAML(object):
     provisioning resources.
     """
 
-    def __init__(self, args):
+    def __init__(self, userdir, resources):
         """Constructor."""
+        self.userdir = userdir
+        self.resources = resources
+
+        self.playbook = join(self.userdir, PROVISION_YAML)
         self.provision = []
-        self.resources = args.res
-        self.playbook = join(args.args.userdir, PROVISION_YAML)
 
     def create(self):
-        """Setup data structure and create the provision YAML.
-
-        :param resources: Resources to provision
-        :type resources: list
-        """
+        """Setup data structure and create the provision YAML."""
         playbook = {}
         playbook['hosts'] = 'localhost'
         playbook['tasks'] = []
@@ -1022,7 +980,6 @@ class ProvisionYAML(object):
         # Write Ansible Playbook
         file_mgmt('w', self.playbook, self.provision)
         LOG.debug("Playbook %s created.", self.playbook)
-        return self.playbook
 
 
 class TeardownYAML(object):
@@ -1031,11 +988,11 @@ class TeardownYAML(object):
     tearing down resources.
     """
 
-    def __init__(self, args):
+    def __init__(self, userdir, resources):
         """Constructor."""
         self.teardown = []
-        self.resources = args.res_paws
-        self.playbook = join(args.args.userdir, TEARDOWN_YAML)
+        self.resources = resources
+        self.playbook = join(userdir, TEARDOWN_YAML)
 
     def create(self):
         """Setup data structure and create the teardown YAML.
@@ -1093,7 +1050,6 @@ class TeardownYAML(object):
         # Write Ansible Playbook
         file_mgmt('w', self.playbook, self.teardown)
         LOG.debug("Playbook %s created.", self.playbook)
-        return self.playbook
 
 
 class GetServerFacts(object):
@@ -1108,11 +1064,11 @@ class GetServerFacts(object):
     def __init__(self, args):
         """Constructor."""
         self.getfacts = []
-        self.resources = args.res
-        self.playbook = join(args.args.userdir, GET_OPS_FACTS_YAML)
+        self.resources = args.resources
+        self.playbook = join(args.userdir, GET_OPS_FACTS_YAML)
         if args.ansible:
             self.ansible = args.ansible
-        self.credential = args.credential
+        self.credentials = args.credentials
 
     def create(self):
         """Setup data structure and create the get_servers_facts YAML.
@@ -1165,7 +1121,7 @@ class GetServerFacts(object):
         # Playbook call - get system facts
         self.ansible.run_playbook(
             getfacts_playbook,
-            extra_vars=self.credential,
+            extra_vars=self.credentials,
             results_class=CloudModuleResults
         )
 
@@ -1175,18 +1131,17 @@ class Conductor(object):
     files, keys, etc before starting paws tasks 'passengers'.
     """
 
-    @staticmethod
-    def valid_openstack_keys(resource, credentials):
-        """Verify openstack keys values are valid.
+    def __init__(self, resources, credentials):
+        self.resources = resources
+        self.credentials = credentials
 
-        :param resource: content of topology file aka resources.yaml
-        :param credentials: Providers credentials.
-        """
+    def valid_openstack_keys(self):
+        """Verify openstack keys values are valid."""
         try:
             LOG.debug("Checking openstack keys are valid")
             # Create instance of nova client
-            nova = Nova(credentials)
-            for res in resource:
+            nova = Nova(self.credentials)
+            for res in self.resources:
                 nova.image_exist(res['image'])
                 nova.flavor_exist(str(res['flavor']))
                 nova.network_exist(res['network'])
@@ -1208,20 +1163,15 @@ class Conductor(object):
             LOG.error("Unable to find SSH private key: %s", sshkey)
             raise SystemExit(1)
 
-    @staticmethod
-    def resource_keys_exist(keys, resource):
-        """Verify resource keys exist.
-
-        :param keys: Keys to check.
-        :param resource: content of topology file aka resources.yaml
-        """
+    def resource_keys_exist(self):
+        """Verify resource keys exist."""
         help_msg = "Please refer to documentation on how to set your "\
             "topology file."
         LOG.debug("Checking resource sections for required keys")
         try:
             # Read resources file
-            for res in resource:
-                for key in keys:
+            for res in self.resources:
+                for key in PROVISION_RESOURCE_KEYS:
                     if key not in res:
                         LOG.error("Required key: %s is missing!", key)
                         LOG.error(help_msg)
@@ -1231,7 +1181,7 @@ class Conductor(object):
                         LOG.error(help_msg)
                         raise SystemExit(1)
                     if key == "ssh_private_key":
-                        Conductor.ssh_private_key_exist(res[key])
+                        self.ssh_private_key_exist(res[key])
         except IOError as ex:
             LOG.error(ex)
             raise SystemExit(1)

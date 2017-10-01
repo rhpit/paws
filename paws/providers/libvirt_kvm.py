@@ -29,7 +29,7 @@ from xml.etree import ElementTree as ET
 from libvirt import libvirtError
 from paws.util import get_ssh_conn, file_mgmt, subprocess_call, cleanup
 from paws.util.decorators import retry
-from paws.constants import LIBVIRT_OUTPUT, API_GET, API_FIND, LIBVIRT_AUTH_HELP
+from paws.constants import LIBVIRT_OUTPUT, LIBVIRT_AUTH_HELP
 from paws.exceptions import PawsPreTaskError
 from paws.remote.driver import Ansible
 from subprocess import PIPE
@@ -110,16 +110,28 @@ from subprocess import PIPE
 
 LOG = getLogger(__name__)
 
+# TODO: add variables back in constants
+API_GET = ''
+API_FIND = ''
+
 
 class Libvirt(object):
     """ Libvirt PAWS main class"""
+
+    __provider_name__ = 'libvirt'
+
     def __init__(self, args):
-        self.provider_name = 'libvirt'
-        self.args = args.args
-        self.resources_paws = args.resources_paws
-        self.credential_file = args.credential_file
+        self.args = args
+        self.userdir = args.userdir
+        self.resources = args.resources
+        self.credentials = args.credentials
+        self.resources_paws_file = args.resources_paws_file
+        self.verbose = args.verbose
+
         self.util = Util(self)
-        self.ansible = Ansible(args.userdir)
+        self.ansible = Ansible(self.userdir)
+
+        self.resources_paws = None
 
         # Libvirt domain/VM states
         self.states = {
@@ -132,11 +144,16 @@ class Libvirt(object):
             libvirt.VIR_DOMAIN_CRASHED: 'crashed',
         }
 
-    def set_libvirt_env_var(self, creds):
+    @property
+    def name(self):
+        """Return provider name."""
+        return self.__provider_name__
+
+    def set_libvirt_env_var(self):
         """Set LIBVIRT_DEFAULT_URI system variable. It is required for some
         API calls"""
-        if getenv('LIBVIRT_DEFAULT_URI', False) == False:
-            environ['LIBVIRT_DEFAULT_URI'] = creds['qemu_instance']
+        if getenv('LIBVIRT_DEFAULT_URI', False) is False:
+            environ['LIBVIRT_DEFAULT_URI'] = self.credentials['qemu_instance']
 
     def garbage_collector(self):
         """Garbage collector method. it knows which files to collect for this
@@ -147,24 +164,18 @@ class Libvirt(object):
         :rtypr garbage: list
         """
         garbage = [self.ansible.ansible_inventory,
-                   join(self.args.userdir, LIBVIRT_OUTPUT)]
+                   join(self.userdir, LIBVIRT_OUTPUT)]
         return garbage
 
     def clean_files(self):
         """Clean files genereated by paws for Openstack provider. It will only
         clean generated files when in non verbose mode.
         """
-        if not self.args.verbose:
+        if not self.verbose:
             cleanup(self.garbage_collector())
 
-    def provision(self, res):
-        """ Provision system resource(s) in Libvirt provider
-
-        :param res: content of all files (resources.yaml, resources.paws and
-        credentials.yaml )
-        :type res: list of dict
-        """
-
+    def provision(self):
+        """ Provision system resource(s) in Libvirt provider"""
         # -- basic flow --
         # assume qcow and xml files required already exist as declared in
         # resources.yaml file
@@ -173,19 +184,15 @@ class Libvirt(object):
         # Start VM
         # show VM info (network, etc)
 
-        # set resources
-        self.res = res['res']
-        self.res_paws = res['res_paws']
-        self.creds = res['creds']
-        self.set_libvirt_env_var(self.creds)
+        self.set_libvirt_env_var()
 
         # Create empty inventory file for localhost calls
         self.ansible.create_hostfile()
 
         # check libvirt connection - validating authentication
-        conn = self.util.get_connection(self.creds)
+        conn = self.util.get_connection()
 
-        for elem in self.res:
+        for elem in self.resources:
             LOG.info('Working to provision %s VM on %s' % (elem['name'],
                                                            elem['provider']))
             # check for required files
@@ -221,7 +228,7 @@ class Libvirt(object):
             except:
                 LOG.debug("An error happened during provision VM %s trying \
                 forced teardown" % elem['name'])
-                self.teardown(res)
+                self.teardown()
 
             # @attention Libvirt provider doesn't need hosts inventory file but
             # it is required by Winsetup and Group.
@@ -234,23 +241,14 @@ class Libvirt(object):
 
         self.util.generate_resources_paws(conn)
 
+        return self.resources_paws
 
-    def teardown(self, res):
-        """ Provision system resource(s) in Openstack provider
+    def teardown(self):
+        """ Provision system resource(s) in Openstack provider"""
+        self.set_libvirt_env_var()
 
-        :param res: content of resources file. For Openstack it is expected
-        to have the content of resources.yaml but the parameter might have
-        both files
-        :type res: list of dict
-        """
-        # set resources
-        self.res = res['res']
-        self.res_paws = res['res_paws']
-        self.creds = res['creds']
-        self.set_libvirt_env_var(self.creds)
-
-        conn = self.util.get_connection(self.creds)
-        for elem in self.res:
+        conn = self.util.get_connection()
+        for elem in self.resources:
             # get vm object and continue with teardown process (stop and del)
             if self.util.vm_exist(conn, elem['name']):
                 vm = self.util.find_vm_by_name(conn, elem['name'])
@@ -260,22 +258,14 @@ class Libvirt(object):
 
         self.clean_files()
 
-    def show(self, res):
-        """ Provision system resource(s) in Openstack provider
+        return {'resources': self.resources}
 
-        :param res: content of resources file. For Openstack it is expected
-        to have the content of resources.yaml but the parameter might have
-        both files
-        :type res: list of dict
-        """
-        # set resources
-        self.res = res['res']
-        self.res_paws = res['res_paws']
-        self.creds = res['creds']
-        self.set_libvirt_env_var(self.creds)
-
-        conn = self.util.get_connection(self.creds)
+    def show(self):
+        """ Provision system resource(s) in Openstack provider"""
+        self.set_libvirt_env_var()
+        conn = self.util.get_connection()
         self.util.generate_resources_paws(conn)
+        return self.resources_paws
 
 
 class Util(object):
@@ -286,16 +276,15 @@ class Util(object):
     def __init__(self, args):
         self.args = args
 
-    @staticmethod
-    def get_connection(creds):
+    def get_connection(self):
         """ Get connection with libvirt using QEMU driver and system
         context
 
-        :param creds: content of credentials.yaml file
-        :type creds: yaml
         :return conn: connection with libvirt
         :rtype conn: libvirt connection
         """
+        creds = self.args.credentials
+
         if 'username' in creds:
             auth = [[libvirt.VIR_CRED_AUTHNAME, libvirt.VIR_CRED_NOECHOPROMPT],
                     creds['username'], None]
@@ -500,7 +489,6 @@ class Util(object):
             raise PawsPreTaskError
 
         LOG.info("%s provisioned" % vm['name'])
-
 
     @staticmethod
     def create_vm(conn, xml_path):
@@ -724,10 +712,10 @@ class Util(object):
         :param conn: Libvirt connection
         :type conn: object
         """
-        LOG.debug("Generating %s" % self.args.resources_paws)
+        LOG.debug("Generating %s" % self.args.resources_paws_file)
 
         vms = []
-        for res in self.args.res:
+        for res in self.args.resources:
             if self.vm_exist(conn, res['name']):
                 vm_info = self.get_vm_info(conn, res)
                 if vm_info:
@@ -735,12 +723,17 @@ class Util(object):
 
         # Write resources.paws
         if len(vms) > 0:
-            if exists(self.args.resources_paws):
-                res_paws = file_mgmt('r', self.args.resources_paws)
+            if exists(self.args.resources_paws_file):
+                res_paws = file_mgmt('r', self.args.resources_paws_file)
 
                 for x in res_paws['resources']:
-                    if x['provider'] != self.args.provider_name:
+                    if x['provider'] != self.args.name:
                         vms.append(x)
 
-            file_mgmt('w', self.args.resources_paws, {"resources": vms})
-            LOG.debug("Successfully created %s", self.args.resources_paws)
+            self.args.resources_paws = {'resources': vms}
+            file_mgmt(
+                'w',
+                self.args.resources_paws_file,
+                self.args.resources_paws
+            )
+            LOG.debug("Successfully created %s", self.args.resources_paws_file)

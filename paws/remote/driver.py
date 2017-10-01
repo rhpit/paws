@@ -126,26 +126,16 @@ class Ansible(object):
         finally:
             self.variable_manager.set_inventory(self.inventory)
 
-    def create_hostfile(self, tp_file=None, tp_obj=None):
+    def create_hostfile(self, tp_obj=None):
         """Create Ansible inventory file to replace default (/etc/ansible/hosts).
 
-        :param tp_file: Topology file (absolute path)
-        :type tp_file: str
-        :param tp_obj: Topology object
+        :param tp_obj: Resources object
         :type tp_obj: object
         """
         # Create empty file if inputs are not defined
-        if tp_file is None and tp_obj is None:
+        if tp_obj is None:
             file_mgmt('w', self.ansible_inventory, '')
             return 0
-
-        # Read resources from file
-        if tp_file:
-            jdata = file_mgmt('r', tp_file)
-
-        # Read resources from memory
-        if tp_obj:
-            jdata = tp_obj
 
         # Can we re-use existing ansible hosts file?
         try:
@@ -153,9 +143,9 @@ class Ansible(object):
             hosts_data = file_mgmt('r', self.ansible_inventory)
 
             # Check that resources have entries in hosts file
-            resources_count = len(jdata['resources'])
+            resources_count = len(tp_obj['resources'])
             counter = 0
-            for item in jdata['resources']:
+            for item in tp_obj['resources']:
                 sec = item['name']
                 sec_vars = item['name'] + ':vars'
                 user_match = "ansible_user = %s" % item['win_username']
@@ -180,7 +170,7 @@ class Ansible(object):
         # Create config parser object
         config = ConfigParser()
 
-        for item in jdata['resources']:
+        for item in tp_obj['resources']:
             # Create section
             section = item['name'].replace(" ", "")
             config.add_section(section)
