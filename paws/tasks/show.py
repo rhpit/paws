@@ -23,7 +23,7 @@ resulting at message displayed at console output.
 from ansible.errors import AnsibleRuntimeError
 
 from paws.core import PawsTask
-from paws.exceptions import NovaPasswordError, ShowError, SSHError
+from paws.exceptions import NovaPasswordError, SSHError
 from paws.providers import Provider
 from paws.util import log_resources, Namespace
 
@@ -107,16 +107,18 @@ class Show(PawsTask):
 
             # Log system resources details to console
             log_resources(self.resources_paws, "show")
-        except SystemExit:
-            raise SystemExit(1)
         except (AnsibleRuntimeError, NovaPasswordError, SSHError,
-                KeyboardInterrupt) as ex:
+                KeyboardInterrupt, SystemExit) as ex:
+            # set exit code
+            self.exit_code = 1
+
             if isinstance(ex, KeyboardInterrupt):
                 self.logger.warning("CTRL+C detected, interrupting execution")
-            raise ShowError
         finally:
             # save end time
             self.end()
 
             self.logger.info("END: %s, TIME: %dh:%dm:%ds",
                              self.name, self.hours, self.minutes, self.seconds)
+
+        return self.exit_code

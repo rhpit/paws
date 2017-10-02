@@ -19,6 +19,7 @@
 """Winsetup task."""
 
 from os.path import join, exists, isfile
+from ansible.errors import AnsibleRuntimeError
 
 from paws.constants import ADMIN, WIN_EXEC_YAML, LINE
 from paws.core import PawsTask
@@ -214,25 +215,34 @@ class Winsetup(PawsTask):
                     sut_ssh_password,
                     sut_ssh_key
                 )
+
+                # Playbook call - run PowerShell script on Windows resources
+                self.ansible.run_playbook(
+                    self.winsetup_yaml,
+                    pb_vars,
+                    results_class=GenModuleResults
+                )
             except SSHError:
+                # set exit code
+                self.exit_code = 1
+
                 self.logger.error(
                     "Unable to establish SSH connection to %s", sut_ip
                 )
-                raise SystemExit(1)
+            except (AnsibleRuntimeError, SystemExit):
+                # set exit code
+                self.exit_code = 1
+            finally:
+                # save end time
+                self.end()
 
-            # Playbook call - run PowerShell script on Windows resources
-            self.ansible.run_playbook(
-                self.winsetup_yaml,
-                pb_vars,
-                results_class=GenModuleResults
-            )
+                # clean up run time files
+                if not self.verbose:
+                    cleanup([self.winsetup_yaml], self.userdir)
 
-        # save end time
-        self.end()
+                self.logger.info(
+                    "END: %s, TIME: %dh:%dm:%ds", self.name, self.hours,
+                    self.minutes, self.seconds
+                )
 
-        # clean up run time files
-        if not self.verbose:
-            cleanup([self.winsetup_yaml], self.userdir)
-
-        self.logger.info("END: %s, TIME: %dh:%dm:%ds",
-                         self.name, self.hours, self.minutes, self.seconds)
+            return self.exit_code

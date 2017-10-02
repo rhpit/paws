@@ -20,7 +20,7 @@
 from ansible.errors import AnsibleRuntimeError
 
 from paws.core import PawsTask
-from paws.exceptions import NovaPasswordError, ProvisionError, SSHError
+from paws.exceptions import NovaPasswordError, SSHError
 from paws.providers import Provider
 from paws.util import log_resources, Namespace
 
@@ -98,15 +98,15 @@ class Provision(PawsTask):
 
             # Run provider action
             self.resources_paws = self.provider.run_action(self.name.lower())
-        except SystemExit:
-            raise SystemExit(1)
         except (AnsibleRuntimeError, NovaPasswordError, SSHError,
-                KeyboardInterrupt) as ex:
+                KeyboardInterrupt, SystemExit) as ex:
+            # set exit code
+            self.exit_code = 1
+
             if isinstance(ex, KeyboardInterrupt):
                 self.logger.warning("CTRL+C detected, interrupting execution")
             # teardown system resources
             self.provider.run_action('teardown')
-            raise ProvisionError
         finally:
             # save end time
             self.end()
@@ -116,3 +116,5 @@ class Provision(PawsTask):
 
             self.logger.info("END: %s, TIME: %dh:%dm:%ds",
                              self.name, self.hours, self.minutes, self.seconds)
+
+        return self.exit_code

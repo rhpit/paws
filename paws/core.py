@@ -44,7 +44,24 @@ class PawsTask(LoggerMixin, TimeMixin):
         # create logger
         self.create_logger(PAWS_NAME, self.verbose)
 
+        # task exit code
+        self._exit_code = 0
+
     @property
     def name(self):
         """Return paws task class name."""
         return self.__class__.__name__
+
+    @property
+    def exit_code(self):
+        """Return paws task exit code."""
+        return self._exit_code
+
+    @exit_code.setter
+    def exit_code(self, value):
+        """Set paws task exit code.
+
+        :param value: Task exit code.
+        :type value: int
+        """
+        self._exit_code = value

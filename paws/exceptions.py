@@ -38,16 +38,6 @@ class PawsMsgError(Exception):
         return repr(self.msg)
 
 
-class ProvisionError(PawsError):
-    """Exception raised for errors with provision task."""
-    pass
-
-
-class ShowError(PawsError):
-    """Exception raised for errors with show task."""
-    pass
-
-
 class SSHError(PawsMsgError):
     """Exception raised for errors with SSH connections."""
 

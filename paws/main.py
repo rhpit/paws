@@ -23,12 +23,8 @@ Main class
 from importlib import import_module
 
 from os.path import join
-from ansible.errors import AnsibleRuntimeError
-from novaclient.exceptions import ClientException
 
 from paws.constants import LINE, PAWS_NAME
-from paws.exceptions import ProvisionError, PawsPreTaskError, SSHError
-from paws.exceptions import ShowError
 from paws.util import LoggerMixin, TimeMixin, file_mgmt
 
 
@@ -54,77 +50,67 @@ class Paws(LoggerMixin, TimeMixin):
 
     def run(self):
         """Run a paws task."""
-        # Result
-        result = 0
+        # save start time
+        self.start()
 
-        try:
-            # Save start time
-            self.start()
+        # log commands options
+        self.logger.info("Begin paws execution")
+        self.logger.debug(LINE)
+        self.logger.debug("Paws options".center(45))
+        self.logger.debug(LINE)
+        for key, value in vars(self.args).items():
+            self.logger.debug("%s: %s", key, value)
+        self.logger.debug(LINE)
 
-            # Log commands options
-            self.logger.info("Begin paws execution")
-            self.logger.debug(LINE)
-            self.logger.debug("Paws options".center(45))
-            self.logger.debug(LINE)
-            for key, value in vars(self.args).items():
-                self.logger.debug("%s: %s", key, value)
-            self.logger.debug(LINE)
+        # import paws task
+        pmodule = import_module(self.task_module)
 
-            # Import paws task
-            pmodule = import_module(self.task_module)
+        # get the class attribute
+        task_cls = getattr(pmodule, self.task.title())
 
-            # Get the class attribute
-            task_cls = getattr(pmodule, self.task.title())
+        # create an object from the class
+        if self.task.lower() == 'group':
+            # read files
+            group = file_mgmt('r', join(self.args.userdir, self.args.name))
 
-            # Create an object from the class
-            if self.task.lower() == 'group':
-                # read files
-                group = file_mgmt('r', join(self.args.userdir, self.args.name))
-
-                # create task object
-                task = task_cls(
-                    self.args.userdir,
-                    group,
-                    self.args.verbose,
-                    args=self.args
-                )
-            else:
-                # read files
-                try:
-                    credentials = file_mgmt(
-                        'r',
-                        join(self.args.userdir, self.args.credentials)
-                    )
-                except (AttributeError, IOError):
-                    credentials = None
-
-                resources = file_mgmt(
+            # create task object
+            task = task_cls(
+                self.args.userdir,
+                group,
+                self.args.verbose,
+                args=self.args
+            )
+        else:
+            # read files
+            try:
+                credentials = file_mgmt(
                     'r',
-                    join(self.args.userdir, self.args.topology)
+                    join(self.args.userdir, self.args.credentials)
                 )
+            except (AttributeError, IOError):
+                credentials = None
 
-                # create task object
-                task = task_cls(
-                    self.args.userdir,
-                    resources,
-                    credentials,
-                    self.args.verbose,
-                    args=self.args
-                )
+            resources = file_mgmt(
+                'r',
+                join(self.args.userdir, self.args.topology)
+            )
 
-            # run task
-            task.run()
-        except (AnsibleRuntimeError, ClientException, SSHError, SystemExit,
-                ShowError, ProvisionError, PawsPreTaskError):
-            result = 1
-        except Exception as ex:
-            if ex.message:
-                self.logger.error(ex)
-        finally:
-            # Save stop time
-            self.end()
+            # create task object
+            task = task_cls(
+                self.args.userdir,
+                resources,
+                credentials,
+                self.args.verbose,
+                args=self.args
+            )
 
-            self.logger.info("End paws execution in %dh:%dm:%ds",
-                             self.hours, self.minutes, self.seconds)
+        # run task
+        exit_code = task.run()
 
-            raise SystemExit(result)
+        # save end time
+        self.end()
+
+        self.logger.info("End paws execution in %dh:%dm:%ds",
+                         self.hours, self.minutes, self.seconds)
+
+        raise SystemExit(exit_code)

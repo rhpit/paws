@@ -98,12 +98,12 @@ class Teardown(PawsTask):
 
             # Run provider action
             self.resources_paws = self.provider.run_action(self.name.lower())
-        except (KeyboardInterrupt, SystemExit) as ex:
+        except (KeyboardInterrupt, SystemExit, AnsibleRuntimeError) as ex:
+            # set exit code
+            self.exit_code = 1
+
             if isinstance(ex, KeyboardInterrupt):
                 self.logger.warning("CRTL+C detected, interrupting execution")
-            raise SystemExit(1)
-        except AnsibleRuntimeError:
-            raise AnsibleRuntimeError
         finally:
             # save end time
             self.end()
@@ -113,3 +113,5 @@ class Teardown(PawsTask):
 
             self.logger.info("END: %s, TIME: %dh:%dm:%ds",
                              self.name, self.hours, self.minutes, self.seconds)
+
+        return self.exit_code

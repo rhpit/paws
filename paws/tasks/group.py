@@ -232,84 +232,82 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, key))
         # pre run tasks
         self.pre_run()
 
-        try:
-            self.logger.info("START: %s", self.name)
+        self.logger.info("START: %s", self.name)
 
-            # Save the start time
-            self.start()
+        # save the start time
+        self.start()
 
-            for item in self.tasklist:
-                task = item['task'].lower()
-                self.logger.info(
-                    "Running: %s (task=%s)" % (item['name'], task)
-                )
+        for item in self.tasklist:
+            task = item['task'].lower()
+            self.logger.info("Running: %s (task=%s)" % (item['name'], task))
 
-                # Wait
-                if task == 'wait':
-                    try:
-                        duration = item['duration']
-                        self.logger.info("Delaying %ss" % duration)
-                        sleep(int(duration))
-                        continue
-                    except KeyError:
-                        self.logger.warning(
-                            "Delay duration was not set! Skipping.."
-                        )
-                        continue
-
-                if 'args' in item:
-                    # Combine list of dict into one dict
-                    args = {key: value for item in item[
-                        'args'] for key, value in item.items()}
-
-                    # Set task specific arguments into memory
-                    self.set_task_attr(self.map_task_args(args))
-
-                # Import task module
-                pmodule = import_module(PAWS_TASK_MODULES_PATH + task)
-
-                # Get task class
-                task_cls = getattr(pmodule, task.title())
-
-                # read files
-                _vars = self.groupdata['vars']
+            # wait
+            if task == 'wait':
                 try:
-                    credentials = file_mgmt(
-                        'r',
-                        join(self.userdir, _vars['credentials'])
+                    duration = item['duration']
+                    self.logger.info("Delaying %ss" % duration)
+                    sleep(int(duration))
+                    continue
+                except KeyError:
+                    self.logger.warning(
+                        "Delay duration was not set! Skipping.."
                     )
-                except (AttributeError, IOError):
-                    credentials = None
+                    continue
 
-                resources = file_mgmt(
+            if 'args' in item:
+                # combine list of dict into one dict
+                args = {key: value for item in item[
+                    'args'] for key, value in item.items()}
+
+                # set task specific arguments into memory
+                self.set_task_attr(self.map_task_args(args))
+
+            # import task module
+            pmodule = import_module(PAWS_TASK_MODULES_PATH + task)
+
+            # get task class
+            task_cls = getattr(pmodule, task.title())
+
+            # read files
+            _vars = self.groupdata['vars']
+            try:
+                credentials = file_mgmt(
                     'r',
-                    join(self.userdir, _vars['topology'])
+                    join(self.userdir, _vars['credentials'])
                 )
+            except (AttributeError, IOError):
+                credentials = None
 
-                # Create object from task class
-                task = task_cls(
-                    self.userdir,
-                    resources,
-                    credentials,
-                    self.verbose,
-                    args=self.args
-                )
+            resources = file_mgmt(
+                'r',
+                join(self.userdir, _vars['topology'])
+            )
 
-                # Run task
-                task.run()
+            # create object from task class
+            task = task_cls(
+                self.userdir,
+                resources,
+                credentials,
+                self.verbose,
+                args=self.args
+            )
 
-                if 'args' in item:
-                    # Delete task arguments values from memory
-                    self.del_task_attr(self.map_task_args(args))
-        except ImportError:
-            self.logger.error("Unable to import %s module" % task)
-            raise SystemExit(1)
-        except AttributeError:
-            self.logger.error("Unable to create task %s object" % task)
-            raise SystemExit(1)
-        finally:
-            # save end time
-            self.end()
+            # run task
+            exit_code = task.run()
 
-            self.logger.info("END: Group, TIME: %dh:%dm:%ds",
-                             self.hours, self.minutes, self.seconds)
+            # quit group execution if exit code is not zero
+            if exit_code != 0:
+                self.exit_code = exit_code
+                break
+
+            if 'args' in item:
+                # delete task arguments values from memory
+                self.del_task_attr(self.map_task_args(args))
+
+        # save end time
+        self.end()
+
+        self.logger.info("END: Group, TIME: %dh:%dm:%ds",
+                         self.hours, self.minutes, self.seconds)
+
+        return self.exit_code
