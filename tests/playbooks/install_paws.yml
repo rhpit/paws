@@ -1,0 +1,9 @@
+---
+- name: Install paws package
+  hosts: "{{ hosts | default('all') }}"
+
+  vars:
+    - install_method: "{{ install_type | default('pip') }}"
+
+  roles:
+    - { role: rywillia.paws-install, install_type: "{{ install_method }}" }

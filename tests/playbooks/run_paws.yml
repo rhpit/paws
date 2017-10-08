@@ -1,0 +1,11 @@
+---
+- name: Run paws task
+  hosts: "{{ hosts | default('all') }}"
+
+  pre_tasks:
+    - name: Load variables from file
+      include_vars:
+        file: vars.yml
+
+  roles:
+    - rywillia.paws-run

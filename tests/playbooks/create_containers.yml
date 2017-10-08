@@ -1,0 +1,49 @@
+---
+- name: Create paws docker container test clients
+  hosts: localhost
+
+  tasks:
+    - name: Load variables from file
+      include_vars:
+        file: vars.yml
+
+    - name: Create container(s)
+      docker_container:
+        name: "{{ item.name }}"
+        image: "{{ item.image }}"
+        command: /bin/bash
+        detach: True
+        tty: True
+      with_items:
+        - "{{ containers }}"
+
+    - name: Add host entries
+      add_host:
+        name: "{{ item.name }}"
+        group: containers
+        ansible_connection: docker
+      with_items:
+        - "{{ containers }}"
+
+    - name: Remove inventory if exists
+      file:
+        path: paws_inventory
+        state: absent
+
+    - name: Create all section
+      shell: echo "[all]" > paws_inventory
+
+    - name: Add containers to all section
+      shell:
+        cmd: |
+          cat >> paws_inventory <<EOF
+          {{ item.name }} ansible_connection=docker
+          EOF
+      with_items:
+        - "{{ containers }}"
+
+    - name: Install Python 2, required by Ansible to run modules
+      raw: yum install -y python
+      delegate_to: "{{ item }}"
+      with_items:
+        - "{{ hostvars['localhost']['groups']['containers'] }}"

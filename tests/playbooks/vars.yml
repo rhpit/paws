@@ -1,0 +1,62 @@
+---
+# openstack authentication
+os_auth_url:
+os_username:
+os_password:
+os_project_name:
+
+# key pair associated with instances created
+key_pair:
+
+# ssh private key pair used to connect to instances
+ssh_private_key_file:
+
+# containers
+containers:
+  - name: paws-centos-7
+    image: centos:7
+
+  - name: paws-fedora-24
+    image: fedora:24
+
+  - name: paws-fedora-25
+    image: fedora:25
+
+  - name: paws-fedora-26
+    image: fedora:26
+
+# virtual machines
+vms:
+  - name: paws-centos-7
+    image:
+    user: centos
+
+  - name: paws-fedora-24
+    image:
+    user: fedora
+
+  - name: paws-fedora-25
+    image:
+    user: fedora
+
+  - name: paws-fedora-26
+    image:
+    user: fedora
+
+# paws local user directory to copy files from
+local_user_dir:
+
+# paws remote user directory to be created
+user_dir:
+
+# paws credentials file name within user directory
+credential:
+
+# paws topology file name within user directory
+topology:
+
+# paws powershell file name within user directory
+powershell:
+
+# paws group file name within user directory
+group:

@@ -1,0 +1,23 @@
+---
+- name: Delete paws virtual machine test clients
+  hosts: localhost
+
+  tasks:
+    - name: Load variables from file
+      include_vars:
+        file: vars.yml
+
+    - name: Delete vm(s)
+      os_server:
+        state: absent
+        auth:
+          auth_url: "{{ os_auth_url }}"
+          username: "{{ os_username }}"
+          password: "{{ os_password }}"
+          project_name: "{{ os_project_name }}"
+        name: "{{ item.name }}"
+        timeout: 60
+        wait: yes
+        delete_fip: yes
+      with_items:
+        - "{{ vms }}"

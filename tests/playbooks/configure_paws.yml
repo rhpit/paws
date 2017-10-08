@@ -1,0 +1,27 @@
+---
+- name: Configure paws
+  hosts: "{{ hosts | default('all') }}"
+
+  tasks:
+    - name: Load variables from file
+      include_vars:
+        file: vars.yml
+
+    - name: Create user directory
+      file:
+        path: "{{ user_dir }}"
+        state: directory
+        mode: 0755
+
+    - name: Copy local user directory to remote
+      synchronize:
+        src: "{{ local_user_dir }}"
+        dest: "{{ user_dir }}"
+
+    - name: Update resource name to eliminate duplicates
+      replace:
+        path: "{{ user_dir }}/{{ topology }}"
+        regexp: '- name: '
+        replace: '- name: {{ 1000 | random }}_'
+      with_items:
+        - "{{ hostvars | length}}"

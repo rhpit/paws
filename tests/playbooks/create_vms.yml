@@ -1,0 +1,78 @@
+---
+- name: Create paws virtual machine test clients
+  hosts: localhost
+
+  tasks:
+    - name: Load variables from file
+      include_vars:
+        file: vars.yml
+
+    - name: Create vm(s)
+      os_server:
+        state: present
+        auth:
+          auth_url: "{{ os_auth_url }}"
+          username: "{{ os_username }}"
+          password: "{{ os_password }}"
+          project_name: "{{ os_project_name }}"
+        name: "{{ item.name }}"
+        image: "{{ item.image }}"
+        key_name: "{{ key_pair }}"
+        timeout: 60
+        flavor: 3
+        auto_ip: yes
+        wait: yes
+        meta:
+          hostname: "{{ item.name }}"
+          ansible_user: "{{ item.user }}"
+      register: systems
+      with_items:
+        - "{{ vms }}"
+
+    - name: Add host entries
+      add_host:
+        name: "{{ item.openstack.accessIPv4 }}"
+        group: vms
+        ansible_user: "{{ item.openstack.metadata.ansible_user }}"
+        ansible_ssh_private_key_file: "{{ ssh_private_key_file }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+      with_items:
+        - "{{ systems.results }}"
+
+    - name: Remove inventory if exists
+      file:
+        path: paws_inventory
+        state: absent
+
+    - name: Create inventory
+      shell:
+        cmd: |
+          cat >> paws_inventory <<EOF
+          [{{ item.openstack.accessIPv4 }}]
+          {{ item.openstack.accessIPv4 }}
+          [{{ item.openstack.accessIPv4 }}:vars]
+          ansible_user={{ item.openstack.metadata.ansible_user }}
+          ansible_ssh_private_key_file={{ ssh_private_key_file }}
+          ansible_ssh_common_args="-o StrictHostKeyChecking=no"
+          EOF
+      with_items:
+        - "{{ systems.results }}"
+
+    - name: Create all section
+      shell: echo "[all]" >> paws_inventory
+
+    - name: Add vms to all section
+      shell:
+        cmd: |
+          cat >> paws_inventory <<EOF
+          {{ item.openstack.accessIPv4 }}
+          EOF
+      with_items:
+        - "{{ systems.results }}"
+
+    - name: Install Python 2, required by Ansible to run modules
+      raw: yum install -y python
+      become: True
+      delegate_to: "{{ item }}"
+      with_items:
+        - "{{ hostvars['localhost']['groups']['vms'] }}"

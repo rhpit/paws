@@ -1,0 +1,15 @@
+---
+- name: Delete paws docker container test clients
+  hosts: localhost
+
+  tasks:
+    - name: Load variables from file
+      include_vars:
+        file: vars.yml
+
+    - name: Delete container(s)
+      docker_container:
+        name: "{{ item.name }}"
+        state: absent
+      with_items:
+        - "{{ containers }}"
