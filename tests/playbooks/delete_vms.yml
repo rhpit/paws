@@ -16,7 +16,7 @@
           password: "{{ os_password }}"
           project_name: "{{ os_project_name }}"
         name: "{{ item.name }}"
-        timeout: 60
+        timeout: 300
         wait: yes
         delete_fip: yes
       with_items:

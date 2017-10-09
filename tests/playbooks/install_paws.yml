@@ -3,7 +3,7 @@
   hosts: "{{ hosts | default('all') }}"
 
   vars:
-    - install_method: "{{ install_type | default('pip') }}"
+    - install_method: "{{ install_choice | default('pip') }}"
 
   roles:
     - { role: rywillia.paws-install, install_type: "{{ install_method }}" }

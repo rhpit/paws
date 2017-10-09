@@ -18,7 +18,7 @@
         name: "{{ item.name }}"
         image: "{{ item.image }}"
         key_name: "{{ key_pair }}"
-        timeout: 60
+        timeout: 300
         flavor: 3
         auto_ip: yes
         wait: yes
