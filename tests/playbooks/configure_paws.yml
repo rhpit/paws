@@ -13,6 +13,11 @@
         state: directory
         mode: 0755
 
+    - name: Install rsync package required for synchronize module
+      package:
+        name: rsync
+        state: latest
+
     - name: Copy local user directory to remote
       synchronize:
         src: "{{ local_user_dir }}"
