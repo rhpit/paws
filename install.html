@@ -117,14 +117,13 @@ occur if you are running a minimal OS version or don’t have python-pip and
 others required packages installed in your system</em>, installing packages required:</p>
 <div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Yum package manager</span>
 <span class="n">sudo</span> <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">gcc</span> <span class="n">make</span> <span class="n">python</span><span class="o">-</span><span class="n">devel</span> <span class="n">python</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">python</span><span class="o">-</span><span class="n">pip</span> \
-<span class="n">openssl</span><span class="o">-</span><span class="n">devel</span> <span class="n">libffi</span><span class="o">-</span><span class="n">devel</span> <span class="n">redhat</span><span class="o">-</span><span class="n">rpm</span><span class="o">-</span><span class="n">config</span>
+<span class="n">openssl</span> <span class="n">openssl</span><span class="o">-</span><span class="n">devel</span> <span class="n">libffi</span><span class="o">-</span><span class="n">devel</span> <span class="n">redhat</span><span class="o">-</span><span class="n">rpm</span><span class="o">-</span><span class="n">config</span>
 
 <span class="c1"># Dnf package manager</span>
 <span class="n">sudo</span> <span class="n">dnf</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">gcc</span> <span class="n">make</span> <span class="n">python</span><span class="o">-</span><span class="n">devel</span> <span class="n">python</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">python</span><span class="o">-</span><span class="n">pip</span> \
-<span class="n">openssl</span><span class="o">-</span><span class="n">devel</span> <span class="n">libffi</span><span class="o">-</span><span class="n">devel</span> <span class="n">redhat</span><span class="o">-</span><span class="n">rpm</span><span class="o">-</span><span class="n">config</span>
+<span class="n">openssl</span> <span class="n">openssl</span><span class="o">-</span><span class="n">devel</span> <span class="n">libffi</span><span class="o">-</span><span class="n">devel</span> <span class="n">redhat</span><span class="o">-</span><span class="n">rpm</span><span class="o">-</span><span class="n">config</span>
 </pre></div>
 </div>
-<p>installing paws-cli</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>sudo pip install paws-cli
 </pre></div>
 </div>
@@ -135,7 +134,6 @@ Below follow the steps to install PAWS for each of supported OS</p>
 <h3>CentOS<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
-sudo yum install -y centos-release-openstack-liberty
 sudo yum install -y paws
 </pre></div>
 </div>
@@ -157,14 +155,12 @@ sudo dnf install -y paws
 <div class="section" id="id3">
 <h3>Red Hat Enterprise Linux<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>On RHEL you need to have a valid subscription and enable repos below. EPEL is optional.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo subscription-manager register
-sudo subscription-manager attach
-sudo subscription-manager repos --enable rhel-7-&lt;variant&gt;-rpms
-sudo subscription-manager repos --enable rhel-7-&lt;variant&gt;-optional-rpms
-sudo subscription-manager repos --enable rhel-7-&lt;variant&gt;-extras-rpms
-sudo subscription-manager repos --enable rhel-7-&lt;variant&gt;-openstack-8-tools-rpms
-sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
-sudo yum install -y paws
+<div class="highlight-bash"><div class="highlight"><pre><span></span>    sudo subscription-manager register
+    sudo subscription-manager attach
+    sudo subscription-manager repos --enable rhel-7-&lt;variant&gt;-rpms
+sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
+    sudo yum install -y paws
 </pre></div>
 </div>
 </div>

@@ -68,13 +68,11 @@ others required packages installed in your system*, installing packages required
 
 	# Yum package manager
 	sudo yum install -y git gcc make python-devel python-setuptools python-pip \
-	openssl-devel libffi-devel redhat-rpm-config
+	openssl openssl-devel libffi-devel redhat-rpm-config
 
 	# Dnf package manager
 	sudo dnf install -y git gcc make python-devel python-setuptools python-pip \
-	openssl-devel libffi-devel redhat-rpm-config
-	
-installing paws-cli
+	openssl openssl-devel libffi-devel redhat-rpm-config
 
 .. code-block:: bash
 
@@ -93,7 +91,6 @@ CentOS
 
 	sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 	sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
-	sudo yum install -y centos-release-openstack-liberty
 	sudo yum install -y paws
 
 Fedora
@@ -125,9 +122,7 @@ On RHEL you need to have a valid subscription and enable repos below. EPEL is op
 	sudo subscription-manager register
 	sudo subscription-manager attach
 	sudo subscription-manager repos --enable rhel-7-<variant>-rpms
-	sudo subscription-manager repos --enable rhel-7-<variant>-optional-rpms
-	sudo subscription-manager repos --enable rhel-7-<variant>-extras-rpms
-	sudo subscription-manager repos --enable rhel-7-<variant>-openstack-8-tools-rpms
+    sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 	sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
 	sudo yum install -y paws
 
