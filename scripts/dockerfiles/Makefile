@@ -22,7 +22,7 @@ default: help
 # GLOBAL VARIABLES
 ############################################
 # set paws version to use as docker tag
-VERSION=0.3.8
+VERSION=0.3.8.1
 
 ############################################
 # Color definition
