@@ -9,7 +9,7 @@ Below are common arguments that are available to all paws tasks.
    :header: "Argument", "Default", "Required", "Description"
    :widths: 100, 100, 100, 100
 
-   "-ud, --userdir", "/home/$USER/paws", "Yes", "User directory where files
+   "-ud, --userdir", "/home/$USER/ws", "Yes", "User directory where files
    used by paws are stored."
    "-v, --verbose", "", "No", "Enable to have verbose logging."
    "-h, --help", "", "No", "Enable to show help menu."

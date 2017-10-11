@@ -28,15 +28,15 @@ Paws Files
 PAWS files are to help get you started with paws and can be modified to 
 meet your needs. You can save PAWS WS files in any convenient location in 
 your system and use **-ud** parameter while running PAWS to load your files from
-any path. By default we recommend saving these files at your /home/$USER/paws
+any path. By default we recommend saving these files at your /home/$USER/ws
 
-PAWS default user directory **/home/$USER/paws**
+PAWS default user directory **/home/$USER/ws**
 
 .. code:: bash
 
 	$ cd ~ 
-	$ mkdir paws
-	$ git clone https://github.com/rhpit/ws.git paws 
+	$ mkdir ws
+	$ git clone https://github.com/rhpit/ws.git ws 
 
 .. important::
 	We strongly recommend that you visit the following page
@@ -89,7 +89,7 @@ by your paws files.
 Details about credentials keys/values can be found here:
 `credentials.yaml <files.html#credentials-yaml>`_.
 
-Next edit or create **/home/$USER/paws/resources.yaml** which contains the 
+Next edit or create **/home/$USER/ws/resources.yaml** which contains the 
 system resource you want to provision.
 
 .. code:: yaml
@@ -156,7 +156,7 @@ At top of this page you saw how to clone https://github.com/rhpit/ws repo
 that contains some samples of powershell and scripts you can use here.
 
 Following the standard scripts files can be found at 
-**/home/$USER/paws/powershell**.
+**/home/$USER/ws/powershell**.
 
 Now that you have your PowerShell script you are ready to configure your Windows
 system. Call paws to configure your system resource.
@@ -181,7 +181,7 @@ Group
 Group task will run multiple paws commands as one command. A group is a YAML
 file which defines a list of paws tasks to run.
 
-Following the standard group files can be found at **/home/$USER/paws/group**.
+Following the standard group files can be found at **/home/$USER/ws/group**.
 
 First edit or create a group file which will define a list of tasks you want
 to run. 

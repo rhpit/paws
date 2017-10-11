@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Getting Started &#8212; PAWS 0.3.8 documentation</title>
+    <title>Getting Started &#8212; PAWS 0.3.8.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3.8',
+        VERSION:     '0.3.8.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -68,11 +68,11 @@ $ sudo dnf install -y git
 <p>PAWS files are to help get you started with paws and can be modified to
 meet your needs. You can save PAWS WS files in any convenient location in
 your system and use <strong>-ud</strong> parameter while running PAWS to load your files from
-any path. By default we recommend saving these files at your /home/$USER/paws</p>
-<p>PAWS default user directory <strong>/home/$USER/paws</strong></p>
+any path. By default we recommend saving these files at your /home/$USER/ws</p>
+<p>PAWS default user directory <strong>/home/$USER/ws</strong></p>
 <div class="code bash highlight-default"><div class="highlight"><pre><span></span>$ cd ~
-$ mkdir paws
-$ git clone https://github.com/rhpit/ws.git paws
+$ mkdir ws
+$ git clone https://github.com/rhpit/ws.git ws
 </pre></div>
 </div>
 <div class="admonition important">
@@ -118,7 +118,7 @@ available task.</p>
 by your paws files.</p>
 <p>Details about credentials keys/values can be found here:
 <a class="reference external" href="files.html#credentials-yaml">credentials.yaml</a>.</p>
-<p>Next edit or create <strong>/home/$USER/paws/resources.yaml</strong> which contains the
+<p>Next edit or create <strong>/home/$USER/ws/resources.yaml</strong> which contains the
 system resource you want to provision.</p>
 <div class="code yaml highlight-default"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="p">:</span>
    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">windows_2012</span>
@@ -172,7 +172,7 @@ task.</p>
 <p>At top of this page you saw how to clone <a class="reference external" href="https://github.com/rhpit/ws">https://github.com/rhpit/ws</a> repo
 that contains some samples of powershell and scripts you can use here.</p>
 <p>Following the standard scripts files can be found at
-<strong>/home/$USER/paws/powershell</strong>.</p>
+<strong>/home/$USER/ws/powershell</strong>.</p>
 <p>Now that you have your PowerShell script you are ready to configure your Windows
 system. Call paws to configure your system resource.</p>
 <div class="code bash highlight-default"><div class="highlight"><pre><span></span>$ paws winsetup -ps powershell/get_system_info.ps1
@@ -192,7 +192,7 @@ PowerShell script.</p>
 <h3>Group<a class="headerlink" href="#group" title="Permalink to this headline">¶</a></h3>
 <p>Group task will run multiple paws commands as one command. A group is a YAML
 file which defines a list of paws tasks to run.</p>
-<p>Following the standard group files can be found at <strong>/home/$USER/paws/group</strong>.</p>
+<p>Following the standard group files can be found at <strong>/home/$USER/ws/group</strong>.</p>
 <p>First edit or create a group file which will define a list of tasks you want
 to run.</p>
 <p>Now that you have your group file you are ready to execute all tasks you have
@@ -248,7 +248,7 @@ may still be active in your provider.</p>
 
 
 
-<p class="blurb">Provision Automated Windows and Services</br>version: <b>0.3.8-0</b></p>
+<p class="blurb">Provision Automated Windows and Services</br>version: <b>0.3.8-1</b></p>
 
 
 

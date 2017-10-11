@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Installation &#8212; PAWS 0.3.8 documentation</title>
+    <title>Installation &#8212; PAWS 0.3.8.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3.8',
+        VERSION:     '0.3.8.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -184,40 +184,47 @@ permissions denied errors while running paws container.</p>
 pull from at <a class="reference external" href="https://hub.docker.com/r/eduardomcerqueira/paws/">https://hub.docker.com/r/eduardomcerqueira/paws/</a> or running the
 commands below.</p>
 <p>You will notice the commands below are mounting the folder
-<strong>/home/ecerquei/github/ws/</strong> from host into the container. This folder contains
+<strong>/home/user/ws/</strong> from host into the container. This folder contains
 the WS scripts that you will see at next section on <a class="reference external" href="guide.html">getting started</a></p>
+<p>PS: By default PAWS searches for /home/user/ws as folder for userdir where
+scripts should be saved. see <a class="reference external" href="tasks.html?highlight=userdir">userdir</a></p>
 <div class="section" id="id4">
 <h3>Centos<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-centos-latest
-sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-centos-latest /bin/bash
+<span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git ws
+sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-centos-latest /bin/bash
 </pre></div>
 </div>
 </div>
 <div class="section" id="fedora-latest">
 <h3>Fedora latest<a class="headerlink" href="#fedora-latest" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-latest
-sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-latest /bin/bash
+<span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git paws
+sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-latest /bin/bash
 </pre></div>
 </div>
 </div>
 <div class="section" id="fedora-26">
 <h3>Fedora 26<a class="headerlink" href="#fedora-26" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-26
-sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-26 /bin/bash
+<span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git paws
+sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-26 /bin/bash
 </pre></div>
 </div>
 </div>
 <div class="section" id="fedora-25">
 <h3>Fedora 25<a class="headerlink" href="#fedora-25" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-25
-sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-25 /bin/bash
+<span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git paws
+sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-25 /bin/bash
 </pre></div>
 </div>
 </div>
 <div class="section" id="fedora-24">
 <h3>Fedora 24<a class="headerlink" href="#fedora-24" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-24
-sudo docker run -it --name paws-dev -v /home/ecerquei/github/ws/:/home/paws/paws eduardomcerqueira/paws:0.3.8-fedora-24 /bin/bash
+<span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git paws
+sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-24 /bin/bash
 </pre></div>
 </div>
 <hr class="docutils" />
@@ -241,7 +248,7 @@ guide.</p>
 
 
 
-<p class="blurb">Provision Automated Windows and Services</br>version: <b>0.3.8-0</b></p>
+<p class="blurb">Provision Automated Windows and Services</br>version: <b>0.3.8-1</b></p>
 
 
 
