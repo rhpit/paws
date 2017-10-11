@@ -53,6 +53,9 @@ cp config/paws_completion %{buildroot}%{_datadir}/bash-completion/completions/pa
 %{_datadir}/bash-completion/completions/paws
 
 %post
+# upgrade pip for backwards compatibility
+echo upgrading pip
+pip install -U pip > /dev/null
 # install pip modules required by PAWS and outdated when installed by rpm
 echo installing pip required modules from https://github.com/rhpit/paws/raw/master/requirements.txt
 pip install -U -r https://github.com/rhpit/paws/raw/master/requirements.txt > /dev/null
