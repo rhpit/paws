@@ -17,9 +17,6 @@ RUN curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/e
 # Install EPEL repository for paws dependencies
 RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
-# Install repository to access openstack packages
-RUN yum install -y centos-release-openstack-liberty
-
 # Install paws package
 RUN yum install -y paws
 

@@ -52,9 +52,6 @@ build-centos:
 	@sudo docker images paws-centos-latest:$(VERSION)
 
 build-fedora:
-	@echo -e "$(OK_COLOR)building paws-fedora-24:$(VERSION) docker image$(NO_COLOR)"
-	@sudo docker build -t paws-fedora-24:$(VERSION) fedora/24
-	@sudo docker tag paws-fedora-24:$(VERSION) eduardomcerqueira/paws:$(VERSION)-fedora-24
 	@echo -e "$(OK_COLOR)building paws-fedora-25:$(VERSION) docker image$(NO_COLOR)"
 	@sudo docker build -t paws-fedora-25:$(VERSION) fedora/25
 	@sudo docker tag paws-fedora-25:$(VERSION) eduardomcerqueira/paws:$(VERSION)-fedora-25
@@ -62,7 +59,7 @@ build-fedora:
 	@sudo docker build -t paws-fedora-26:$(VERSION) fedora/26
 	@sudo docker tag paws-fedora-26:$(VERSION) eduardomcerqueira/paws:$(VERSION)-fedora-26
 	@echo -e "$(OK_COLOR)building paws-fedora-latest:$(VERSION) docker image$(NO_COLOR)"
-	@sudo docker build -t paws-fedora-latest:$(VERSION) fedora/latest     
+	@sudo docker build -t paws-fedora-latest:$(VERSION) fedora/latest
 	@sudo docker tag paws-fedora-latest:$(VERSION) eduardomcerqueira/paws:$(VERSION)-fedora-latest
 	@echo -e "$(OK_COLOR)images built$(NO_COLOR)"
 	@sudo docker images paws-fedora
