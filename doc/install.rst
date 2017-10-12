@@ -12,7 +12,7 @@ Support matrix
 	:widths: 100, 75, 70, 70
 
 	"`CentOS <http://www.centos.org>`_", "7.2, 7.3, 7.4", "Yes", "Yes"
-	"`Fedora <http://www.fedoraproject.org>`_", "24, 25, 26", "Yes", "Yes"
+	"`Fedora <http://www.fedoraproject.org>`_", "`Supported Releases <https://fedoraproject.org/wiki/Releases#Current_Supported_Releases>`_", "Yes", "Yes"
 	"`Red Hat Enterprise Linux <https://www.redhat.com/en/technologies/linux-platforms>`_", "7.2, 7.3, 7.4", "Yes", "No"
 
 .. note::
@@ -96,11 +96,12 @@ CentOS
 Fedora
 ++++++
 
-Replace version from repo url to match with your Fedora version or just use copr that does it automatically for you:
+Replace **<VERSION>** from repo url to match with your Fedora version or just
+use copr that does it automatically for you:
 
 .. code-block:: bash
 
-	sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/fedora-24/eduardocerqueira-paws-fedora-24.repo
+	sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/fedora-<VERSION>/eduardocerqueira-paws-fedora-<VERSION>.repo
 	sudo dnf install -y paws
 	
 or by copr
@@ -156,45 +157,36 @@ Centos
 
 .. code-block:: bash
 
-	sudo docker pull eduardomcerqueira/paws:0.3.8-centos-latest
+	sudo docker pull eduardomcerqueira/paws:0.3.8.1-centos-latest
 	cd ~ && git clone https://github.com/rhpit/ws.git ws
-	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-centos-latest /bin/bash 
+	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-centos-latest /bin/bash
 
 Fedora latest
 +++++++++++++
 
 .. code-block:: bash
 
-	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-latest
+	sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-latest
 	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-latest /bin/bash
+	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-latest /bin/bash
 
 Fedora 26
 +++++++++
 
 .. code-block:: bash
 
-	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-26
+	sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-26
 	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-26 /bin/bash
+	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-26 /bin/bash
 
 Fedora 25
 +++++++++
 
 .. code-block:: bash
 
-	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-25
+	sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-25
 	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-25 /bin/bash
-
-Fedora 24
-+++++++++
-
-.. code-block:: bash
-
-	sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-24
-	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-24 /bin/bash
+	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-25 /bin/bash
 
 ----
 
