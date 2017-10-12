@@ -68,7 +68,7 @@ regular application based on <strong>RPM</strong>, <strong>PIP</strong> or <stro
 <td>Yes</td>
 </tr>
 <tr class="row-odd"><td><a class="reference external" href="http://www.fedoraproject.org">Fedora</a></td>
-<td>24, 25, 26</td>
+<td><a class="reference external" href="https://fedoraproject.org/wiki/Releases#Current_Supported_Releases">Supported Releases</a></td>
 <td>Yes</td>
 <td>Yes</td>
 </tr>
@@ -140,8 +140,9 @@ sudo yum install -y paws
 </div>
 <div class="section" id="id2">
 <h3>Fedora<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<p>Replace version from repo url to match with your Fedora version or just use copr that does it automatically for you:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/fedora-24/eduardocerqueira-paws-fedora-24.repo
+<p>Replace <strong>&lt;VERSION&gt;</strong> from repo url to match with your Fedora version or just
+use copr that does it automatically for you:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/fedora-&lt;VERSION&gt;/eduardocerqueira-paws-fedora-&lt;VERSION&gt;.repo
 sudo dnf install -y paws
 </pre></div>
 </div>
@@ -186,41 +187,33 @@ the WS scripts that you will see at next section on <a class="reference external
 scripts should be saved. see <a class="reference external" href="tasks.html?highlight=userdir">userdir</a></p>
 <div class="section" id="id4">
 <h3>Centos<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-centos-latest
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8.1-centos-latest
 <span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git ws
-sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-centos-latest /bin/bash
+sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-centos-latest /bin/bash
 </pre></div>
 </div>
 </div>
 <div class="section" id="fedora-latest">
 <h3>Fedora latest<a class="headerlink" href="#fedora-latest" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-latest
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-latest
 <span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git paws
-sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-latest /bin/bash
+sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-latest /bin/bash
 </pre></div>
 </div>
 </div>
 <div class="section" id="fedora-26">
 <h3>Fedora 26<a class="headerlink" href="#fedora-26" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-26
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-26
 <span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git paws
-sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-26 /bin/bash
+sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-26 /bin/bash
 </pre></div>
 </div>
 </div>
 <div class="section" id="fedora-25">
 <h3>Fedora 25<a class="headerlink" href="#fedora-25" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-25
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-25
 <span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git paws
-sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-25 /bin/bash
-</pre></div>
-</div>
-</div>
-<div class="section" id="fedora-24">
-<h3>Fedora 24<a class="headerlink" href="#fedora-24" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8-fedora-24
-<span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git paws
-sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8-fedora-24 /bin/bash
+sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-25 /bin/bash
 </pre></div>
 </div>
 <hr class="docutils" />
@@ -273,7 +266,6 @@ guide.</p>
 <li class="toctree-l3"><a class="reference internal" href="#fedora-latest">Fedora latest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#fedora-26">Fedora 26</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#fedora-25">Fedora 25</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fedora-24">Fedora 24</a></li>
 </ul>
 </li>
 </ul>
