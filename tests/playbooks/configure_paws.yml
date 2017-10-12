@@ -2,10 +2,22 @@
 - name: Configure paws
   hosts: "{{ hosts | default('all') }}"
 
+  vars:
+    become: True
+
   tasks:
     - name: Load variables from file
       include_vars:
         file: vars.yml
+
+    - name: Whoami
+      shell: whoami
+      register: user
+
+    - name: Determine if user should not become root
+      set_fact:
+        become=False
+      when: "user.stdout.strip() == 'root'"
 
     - name: Create user directory
       file:
@@ -17,6 +29,7 @@
       package:
         name: rsync
         state: latest
+      become: "{{ become }}"
 
     - name: Copy local user directory to remote
       synchronize:

@@ -70,9 +70,37 @@
       with_items:
         - "{{ systems.results }}"
 
-    - name: Install Python 2, required by Ansible to run modules
+- name: Install packages required for Ansible communication
+  hosts: vms
+  gather_facts: no
+
+  vars:
+    become: True
+
+  tasks:
+    - name: Wait for SSH connection to be established
+      local_action:
+        module: wait_for
+        host: "{{ inventory_hostname }}"
+        port: 22
+        timeout: 600
+
+    - name: Whoami
+      raw: whoami
+      register: user
+
+    - name: Determine if user should not become root
+      set_fact:
+        become=False
+      when: "user.stdout.strip() == 'root'"
+
+    - name: Check if python 2 is installed
+      raw: rpm -qa python
+      register: pkg_check
+
+    - name: Install python 2
       raw: yum install -y python
-      become: True
-      delegate_to: "{{ item }}"
+      become: "{{ become }}"
+      when: item.stdout == ''
       with_items:
-        - "{{ hostvars['localhost']['groups']['vms'] }}"
+        - "{{ pkg_check }}"

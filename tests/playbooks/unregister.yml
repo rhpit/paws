@@ -1,0 +1,28 @@
+---
+- name: Unregister systems
+  hosts: "{{ hosts | default('all') }}"
+
+  vars:
+    become: True
+
+  tasks:
+    - name: Load variables from file
+      include_vars:
+        file: vars.yml
+
+    - name: Whoami
+      shell: whoami
+      register: user
+
+    - name: Determine if user should not become root
+      set_fact:
+        become=False
+      when: "user.stdout.strip() == 'root'"
+
+    - name: Unregister system
+      redhat_subscription:
+        username: "{{ rhn_username }}"
+        password: "{{ rhn_password }}"
+        state: absent
+      become: "{{ become }}"
+      when: ansible_distribution.lower() == 'redhat'

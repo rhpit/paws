@@ -16,9 +16,6 @@ containers:
   - name: paws-centos-7
     image: centos:7
 
-  - name: paws-fedora-24
-    image: fedora:24
-
   - name: paws-fedora-25
     image: fedora:25
 
@@ -30,10 +27,6 @@ vms:
   - name: paws-centos-7
     image:
     user: centos
-
-  - name: paws-fedora-24
-    image:
-    user: fedora
 
   - name: paws-fedora-25
     image:

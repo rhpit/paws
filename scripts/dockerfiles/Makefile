@@ -71,8 +71,6 @@ push-centos:
 	
 push-fedora:
 	@sudo docker login
-	@echo -e "$(OK_COLOR)push paws-fedora-24:$(VERSION) docker image to hub.docker.com$(NO_COLOR)"
-	@sudo docker push eduardomcerqueira/paws:$(VERSION)-fedora-24
 	@echo -e "$(OK_COLOR)push paws-fedora-25:$(VERSION) docker image to hub.docker.com$(NO_COLOR)"
 	@sudo docker push eduardomcerqueira/paws:$(VERSION)-fedora-25
 	@echo -e "$(OK_COLOR)push paws-fedora-26:$(VERSION) docker image to hub.docker.com$(NO_COLOR)"

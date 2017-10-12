@@ -1,11 +1,30 @@
 ---
-- name: Create paws docker container test clients
+- name: Create paws docker container based on paws images
   hosts: localhost
 
   tasks:
     - name: Load variables from file
       include_vars:
         file: vars.yml
+
+    - name: Make copies of user directory for volume mounts
+      local_action:
+        module: synchronize
+        src: "{{ local_user_dir }}"
+        dest: "/tmp/{{ item.name }}"
+      with_items:
+        - "{{ containers }}"
+
+    - name: Set permissions for volume mounts
+      local_action:
+        module: file
+        path: "/tmp/{{ item.name }}"
+        state: directory
+        recurse: yes
+        owner: 1000
+        group: 1000
+      with_items:
+        - "{{ containers }}"
 
     - name: Create container(s)
       docker_container:
@@ -14,6 +33,8 @@
         command: /bin/bash
         detach: True
         tty: True
+        volumes:
+          - "/tmp/{{ item.name }}:{{ user_dir }}"
       with_items:
         - "{{ containers }}"
 
@@ -42,17 +63,18 @@
       with_items:
         - "{{ containers }}"
 
-- name: Install packages required for Ansible communication
+- name: Update resource names
   hosts: containers
-  gather_facts: no
 
   tasks:
-    - name: Check if python 2 is installed
-      raw: rpm -qa python
-      register: pkg_check
+    - name: Load variables from file
+      include_vars:
+        file: vars.yml
 
-    - name: Install Python 2
-      raw: yum install -y python
-      when: item.stdout == ''
+    - name: Update resource name to eliminate duplicates
+      replace:
+        path: "{{ user_dir }}/{{ topology }}"
+        regexp: '- name: '
+        replace: '- name: {{ 1000 | random }}_'
       with_items:
-        - "{{ pkg_check }}"
+        - "{{ containers }}"

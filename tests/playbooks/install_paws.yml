@@ -5,5 +5,10 @@
   vars:
     - install_method: "{{ install_choice | default('pip') }}"
 
+  pre_tasks:
+    - name: Load variables from file
+      include_vars:
+        file: vars.yml
+
   roles:
     - { role: rywillia.paws-install, install_type: "{{ install_method }}" }
