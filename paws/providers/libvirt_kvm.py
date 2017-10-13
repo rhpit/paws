@@ -39,70 +39,70 @@ from subprocess import PIPE
     Libvirt provider, It is a wrapper interacting with Libvirt
     QEMU-KVM through API based on official documentation
     http://libvirt.org/html/libvirt-libvirt-domain.html
-    
+
     _kvm was appended to the module name to avoid conflict with official
     libvirt-python module
-    
+
     PAWS assumptions to use libvirt provider in your system:
-    
+
     * libvirt is already installed
     * qemu driver is installed (ibvirt-daemon-driver-qemu)
     * libvirt service is running
     * libvirt authentication rule or policy is in place
     * windows*.qcow file exists at path specified in resources.yaml
     * windows*.xml file exists at path specified in resources.yaml
-    
+
     @attention: Libvirt requires permissions to execute some API calls and
     to write new domains/vms. if you run PAWS with root or sudo than you can
     skip Libvirt authentication from notes below otherwise choose one of the
     2 alternatives and setup in your system where PAWS will be executed.
-    
+
     @note: Alternative 1 (RECOMMENDED) - polkit rule
-    
+
     Configure libvirt virt-manager without asking password. It is needed
     to paws be able to communicate with libvirt without need
     to run PAWS as sudo/root
-    
+
     --create new polkit rule
         sudo vim /etc/polkit-1/rules.d/80-libvirt-manage.rules
-    
+
         polkit.addRule(function(action, subject) {
           if (action.id == "org.libvirt.unix.manage"
           && subject.local && subject.active && subject.isInGroup("wheel")) {
             return polkit.Result.YES;
           }
         });
-    
+
     --add your user to wheel group
         usermod -a -G wheel $USER
-    
+
     source: https://goldmann.pl/blog/2012/12/03/\
     configuring-polkit-in-fedora-18-to-access-virt-manager/
-    
+
     @note: Alternative 2 - Configuring libvirtd.conf
-    
+
     Change the configuration in /etc/libvirt/libvirtd.conf as follows:
-    
+
     1.In case it does not exist, create the group which should own the socket:
     $ sudo groupadd libvirt
-    
+
     2. Add the desired users to the group:
     $ sudo usermod -a -G libvirt username
     or example using wheel group;
     $ sudo usermod -a -G wheel username
-    
+
     3. Change the configuration in /etc/libvirt/libvirtd.conf as follows:
     unix_sock_group = "libvirt"    # or wheel if you prefer
     unix_sock_rw_perms = "0770"
     auth_unix_rw = "none"
-    
+
     4. Restart libvirtd:
     $ sudo systemctl restart libvirtd
-    
+
     5. set LIBVIRT_DEFAULT_URI variable. It is handled by PAWS so you can skip
     this step if you are interacting with libvirt by PAWS
     $ export LIBVIRT_DEFAULT_URI=qemu:///system
-    
+
     6. testing, if there is any domain/vm in your system you should see after
     run the command below without sudo:
     $ virsh list --all
@@ -292,7 +292,7 @@ class Util(object):
         else:
             conn = libvirt.open(creds['qemu_instance'])
 
-        if conn == None:
+        if conn is None:
             LOG.error('Failed to open connection to %s',
                       creds['qemu_instance'])
             LOG.warn('check PAWS documentation %s' % LIBVIRT_AUTH_HELP)
@@ -339,7 +339,8 @@ class Util(object):
                                  show_percent=True) as bar:
                     while True:
                         chunk = req.read(CHUNK)
-                        if not chunk: break
+                        if not chunk:
+                            break
                         fp.write(chunk)
                         bar.update(len(chunk))
 
@@ -435,7 +436,6 @@ class Util(object):
         # save temporally vm definition file to be used for creation
         # user_dir + elem-name -- hidden file
 
-
         _xml = join(userdir, LIBVIRT_OUTPUT)
         domain.write(_xml)
 
@@ -446,7 +446,6 @@ class Util(object):
 
         LOG.debug("Parse completed, file %s is ready" % xml_path)
         return _xml_obj
-
 
     @staticmethod
     def create_vm_virtinstall(vm, fatal=True):
@@ -590,7 +589,7 @@ class Util(object):
     @staticmethod
     def delete_vm(conn, vm, flag=None):
         """ """
-        #TODO: PAWS-84 flag to delete VM during teardown
+        # TODO: PAWS-84 flag to delete VM during teardown
         try:
             vm.undefineFlags(1)
             LOG.debug("VM %s deleted" % vm.name())
@@ -622,7 +621,7 @@ class Util(object):
             if not ifaces:
                 raise Exception("waiting for network interface")
 
-            LOG.debug("{0:10} {1:20} {2:12} {3}".\
+            LOG.debug("{0:10} {1:20} {2:12} {3}".
                       format("Interface", "MAC address", "Protocol",
                              "Address"))
 
@@ -636,7 +635,7 @@ class Util(object):
                 if val['addrs']:
                     for addr in val['addrs']:
                         LOG.debug("{0:10} {1:19}".format(name, val['hwaddr'])),
-                        LOG.debug("{0:12} {1}/{2} ".\
+                        LOG.debug("{0:12} {1}/{2} ".
                                   format(toIPAddrType(addr['type']),
                                          addr['addr'], addr['prefix'])),
                 else:

@@ -25,9 +25,10 @@ from os.path import exists
 
 VERSION = "paws/version.txt"
 
+
 def get_version():
     """Get version and release"""
-    # version.txt file is copied during build process    
+    # version.txt file is copied during build process
     if exists(VERSION):
         with open(VERSION, "r") as version_file:
             version = version_file.read()
@@ -35,10 +36,11 @@ def get_version():
     else:
         return "dev"
 
+
 setup(
     name='paws-cli',
     version=get_version(),
-    description='tool to provision Windows and configure Windows services', 
+    description='tool to provision Windows and configure Windows services',
     long_description='Paws is a Linux based tool to provision Windows systems \
 and configure Windows services with a simpler way to test hybrid environments \
 (Linux and Windows)',
@@ -67,7 +69,7 @@ and configure Windows services with a simpler way to test hybrid environments \
     install_requires=['paramiko',
                       'pywinrm',
                       'click',
-                      'shade', 
+                      'shade',
                       'ansible',
                       'python-novaclient',
                       'python-glanceclient',
