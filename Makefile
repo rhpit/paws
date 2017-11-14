@@ -172,7 +172,7 @@ pylint:
 	@echo "------Starting Pylint code analysis------"
 	# TODO: pls enable me again after Libvirt code is integrated
 	# find paws/ tests/ -name "*.py" | xargs pylint --rcfile=.pylintrc
-	find paws/ tests/ -name "*.py" | grep -v libvirt | xargs pylint \
+	find paws/ -name "*.py" | grep -v libvirt | xargs pylint \
 	--rcfile=.pylintrc
 	@echo
 

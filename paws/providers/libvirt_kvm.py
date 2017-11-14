@@ -225,7 +225,7 @@ class Libvirt(object):
                                  elem['win_password'])
                 except Exception as ex:
                     LOG.error(ex)
-            except:
+            except Exception:
                 LOG.debug("An error happened during provision VM %s trying \
                 forced teardown" % elem['name'])
                 self.teardown()
@@ -523,7 +523,7 @@ class Util(object):
         try:
             vm = conn.lookupByName(vm_name)
             LOG.debug("VM %s found" % vm_name)
-        except:
+        except Exception:
             vm = None
             LOG.debug("VM %s doesn't exist" % vm_name)
         return vm
