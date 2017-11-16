@@ -162,20 +162,21 @@ ifeq ("$(BRANCH)","master")
 else
 	@echo -e "$(ERROR_COLOR)can't run build for branch != master to upstream$(NO_COLOR)"
 endif
-	
-codecheck: 
-	@echo "------Starting PEP8 code analysis------"
-	# TODO: pls enable me again after Libvirt code is integrated 
-	# find paws/ tests/ -name "*.py" |xargs pep8 --verbose --statistics \
-	# --count --show-pep8 --exclude=.eggs
-	find paws/ tests/ -name "*.py" | grep -v libvirt | xargs pep8 \
-	--verbose --statistics --count --show-pep8 --exclude=.eggs
+
+flake8:
+	@echo "------Starting flake8 code analysis------"
+	flake8 --max-line-length=100 --benchmark --exclude=.eggs
+	@echo
+
+pylint:
 	@echo "------Starting Pylint code analysis------"
 	# TODO: pls enable me again after Libvirt code is integrated
 	# find paws/ tests/ -name "*.py" | xargs pylint --rcfile=.pylintrc
-	find paws/ tests/ -name "*.py" | grep -v libvirt | xargs pylint \
+	find paws/ -name "*.py" | grep -v libvirt | xargs pylint \
 	--rcfile=.pylintrc
 	@echo
+
+codecheck: flake8 pylint
 
 # get distro and set package manager DNF or YUM depending of distro
 distro:

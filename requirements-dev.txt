@@ -3,7 +3,7 @@ virtualenv
 setuptools
 wheel
 # need for code check, tests and documentation
-pep8
+flake8
 pylint
 pytest
 sphinx

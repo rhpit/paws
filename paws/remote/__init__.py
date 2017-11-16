@@ -20,7 +20,6 @@
 Remote package which contains modules used to talk to remote machines.
 """
 
-from ConfigParser import ConfigParser
 from logging import getLogger
 from os.path import join
 

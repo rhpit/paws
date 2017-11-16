@@ -36,7 +36,11 @@ Once the vars file is filled in, go ahead and run the tests!
 import os
 import pytest
 
-from paws.tasks import Group, Provision, Show, Teardown, Winsetup
+from paws.tasks.group import Group
+from paws.tasks.provision import Provision
+from paws.tasks.show import Show
+from paws.tasks.teardown import Teardown
+from paws.tasks.winsetup import Winsetup
 from paws.util import file_mgmt
 
 

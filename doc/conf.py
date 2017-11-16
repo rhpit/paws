@@ -167,7 +167,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
         (master_doc, 'paws', u'PAWS :: Provision Automated Windows and Services',
-     [author], 1)
+         [author], 1)
 ]
 
 
@@ -178,9 +178,5 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
         (master_doc, 'PAWS', u'PAWS :: Provision Automated Windows and Services',
-     author, 'PAWS', 'One line description of project.',
-     'Miscellaneous'),
+         author, 'PAWS', 'One line description of project.', 'Miscellaneous'),
 ]
-
-
-
