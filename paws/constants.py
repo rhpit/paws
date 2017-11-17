@@ -88,7 +88,7 @@ GROUP_REQUIRED = {
     'header': [
         {'name': '.*.'},
         {'description': '.*.'},
-        {'maintainer': "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"}],
+        {'maintainer': "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+"}],
     'vars': [{'topology': '(.*.yaml)$|(.*.yml)$'}]}
 
 # Openstack authentication env variables

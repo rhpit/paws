@@ -21,13 +21,8 @@ Paws exceptions.
 """
 
 
-class PawsError(Exception):
-    """Base class for paws exceptions."""
-    pass
-
-
-class PawsMsgError(Exception):
-    """Base class for paws exceptions with messages."""
+class SSHError(Exception):
+    """Exception raised for errors with SSH connections."""
 
     def __init__(self, msg):
         """Constructor."""
@@ -38,21 +33,17 @@ class PawsMsgError(Exception):
         return repr(self.msg)
 
 
-class SSHError(PawsMsgError):
-    """Exception raised for errors with SSH connections."""
-
-    def __init__(self, msg):
-        """Constructor."""
-        super(SSHError, self).__init__(msg)
-
-
-class NovaPasswordError(PawsMsgError):
+class NovaPasswordError(Exception):
     """Exception raised for errors with getting nova password."""
 
     def __init__(self, msg):
         """Constructor."""
-        super(NovaPasswordError, self).__init__(msg)
+        self.msg = msg
+
+    def __str__(self):
+        """Return the string given at time of exception raised."""
+        return repr(self.msg)
 
 
-class PawsPreTaskError(PawsError):
+class PawsPreTaskError(Exception):
     """Exception raised for errors with paws tasks pre_task actions."""

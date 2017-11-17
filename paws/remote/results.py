@@ -93,9 +93,7 @@ class GenModuleResults(ResultsBase):
             or not
         :type def_callback: bool
         """
-        super(GenModuleResults, self).__init__(
-            result, callback, def_callback
-        )
+        ResultsBase.__init__(result, callback, def_callback)
 
     def process(self):
         """Process results."""
@@ -149,9 +147,7 @@ class CloudModuleResults(ResultsBase):
             or not
         :type def_callback: bool
         """
-        super(CloudModuleResults, self).__init__(
-            result, callback, def_callback
-        )
+        ResultsBase.__init__(result, callback, def_callback)
 
     def process(self):
         """Process results."""

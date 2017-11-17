@@ -28,6 +28,8 @@ from paws.providers.openstack import Util, Glance, Nova
 from paws.constants import ADMINISTRADOR_PWD, DEFAULT_USERDIR
 
 
+# TODO: Need to revist this module and see if it is still required?
+
 class CIHelper(object):
 
     def __init__(self, logger, ud=None):
@@ -51,7 +53,7 @@ class CIHelper(object):
         """Load credentials.yaml same used in PAWS"""
         # TODO: fix me
         creds = Util(self.creds_file)
-        return creds.get_credentials(self.creds_file)
+        return creds.get_credentials()
 
     def set_paws_files(self, image, name):
         """Set required paws files.

@@ -92,7 +92,7 @@ class WinPsExecYAML(object):
         playbook['hosts'] = '{{ hosts }}'
         playbook['name'] = 'Preparing to run powershell on remote Windows'
 
-        if pvars is "file":
+        if pvars == "file":
             # PowerShell variables is defined by a file
             playbook['vars'] = {
                 'win_var_path': 'c:/my_vars.json'
@@ -113,7 +113,7 @@ class WinPsExecYAML(object):
                     'register': 'powershell_stdout'
                 }
             ]
-        elif pvars is "str":
+        elif pvars == "str":
             # PowerShell variables is defined as a string
             playbook['tasks'] = [
                 {
