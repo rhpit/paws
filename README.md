@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/paws-cli.svg)](https://badge.fury.io/py/paws-cli)
+
 # PAWS :: Provision Automated Windows and Services
 
 Paws is a Linux based tool to provision Windows systems and configure 
