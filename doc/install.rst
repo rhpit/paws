@@ -141,9 +141,9 @@ with docker: https://docs.docker.com/engine/installation/
    that has SELINUX make sure to manage it too otherwise it can cause 
    permissions denied errors while running paws container.
 
-PAWS docker images are based on official Centos and Fedora images and you can 
-pull from at https://hub.docker.com/r/eduardomcerqueira/paws/ or running the 
-commands below.
+PAWS docker image are based on official alpine image and you can pull from
+https://hub.docker.com/r/rywillia/paws/ or running the following commands
+below.
 
 You will notice the commands below are mounting the folder 
 **/home/user/ws/** from host into the container. This folder contains
@@ -152,43 +152,11 @@ the WS scripts that you will see at next section on `getting started <guide.html
 PS: By default PAWS searches for /home/user/ws as folder for userdir where
 scripts should be saved. see `userdir <tasks.html?highlight=userdir>`_
 
-Centos
-++++++
-
 .. code-block:: bash
 
-	sudo docker pull eduardomcerqueira/paws:0.3.8.1-centos-latest
-	cd ~ && git clone https://github.com/rhpit/ws.git ws
-	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-centos-latest /bin/bash
-
-Fedora latest
-+++++++++++++
-
-.. code-block:: bash
-
-	sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-latest
-	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-latest /bin/bash
-
-Fedora 26
-+++++++++
-
-.. code-block:: bash
-
-	sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-26
-	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-26 /bin/bash
-
-Fedora 25
-+++++++++
-
-.. code-block:: bash
-
-	sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-25
-	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-25 /bin/bash
-
-----
+    sudo docker pull rywillia/paws:latest
+    cd ~ && git clone https://github.com/rhpit/ws.git ws
+    sudo docker run -it --name paws -v /home/user/ws/:/home/paws/ws rywillia/paws:latest sh
 
 You are now ready to begin using paws! To get started please navigate to the
 side bar on the left to see the `getting started <guide.html>`_

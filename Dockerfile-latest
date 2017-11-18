@@ -1,0 +1,26 @@
+#
+# paws dockerfile
+#
+# Build:
+# sudo docker build -t paws:<release> .
+#
+# Run:
+# sudo docker run -it --name paws-<release> \
+# -v /home/<user>/github/ws/:/home/paws/paws paws:<release> sh
+#
+
+FROM alpine:latest
+
+# Install system package dependencies
+RUN apk add --no-cache python py-pip python-dev gcc make openssl openssl-dev \
+    libffi libffi-dev linux-headers musl-dev
+RUN pip install --no-cache-dir cffi pbr
+
+# Install paws package
+RUN pip install --no-cache-dir paws-cli
+
+# Add paws user with uid=1000
+RUN adduser -D -u 1000 paws
+
+# Switch to paws user
+USER paws

@@ -55,35 +55,34 @@ help:
 	@echo -e "Usage: $(WARN_COLOR) make target$(NO_COLOR) where $(WARN_COLOR)target$(NO_COLOR) is one of following:"
 	@echo
 	@echo -e "\t$(OK_COLOR)--- code ---$(NO_COLOR)"	
-	@echo -e "\t$(WARN_COLOR)clean$(NO_COLOR)         clean temp files from local workspace"
-	@echo -e "\t$(WARN_COLOR)codecheck$(NO_COLOR)     run code checkers pep8 and pylint"
-	@echo -e "\t$(WARN_COLOR)test$(NO_COLOR)          run unit tests locally"
-				
-	@echo -e "\t$(OK_COLOR)--- doc ---$(NO_COLOR)"	
-	@echo -e "\t$(WARN_COLOR)doc$(NO_COLOR)           generate sphinx doc html and man pages"
-	@echo -e "\t$(WARN_COLOR)gh-pages$(NO_COLOR)      publish html doc to github pages"
+	@echo -e "\t$(WARN_COLOR)clean$(NO_COLOR)              clean temp files from local workspace"
+	@echo -e "\t$(WARN_COLOR)codecheck$(NO_COLOR)          run code checkers pep8 and pylint"
+	@echo -e "\t$(WARN_COLOR)test$(NO_COLOR)               run unit tests locally"
+
+	@echo -e "\t$(OK_COLOR)--- doc ---$(NO_COLOR)"
+	@echo -e "\t$(WARN_COLOR)doc$(NO_COLOR)                generate sphinx doc html and man pages"
+	@echo -e "\t$(WARN_COLOR)gh-pages$(NO_COLOR)           publish html doc to github pages"
 
 	@echo -e "\t$(OK_COLOR)--- pip ---$(NO_COLOR)"	
-	@echo -e "\t$(WARN_COLOR)pip$(NO_COLOR)           build source codes and generate tar.gz file"
-	@echo -e "\t$(WARN_COLOR)pypi-test$(NO_COLOR)     upload tar.gz to pypi-test"
-	@echo -e "\t$(WARN_COLOR)pypi$(NO_COLOR)          upload tar.gz to pypi"
+	@echo -e "\t$(WARN_COLOR)pip$(NO_COLOR)                build source codes and generate tar.gz file"
+	@echo -e "\t$(WARN_COLOR)pypi-test$(NO_COLOR)          upload tar.gz to pypi-test"
+	@echo -e "\t$(WARN_COLOR)pypi$(NO_COLOR)               upload tar.gz to pypi"
 
 	@echo -e "\t$(OK_COLOR)--- rpm ---$(NO_COLOR)"	
-	@echo -e "\t$(WARN_COLOR)rpm$(NO_COLOR)           build source codes and generate rpm file"
-	@echo -e "\t$(WARN_COLOR)tarball$(NO_COLOR)       generate tarball of project"
-	@echo -e "\t$(WARN_COLOR)srpm$(NO_COLOR)          generate srpm of project"
-	@echo -e "\t$(WARN_COLOR)copr-dev$(NO_COLOR)      generate srpm and send to build in copr-devel internal Red Hat"
-	@echo -e "\t$(WARN_COLOR)copr-upstream$(NO_COLOR) generate srpm and send to build in upstream copr-fedora"
-	@echo -e "\t$(WARN_COLOR)all$(NO_COLOR)           clean test doc rpm"
-	@echo -e "\t$(WARN_COLOR)dev$(NO_COLOR)           clean, rpm and install PAWS locally"
+	@echo -e "\t$(WARN_COLOR)rpm$(NO_COLOR)                 build source codes and generate rpm file"
+	@echo -e "\t$(WARN_COLOR)tarball$(NO_COLOR)             generate tarball of project"
+	@echo -e "\t$(WARN_COLOR)srpm$(NO_COLOR)                generate srpm of project"
+	@echo -e "\t$(WARN_COLOR)copr-dev$(NO_COLOR)            generate srpm and send to build in copr-devel internal Red Hat"
+	@echo -e "\t$(WARN_COLOR)copr-upstream$(NO_COLOR)       generate srpm and send to build in upstream copr-fedora"
+	@echo -e "\t$(WARN_COLOR)all$(NO_COLOR)                 clean test doc rpm"
+	@echo -e "\t$(WARN_COLOR)dev$(NO_COLOR)                 clean, rpm and install PAWS locally"
 
 	@echo -e "\t$(OK_COLOR)--- docker ---$(NO_COLOR)"
-	@echo -e "\t$(WARN_COLOR)build-centos$(NO_COLOR)  build paws-centos docker image"
-	@echo -e "\t$(WARN_COLOR)build-fedora$(NO_COLOR)  build paws-fedora docker images"
-	@echo -e "\t$(WARN_COLOR)push-centos$(NO_COLOR)   push paws-centos docker image to hub.docker.com"	
-	@echo -e "\t$(WARN_COLOR)push-fedora$(NO_COLOR)   push paws-fedora docker images to hub.docker.com"
-	@echo -e "\t$(WARN_COLOR)push-all$(NO_COLOR)      build and push all docker images to hub.docker.com"
-	@echo -e "\t$(WARN_COLOR)clean-images$(NO_COLOR)  delete all paws tagged images"
+	@echo -e "\t$(WARN_COLOR)build-latest-image$(NO_COLOR)  build paws latest docker image"
+	@echo -e "\t$(WARN_COLOR)build-devel-image$(NO_COLOR)   build paws devel docker image"
+	@echo -e "\t$(WARN_COLOR)push-latest-image$(NO_COLOR)   push paws latest docker image to hub.docker.com"
+	@echo -e "\t$(WARN_COLOR)push-devel-image$(NO_COLOR)    push paws devel docker image to hub.docker.com"
+	@echo -e "\t$(WARN_COLOR)clean-images$(NO_COLOR)        delete paws tagged images"
 	@echo -e "$(NO_COLOR)"
 
 all: clean test rpm
@@ -204,23 +203,32 @@ endif
 	@echo
 
 # Docker tasks
-build-centos:
-	@make -C scripts/dockerfiles build-centos
-		
-build-fedora:
-	@make -C scripts/dockerfiles build-fedora
-				
-push-centos:
-	@make -C scripts/dockerfiles push-centos
+build-latest-image:
+	@echo -e "$(OK_COLOR)building paws:latest docker image$(NO_COLOR)"
+	@sudo docker build -t paws:latest -f Dockerfile-latest .
+	@echo -e "$(OK_COLOR)image built$(NO_COLOR)"
+	@sudo docker images paws:latest
 
-push-fedora:
-	@make -C scripts/dockerfiles push-fedora
+build-devel-image:
+	@echo -e "$(OK_COLOR)building paws:latest docker image$(NO_COLOR)"
+	@sudo docker build -t paws:devel -f Dockerfile-devel .
+	@echo -e "$(OK_COLOR)image built$(NO_COLOR)"
+	@sudo docker images paws:devel
 
-push-all:
-	@make -C scripts/dockerfiles push-all
+push-latest-image:
+	@sudo docker login
+	@echo -e "$(OK_COLOR)push paws:latest docker image to hub.docker.com$(NO_COLOR)"
+	@sudo docker push rywillia/paws:latest
+
+push-devel-image:
+	@sudo docker login
+	@echo -e "$(OK_COLOR)push paws:devel docker image to hub.docker.com$(NO_COLOR)"
+	@sudo docker push rywillia/paws:devel
 
 clean-images:
-	@make -C scripts/dockerfiles clean-paws-images
+	# TODO: need a better solution
+	@sudo docker rmi paws:latest
+	@sudo docker rmi paws:devel
 
 # pip tasks
 pip: clean
