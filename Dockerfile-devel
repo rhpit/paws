@@ -2,11 +2,11 @@
 # paws dockerfile
 #
 # Build:
-# sudo docker build -t paws:latest -f Dockerfile-devel .
+# sudo docker build -t paws:devel -f Dockerfile-devel .
 #
 # Run:
-# sudo docker run -it --name paws-<release> \
-# -v /home/<user>/github/ws/:/home/paws/paws paws:<release> sh
+# sudo docker run -it --name paws-devel \
+# -v /home/<user>/github/ws/:/home/paws/paws paws:devel bash
 #
 
 FROM python:2

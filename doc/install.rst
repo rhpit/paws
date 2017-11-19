@@ -141,7 +141,7 @@ with docker: https://docs.docker.com/engine/installation/
    that has SELINUX make sure to manage it too otherwise it can cause 
    permissions denied errors while running paws container.
 
-PAWS docker image are based on official alpine image and you can pull from
+PAWS docker image are based on official python image and you can pull from
 https://hub.docker.com/r/rywillia/paws/ or running the following commands
 below.
 
@@ -156,7 +156,7 @@ scripts should be saved. see `userdir <tasks.html?highlight=userdir>`_
 
     sudo docker pull rywillia/paws:latest
     cd ~ && git clone https://github.com/rhpit/ws.git ws
-    sudo docker run -it --name paws -v /home/user/ws/:/home/paws/ws rywillia/paws:latest sh
+    sudo docker run -it --name paws -v /home/user/ws/:/home/paws/ws rywillia/paws:latest bash
 
 You are now ready to begin using paws! To get started please navigate to the
 side bar on the left to see the `getting started <guide.html>`_

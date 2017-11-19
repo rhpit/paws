@@ -5,8 +5,8 @@
 # sudo docker build -t paws:latest -f Dockerfile-latest .
 #
 # Run:
-# sudo docker run -it --name paws-<release> \
-# -v /home/<user>/github/ws/:/home/paws/paws paws:<release> sh
+# sudo docker run -it --name paws-latest \
+# -v /home/<user>/github/ws/:/home/paws/paws paws:latest bash
 #
 
 FROM python:2
