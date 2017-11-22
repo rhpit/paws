@@ -20,6 +20,8 @@
 Paws cli
 """
 
+from xmlrpclib import ServerProxy
+
 from os import environ
 from os.path import dirname, join
 
@@ -29,7 +31,6 @@ from paws import __file__ as paws_pathfile
 from paws.constants import DEFAULT_USERDIR, PAWS_TASK_MODULES_PATH, TASK_ARGS
 from paws.main import Paws
 from paws.util import file_mgmt, Namespace
-
 
 # Allow CLI to accept short or long options for help
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
@@ -78,7 +79,24 @@ def get_version(ctx, param, value):
                         release = line.strip("RELEASE=").strip()
                 _version = version + "-" + release
         finally:
-            click.echo(_version.strip())
+            # get available paws versions
+            pypi = ServerProxy('https://pypi.python.org/pypi')
+            available_versions = pypi.package_releases('paws-cli')
+
+            try:
+                version_index = available_versions.index(_version)
+                if version_index == 0:
+                    status = 'an up-to-date'
+                else:
+                    status = 'an out-of-date'
+            except ValueError:
+                status = 'a pre-release'
+
+            msg = "Installed version : {0}\nLatest version    : {1}\n\n" \
+                  "You are running {2} version of paws!".\
+                format(_version, available_versions[0], status)
+
+            click.echo(msg)
             ctx.exit()
 
 
