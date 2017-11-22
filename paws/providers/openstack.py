@@ -391,9 +391,13 @@ class Nova(object):
         :param flavor: Size of vm to create.
         """
         LOG.debug('Checking openstack flavor %s' % flavor)
+
         try:
-            self.flavors.find(id=flavor)
-        except ClientException:
+            try:
+                self.flavors.find(name=flavor)
+            except NotFound:
+                self.flavors.find(id=flavor)
+        except NotFound:
             LOG.error("Flavor: %s size does not exist!", flavor)
             raise ClientException(1)
 
@@ -891,7 +895,7 @@ class ProvisionYAML(object):
                     },
                     'state': 'present',
                     'name': machine['name'].encode('utf8'),
-                    'flavor': int(machine['flavor']),
+                    'flavor': machine['flavor'],
                     'image': machine['image'].encode('utf8'),
                     'key_name': machine['keypair'].encode('utf8'),
                     'timeout': 900,
