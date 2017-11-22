@@ -23,8 +23,8 @@ default: help
 ############################################
 # set version into paws/version.txt before to run any build
 # release is managed by separated variable due build diff between spec and pip
-VERSION=0.3.8
-RELEASE=1
+VERSION=0.3.9
+RELEASE=0
 NAME=paws
 MANPAGE=../paws-doc/man/paws.1
 PWD=$(shell bash -c "pwd -P")

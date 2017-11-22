@@ -1,6 +1,6 @@
 Name: 			paws
-Version:		0.3.8
-Release:		1
+Version:		0.3.9
+Release:		0
 
 Summary:		Provision Automated Windows and Services
 Group:			Development/Libraries
