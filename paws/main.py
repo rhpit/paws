@@ -71,7 +71,11 @@ class Paws(LoggerMixin, TimeMixin):
         # create an object from the class
         if self.task.lower() == 'group':
             # read files
-            group = file_mgmt('r', join(self.args.userdir, self.args.name))
+            try:
+                group = file_mgmt('r', join(self.args.userdir, self.args.name))
+            except IOError as ex:
+                self.logger.error('Group file %s' % ex.message)
+                raise SystemExit(1)
 
             # create task object
             task = task_cls(

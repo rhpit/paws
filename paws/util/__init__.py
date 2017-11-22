@@ -302,7 +302,7 @@ def file_mgmt(operation, file_path, content=None, cfg_parser=None):
                         content = f_raw.read()
                 return content
         else:
-            raise IOError("%s file not found!" % file_path)
+            raise IOError("%s not found!" % file_path)
     elif operation in ['w', 'write']:
         # Write
         mode = 'w+' if exists(file_path) else 'w'
