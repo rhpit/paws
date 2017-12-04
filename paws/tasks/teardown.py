@@ -20,9 +20,9 @@
 
 from ansible.errors import AnsibleRuntimeError
 
-from paws.core import PawsTask
+from paws.core import PawsTask, Namespace
+from paws.helpers import log_resources
 from paws.providers import Provider
-from paws.util import log_resources, Namespace
 
 
 class Teardown(PawsTask):

@@ -21,13 +21,12 @@ Remote package which contains modules used to talk to remote machines.
 """
 
 from logging import getLogger
-from os.path import join
 
 from ansible.plugins.callback import CallbackBase
+from os.path import join
 
 from paws.constants import WIN_EXEC_YAML
-from paws.util import file_mgmt
-
+from paws.helpers import file_mgmt
 
 LOG = getLogger(__name__)
 

@@ -20,8 +20,8 @@
 Python build distribution for PAWS
 """
 
-from setuptools import setup
 from os.path import exists
+from setuptools import setup
 
 VERSION = "paws/version.txt"
 
@@ -63,8 +63,7 @@ and configure Windows services with a simpler way to test hybrid environments \
               'paws',
               'paws.providers',
               'paws.remote',
-              'paws.tasks',
-              'paws.util'
+              'paws.tasks'
     ],
     install_requires=['paramiko',
                       'pywinrm',

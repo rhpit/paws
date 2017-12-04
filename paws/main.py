@@ -25,7 +25,8 @@ from importlib import import_module
 from os.path import join
 
 from paws.constants import LINE, PAWS_NAME
-from paws.util import LoggerMixin, TimeMixin, file_mgmt
+from paws.core import LoggerMixin, TimeMixin
+from paws.helpers import file_mgmt
 
 
 class Paws(LoggerMixin, TimeMixin):

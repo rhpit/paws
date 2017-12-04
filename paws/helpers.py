@@ -15,238 +15,89 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Helpers module."""
 
-"""
-Utility package contains common classes, functons, etc to be used throughout
-paws.
-"""
-
-import inspect
+from functools import wraps
 from json import dump as json_dump
 from json import load as json_load
-from logging import DEBUG, INFO, getLogger, Formatter, StreamHandler
+from logging import getLogger
 from socket import error, timeout
 from subprocess import Popen
-from time import time
+from time import sleep
 
 from os import remove, listdir
 from os.path import join, exists, splitext
-from paramiko import SSHClient, AutoAddPolicy
+from paramiko import AutoAddPolicy, SSHClient
 from paramiko.ssh_exception import SSHException
 from yaml import dump as yaml_dump
 from yaml import load as yaml_load
 
 from paws.constants import LINE
 from paws.exceptions import SSHError
-from paws.util.decorators import retry
 
 LOG = getLogger(__name__)
 
+__all__ = [
+    'retry', 'cleanup', 'file_mgmt', 'update_resources_paws',
+    'log_resources', 'check_file', 'get_ssh_conn', 'exec_cmd_by_ssh',
+    'subprocess_call'
+]
 
-class TimeMixin(object):
-    """A time mixin class.
 
-    This class will save a start and end time to calculate the time delta
-    between the two points.
+def retry(exception_to_check, tries=4, delay=10, backoff=1, logger=LOG):
+    """Retry calling the decorated function using an exponential backoff.
+
+    http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/
+    original from: http://wiki.python.org/moin/PythonDecoratorLibrary#Retry
+
+    :param exception_to_check: the exception to check. may be a tuple of
+        exceptions to check
+    :type exception_to_check: Exception or tuple
+    :param tries: number of times to try (not retry) before giving up
+    :type tries: int
+    :param delay: initial delay between retries in seconds
+    :type delay: int
+    :param backoff: backoff multiplier e.g. value of 2 will double the delay
+        each retry
+    :type backoff: int
+    :param logger: logger to use. If None, print
+    :type logger: logging.Logger instance
     """
+    def deco_retry(function_name):
 
-    start_time = None
-    end_time = None
-    hours = 0
-    minutes = 0
-    seconds = 0
+        @wraps(function_name)
+        def f_retry(*args, **kwargs):
+            mtries, mdelay = tries, delay
+            while mtries > 1:
+                try:
+                    return function_name(*args, **kwargs)
+                except exception_to_check, ex:
+                    try:
+                        msg = "%s, retrying in %d seconds..." %\
+                            (str(ex), mdelay)
+                        if logger:
+                            logger.debug(msg)
+                        else:
+                            print msg
+                        sleep(mdelay)
+                        mtries -= 1
+                        mdelay *= backoff
+                    except KeyboardInterrupt:
+                        raise KeyboardInterrupt
+            return function_name(*args, **kwargs)
 
-    def start(self):
-        """Save the start time."""
-        self.start_time = time()
+        return f_retry  # true decorator
 
-    def end(self):
-        """Save the end time."""
-        self.end_time = time()
-
-        # calculate time delta
-        delta = self.end_time - self.start_time
-        self.hours = delta // 3600
-        delta = delta - 3600 * self.hours
-        self.minutes = delta // 60
-        self.seconds = delta - 60 * self.minutes
-
-
-class LoggerMixin(object):
-    """A logger mixin class.
-
-    This class will provide an easy interface for other classes and functions
-    to utilize the paws logger.
-    """
-
-    @classmethod
-    def create_logger(cls, name, verbose):
-        """Create logger.
-
-        :param name: Logger name.
-        :type name: str
-        :param verbose: Verbosity level.
-        :type verbose: int
-        """
-        # get logger
-        logger = getLogger(name)
-
-        # skip creating logger if handler exists
-        if logger.handlers.__len__() > 0:
-            return
-
-        # determine log formatting
-        if verbose >= 1:
-            log_level = DEBUG
-            console = ("%(asctime)s %(levelname)s "
-                       "[%(name)s.%(funcName)s:%(lineno)d] %(message)s")
-        else:
-            log_level = INFO
-            console = ("%(message)s")
-
-        # create stream handler
-        handler = StreamHandler()
-
-        # configure handler
-        handler.setLevel(log_level)
-        handler.setFormatter(Formatter(console, datefmt='%Y-%m-%d %H:%M:%S'))
-
-        # configure logger
-        logger.setLevel(log_level)
-        logger.addHandler(handler)
-
-    @property
-    def logger(self):
-        """Return paws logger."""
-        return getLogger(inspect.getmodule(inspect.stack()[1][0]).__name__)
-
-
-class Namespace(object):
-    """
-    A class which will create a Python namespace object."""
-
-    def __init__(self, kwargs):
-        """Constructor."""
-        self.__dict__.update(kwargs)
-
-
-def subprocess_call(cmd, fatal=True, cwd=None, stdout=None, stderr=None,
-                    env=None):
-    """Run a shell command subprocess call using Popen.
-
-    :param cmd: Command to run
-    :type cmd: str
-    :param fatal: Whether to raise exception with failure
-    :type fatal: bool
-    :param cwd: Directory path to switch to before running command
-    :type cwd: str
-    :param stdout: Pass subprocess PIPE if you want to pipe output
-        from console
-    :type stdout: int
-    :param stderr: Pass subprocess PIPE if you want to pipe output
-        from console
-    :type stderr: int
-    :return: The results from subprocess call
-    :rtype: dict
-    """
-    results = {}
-    proc = Popen(cmd, shell=True, stdout=stdout, stderr=stderr, cwd=cwd,
-                 env=env)
-    output = proc.communicate()
-    if proc.returncode != 0:
-        LOG.debug(output)
-        msg = "Failed %s" % cmd
-        if fatal:
-            raise Exception(msg)
-        else:
-            LOG.error(msg)
-
-    results['rc'] = proc.returncode
-    results['stdout'] = output[0]
-    results['stderr'] = output[1]
-
-    return results
-
-
-def get_conn_param(data):
-    """ Get IP and Credentials """
-    ipaddr, username, password = (None,) * 3
-    for elem in data['resources']:
-        # Get credentials
-        # Administrator account
-        if "ssh_user" and "ssh_password" in elem:
-            username = elem['ssh_user']
-            password = elem['ssh_password']
-        else:
-            # Admin account
-            username = elem['user']
-            password = elem['password']
-        # Get public IP
-        if "ip" in elem:
-            ipaddr = elem['ip']
-    return ipaddr, username, password
-
-
-@retry(SSHError, tries=60)
-def get_ssh_conn(ipaddr, username, password=None, ssh_key=None):
-    """ Connect to remote machine through SSH Port 22 """
-    try:
-        ssh = SSHClient()
-        ssh.load_system_host_keys()
-        ssh.set_missing_host_key_policy(AutoAddPolicy())
-        if ssh_key:
-            ssh.connect(hostname=ipaddr,
-                        username=username,
-                        key_filename=ssh_key,
-                        timeout=5)
-        if password:
-            ssh.connect(hostname=ipaddr,
-                        username=username,
-                        password=password,
-                        timeout=5)
-        ssh.close()
-        LOG.info("Successfully established SSH connection to %s", ipaddr)
-    except timeout as ex:
-        raise SSHError(ex.message)
-    except SSHException as ex:
-        raise SSHError(ex.message)
-    except error as ex:
-        raise SSHError(ex.strerror)
-
-
-@retry(SSHError, tries=60)
-def exec_cmd_by_ssh(ipaddr, username, cmd, password=None, ssh_key=None):
-    """ Connect to remote machine through SSH Port 22 and execute a command"""
-    try:
-        ssh = SSHClient()
-        ssh.load_system_host_keys()
-        ssh.set_missing_host_key_policy(AutoAddPolicy())
-        if ssh_key:
-            ssh.connect(hostname=ipaddr,
-                        username=username,
-                        key_filename=ssh_key,
-                        timeout=30)
-        if password:
-            ssh.connect(hostname=ipaddr,
-                        username=username,
-                        password=password,
-                        timeout=30)
-
-        ssh.exec_command(cmd)
-
-        ssh.close()
-        LOG.info("Successfully executed command: %s", cmd)
-    except timeout as ex:
-        raise SSHError(ex.message)
-    except SSHException as ex:
-        raise SSHError(ex.message)
-    except error as ex:
-        raise SSHError(ex.strerror)
+    return deco_retry
 
 
 def cleanup(purge_list, userdir=None):
-    """
-    Delete remaining files from previous execution
+    """Delete files.
+
+    :param purge_list: Files to be deleted
+    :type purge_list: list
+    :param userdir: User directory
+    :type userdir: str
     """
     for to_delete in purge_list:
         if exists(to_delete):
@@ -276,7 +127,6 @@ def file_mgmt(operation, file_path, content=None, cfg_parser=None):
     :return: Data that was read from a file
     :rtype: object
     """
-
     # Determine file extension
     file_ext = splitext(file_path)[-1]
 
@@ -330,14 +180,25 @@ def update_resources_paws(resources_paws_path, resources_paws_content):
     """
     re-write resource.paws with content of object passed as parameter.
     basically the content of object will override the existing file
-    resources.paws at userdir
+    resources.paws at user directory.
+
+    :param resources_paws_path: File path to resources.paws
+    :type resources_paws_path: str
+    :param resources_paws_content: File content
+    :type resources_paws_content: list
     """
     file_mgmt('w', resources_paws_path, resources_paws_content)
     LOG.debug("Successfully updated %s", resources_paws_path)
 
 
 def log_resources(resources_paws, action):
-    """Log paws resources to console."""
+    """Log paws resources to console.
+
+    :param resources_paws: Resources.paws file content
+    :type resources_paws: list
+    :param action: Paws action performed
+    :type action: str
+    """
     # case when resources.paws was not created maybe because nothing was
     # provisioned.
     if not resources_paws:
@@ -385,7 +246,7 @@ def check_file(file_path, error_msg=None):
     """Generic function to check file exist in disk
 
     :param file_path: absolute path for file
-    :type operation: str
+    :type file_path: str
     :param error_msg: custom error message to print
     :type error_msg: str
     """
@@ -394,3 +255,123 @@ def check_file(file_path, error_msg=None):
             raise IOError("%s file not found! %s" % (file_path, error_msg))
         else:
             raise IOError("%s file not found!" % file_path)
+
+
+@retry(SSHError, tries=60)
+def get_ssh_conn(host, username, password=None, ssh_key=None):
+    """Connect to a remote system by SSH port 22.
+
+    By default it will retry 60 times until it establishes an ssh connection.
+
+    :param host: Remote systems IP address
+    :type host: str
+    :param username: Username
+    :type username: str
+    :param password: Password
+    :type password: str
+    :param ssh_key: SSH private key for authentication
+    :type ssh_key: str
+    """
+    try:
+        ssh = SSHClient()
+        ssh.load_system_host_keys()
+        ssh.set_missing_host_key_policy(AutoAddPolicy())
+        if ssh_key:
+            ssh.connect(hostname=host,
+                        username=username,
+                        key_filename=ssh_key,
+                        timeout=5)
+        if password:
+            ssh.connect(hostname=host,
+                        username=username,
+                        password=password,
+                        timeout=5)
+        ssh.close()
+        LOG.info("Successfully established SSH connection to %s", host)
+    except (error, SSHException, timeout) as ex:
+        try:
+            raise SSHError(ex.strerror)
+        except AttributeError:
+            raise SSHError(ex.message)
+
+
+@retry(SSHError, tries=60)
+def exec_cmd_by_ssh(host, username, cmd, password=None, ssh_key=None):
+    """Connect to a remote system by SSH port 22 and run a command.
+
+    By default it will retry 60 times until it establishes an ssh connection.
+
+    :param host: Remote systems IP address
+    :type host: str
+    :param cmd: Command to execute
+    :type cmd: str
+    :param username: Username
+    :type username: str
+    :param password: Password
+    :type password: str
+    :param ssh_key: SSH private key for authentication
+    :type ssh_key: str
+    """
+    try:
+        ssh = SSHClient()
+        ssh.load_system_host_keys()
+        ssh.set_missing_host_key_policy(AutoAddPolicy())
+        if ssh_key:
+            ssh.connect(hostname=host,
+                        username=username,
+                        key_filename=ssh_key,
+                        timeout=30)
+        if password:
+            ssh.connect(hostname=host,
+                        username=username,
+                        password=password,
+                        timeout=30)
+
+        ssh.exec_command(cmd)
+
+        ssh.close()
+        LOG.info("Successfully executed command: %s", cmd)
+    except (error, SSHException, timeout) as ex:
+        try:
+            raise SSHError(ex.strerror)
+        except AttributeError:
+            raise SSHError(ex.message)
+
+
+def subprocess_call(cmd, fatal=True, cwd=None, stdout=None, stderr=None,
+                    env=None):
+    """Run a shell command by a subprocess call using Popen.
+
+    :param cmd: Command to run
+    :type cmd: str
+    :param fatal: Whether to raise exception with failure
+    :type fatal: bool
+    :param cwd: Directory path to switch to before running command
+    :type cwd: str
+    :param stdout: Pass subprocess PIPE if you want to pipe output from
+        console
+    :type stdout: int
+    :param stderr: Pass subprocess PIPE if you want to pipe output
+        from console
+    :type stderr: int
+    :param env: Environment
+    :type env: dict
+    :return: The results from subprocess call
+    :rtype: dict
+    """
+    results = {}
+    proc = Popen(cmd, shell=True, stdout=stdout, stderr=stderr, cwd=cwd,
+                 env=env)
+    output = proc.communicate()
+    if proc.returncode != 0:
+        LOG.debug(output)
+        msg = "Failed %s" % cmd
+        if fatal:
+            raise Exception(msg)
+        else:
+            LOG.error(msg)
+
+    results['rc'] = proc.returncode
+    results['stdout'] = output[0]
+    results['stderr'] = output[1]
+    return results

@@ -22,10 +22,10 @@ resulting at message displayed at console output.
 """
 from ansible.errors import AnsibleRuntimeError
 
-from paws.core import PawsTask
+from paws.core import PawsTask, Namespace
 from paws.exceptions import NovaPasswordError, SSHError
+from paws.helpers import log_resources
 from paws.providers import Provider
-from paws.util import log_resources, Namespace
 
 
 class Show(PawsTask):

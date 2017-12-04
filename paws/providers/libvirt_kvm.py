@@ -16,24 +16,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import sys
+import urllib2
 from logging import getLogger
+from subprocess import PIPE
+from xml.etree import ElementTree as ET
+
+import libvirt
+from click import style
+from click.termui import progressbar
+from libvirt import libvirtError
 from os import environ, getenv
 from os.path import join, exists
 from requests import HTTPError, RequestException, get
-import urllib2
-from click.termui import progressbar
-from click import style
-import sys
-import libvirt
-from xml.etree import ElementTree as ET
-from libvirt import libvirtError
-from paws.util import get_ssh_conn, file_mgmt, subprocess_call, cleanup
-from paws.util.decorators import retry
+
 from paws.constants import LIBVIRT_OUTPUT, LIBVIRT_AUTH_HELP
 from paws.exceptions import PawsPreTaskError
+from paws.helpers import get_ssh_conn, file_mgmt, subprocess_call, cleanup, \
+    retry
 from paws.remote.driver import Ansible
-from subprocess import PIPE
-
 
 """
     Libvirt provider, It is a wrapper interacting with Libvirt

@@ -16,16 +16,107 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 """Paws core module."""
+from inspect import getmodule, stack
+from logging import DEBUG, INFO, getLogger, Formatter, StreamHandler
+from time import time
+
 from os.path import join
 
 from paws.constants import PAWS_NAME, RESOURCES_PAWS
-from paws.util import LoggerMixin, TimeMixin
+
+__all__ = ['LoggerMixin', 'TimeMixin', 'PawsTask', 'Namespace']
+
+
+class LoggerMixin(object):
+    """Create logging loggers.
+
+    Provides a method to easily create a new python logging logger. A property
+    is available which returns back the paws logger.
+    """
+
+    @classmethod
+    def create_logger(cls, name, verbose):
+        """Create logger.
+
+        :param name: Logger name.
+        :type name: str
+        :param verbose: Verbosity level.
+        :type verbose: int
+        """
+        # get logger
+        logger = getLogger(name)
+
+        # skip creating logger if handler exists
+        if logger.handlers.__len__() > 0:
+            return
+
+        # determine log formatting
+        if verbose >= 1:
+            log_level = DEBUG
+            console = ("%(asctime)s %(levelname)s "
+                       "[%(name)s.%(funcName)s:%(lineno)d] %(message)s")
+        else:
+            log_level = INFO
+            console = ("%(message)s")
+
+        # create stream handler
+        handler = StreamHandler()
+
+        # configure handler
+        handler.setLevel(log_level)
+        handler.setFormatter(Formatter(console, datefmt='%Y-%m-%d %H:%M:%S'))
+
+        # configure logger
+        logger.setLevel(log_level)
+        logger.addHandler(handler)
+
+    @property
+    def logger(self):
+        """Return paws logger."""
+        return getLogger(getmodule(stack()[1][0]).__name__)
+
+
+class TimeMixin(object):
+    """Capture time delta between two points.
+
+    Provides two methods to save start and end times. When the end time is
+    saved, it will calculate the time delta between the two points. You can
+    access that information by the classes atrributes.
+
+    i.e.
+        self.start()
+        times.sleep(60)
+        self.end()
+        print('%dh:%dm:%ds' % (self.hours, self.minutes, self.seconds))
+    """
+
+    start_time = None
+    end_time = None
+    hours = 0
+    minutes = 0
+    seconds = 0
+
+    def start(self):
+        """Save the start time."""
+        self.start_time = time()
+
+    def end(self):
+        """Save the end time."""
+        self.end_time = time()
+
+        # calculate time delta
+        delta = self.end_time - self.start_time
+        self.hours = delta // 3600
+        delta = delta - 3600 * self.hours
+        self.minutes = delta // 60
+        self.seconds = delta - 60 * self.minutes
 
 
 class PawsTask(LoggerMixin, TimeMixin):
     """Paws task.
 
-    Every paws task should inherit this parent paws task class.
+    Provides commonly used attributes, methods, properties used by all paws
+    task classes.
     """
 
     def __init__(self, userdir, verbose):
@@ -65,3 +156,15 @@ class PawsTask(LoggerMixin, TimeMixin):
         :type value: int
         """
         self._exit_code = value
+
+
+class Namespace(object):
+    """Convert a dictionary into a python namespace."""
+
+    def __init__(self, kwargs):
+        """Constructor.
+
+        :param kwargs: Key:values
+        :type kwargs: dict
+        """
+        self.__dict__.update(kwargs)

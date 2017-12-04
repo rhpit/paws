@@ -21,24 +21,24 @@ from logging import getLogger
 from time import sleep
 from uuid import uuid4
 
-from os import getenv
-from os.path import join, exists
-from re import search, IGNORECASE
 from glanceclient.v2.client import Client as gclient
 from keystoneclient.v2_0.client import Client as kclient
 from novaclient.client import Client as nclient
 from novaclient.exceptions import ClientException, NotFound
 from novaclient.v2 import networks, images, flavors
+from os import getenv
+from os.path import join, exists
+from re import search, IGNORECASE
 
 from paws.constants import ADMIN, GET_OPS_FACTS_YAML, ADMINISTRADOR_PWD, LINE
 from paws.constants import OPENSTACK_ENV_VARS, PROVISION_RESOURCE_KEYS
 from paws.constants import PROVISION_YAML, TEARDOWN_YAML, ADMINISTRATOR
 from paws.exceptions import NovaPasswordError, SSHError
+from paws.helpers import cleanup, file_mgmt, get_ssh_conn, \
+    update_resources_paws, retry
 from paws.remote.driver import Ansible
 from paws.remote.prep import WinPrep
 from paws.remote.results import CloudModuleResults
-from paws.util import cleanup, file_mgmt, get_ssh_conn, update_resources_paws
-from paws.util.decorators import retry
 
 LOG = getLogger(__name__)
 

@@ -18,16 +18,16 @@
 
 """Winsetup task."""
 
-from os.path import join, exists, isfile
 from ansible.errors import AnsibleRuntimeError
+from os.path import join, exists, isfile
 
 from paws.constants import ADMIN, WIN_EXEC_YAML, LINE
-from paws.core import PawsTask
+from paws.core import PawsTask, Namespace
 from paws.exceptions import SSHError
+from paws.helpers import cleanup, get_ssh_conn, file_mgmt
 from paws.remote import WinPsExecYAML
 from paws.remote.driver import Ansible
 from paws.remote.results import GenModuleResults
-from paws.util import cleanup, get_ssh_conn, file_mgmt, Namespace
 
 
 class Winsetup(PawsTask):

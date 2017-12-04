@@ -23,9 +23,8 @@ Preparation module to run required configuration on new Windows systems.
 from logging import getLogger
 
 from paws.constants import ADMINISTRATOR, ADMINISTRADOR_PWD
+from paws.helpers import exec_cmd_by_ssh, update_resources_paws, get_ssh_conn
 from paws.remote.results import GenModuleResults
-from paws.util import exec_cmd_by_ssh
-from paws.util import update_resources_paws, get_ssh_conn
 
 LOG = getLogger(__name__)
 

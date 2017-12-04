@@ -22,15 +22,15 @@ Paws cli
 
 from xmlrpclib import ServerProxy
 
+import click
 from os import environ
 from os.path import dirname, join
 
-import click
-
 from paws import __file__ as paws_pathfile
 from paws.constants import DEFAULT_USERDIR, PAWS_TASK_MODULES_PATH, TASK_ARGS
+from paws.core import Namespace
+from paws.helpers import file_mgmt
 from paws.main import Paws
-from paws.util import file_mgmt, Namespace
 
 # Allow CLI to accept short or long options for help
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])

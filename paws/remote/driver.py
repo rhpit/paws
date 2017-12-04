@@ -21,12 +21,9 @@ Python Ansible API module.
 """
 
 import sys
-
-from collections import namedtuple
 from ConfigParser import ConfigParser
+from collections import namedtuple
 from logging import getLogger
-from os import devnull
-from os.path import join
 from pprint import pformat
 
 from ansible.errors import AnsibleRuntimeError
@@ -34,6 +31,8 @@ from ansible.executor.playbook_executor import PlaybookExecutor
 from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible.parsing.dataloader import DataLoader
 from ansible.playbook.play import Play
+from os import devnull
+from os.path import join
 
 try:
     # supports ansible < 2.4
@@ -48,8 +47,7 @@ from paws.constants import ANSIBLE_INVENTORY_FILENAME, LINE
 from paws.constants import PROVISION_YAML, WIN_EXEC_YAML
 from paws.remote import PawsCallbackBase
 from paws.remote.results import ResultsBase
-from paws.util.decorators import retry
-from paws.util import file_mgmt
+from paws.helpers import file_mgmt, retry
 
 LOG = getLogger(__name__)
 

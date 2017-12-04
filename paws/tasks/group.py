@@ -26,8 +26,8 @@ from os.path import join
 
 from paws.constants import GROUP_SECTIONS, PAWS_TASK_MODULES_PATH, GROUP_SCHEMA
 from paws.constants import TASK_ARGS, GROUP_REQUIRED, GROUP_HELP
-from paws.core import PawsTask
-from paws.util import check_file, file_mgmt, Namespace
+from paws.core import PawsTask, Namespace
+from paws.helpers import check_file, file_mgmt
 
 
 class Group(PawsTask):

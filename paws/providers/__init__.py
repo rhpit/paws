@@ -20,7 +20,8 @@
 import importlib
 
 from paws.constants import PROVIDERS
-from paws.util import cleanup, LoggerMixin, Namespace
+from paws.core import LoggerMixin, Namespace
+from paws.helpers import cleanup
 
 
 class Provider(LoggerMixin):
