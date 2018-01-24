@@ -11,37 +11,52 @@ displayed instead.
 
 **ARGUMENTS**
 
-.. csv-table::
-	:header: "Argument", "Default", "Required", "Description"
-	:widths: 100, 100, 100, 100
+.. list-table::
+    :widths: auto
+    :header-rows: 1
 
-	"-c, --credentials", "`credentials.yaml <files.html#credentials-yaml>`_", "Yes", "Providers credentials file
-	containing authentication information."
-	"-t, --topology", "`resources.yaml <files.html#resources-yaml>`_", "Yes", "System resources file which
-	contains systems you want to display information for."
-	"-h, --help", "", "No", "Enable to see help menu."
+    *   - Argument
+        - Default
+        - Required
+        - Description
+
+    *   - -c, --credentials
+        - credentials.yaml
+        - Yes
+        - Providers credentials settings
+
+    *   - -t, --topology
+        - resources.yaml
+        - Yes
+        - System resources definition
+
+    *   - -h, --help
+        -
+        - No
+        - Enable to show help menu
 
 **EXAMPLES**
 
-.. code:: bash
+.. code-block:: bash
+    :linenos:
 
-	# Show using default arguments
-	$ paws show
+    # show windows systems using default options
+    paws show
 
-	# Show using default arguments and verbose logging
-	$ paws -v show
+    # show using default options with verbose logging
+    paws -v show
 
-	# Show using specific user directory and verbose logging
-	$ paws -v -ud /home/user show
+    # show overriding user directory
+    paws -ud /tmp/ws show
 
-	# Show help menu for show
-	$ paws show -h
+    # show help menu
+    paws show --help
 
 **OUTPUT**
 
 **Active instance provisioned by paws.**
 
-.. code:: bash
+.. code-block:: bash
 
 	[ecerquei@dev paws]$ paws show
 	2016-12-02 16:26:30 INFO Begin paws execution
@@ -62,7 +77,7 @@ displayed instead.
 
 **Active instance provisioned by paws running in verbose mode.**
 
-.. code:: bash
+.. code-block:: bash
 
 	[ecerquei@dev paws]$ paws show -v
 	2016-12-02 16:27:07 INFO [paws.main:53] Begin paws execution
@@ -98,7 +113,7 @@ displayed instead.
 
 **No active instance.**
 
-.. code:: bash
+.. code-block:: bash
 
 	[ecerquei@dev paws]$ paws show
 	2016-12-02 15:45:02 INFO Begin paws execution
@@ -112,7 +127,7 @@ displayed instead.
 
 **No active instance running in verbose mode.**
 
-.. code:: bash
+.. code-block:: bash
 
 	[ecerquei@dev paws]$ paws show -v
 	2016-12-02 15:54:47 INFO [paws.main:53] Begin paws execution
@@ -153,7 +168,7 @@ displayed instead.
 	access the machine after provisioned. Instead of having to navigate
 	through files to find the login information.
 
- .. code:: bash
+ .. code-block:: bash
 
 	*********************************************
 	            System Resources (show)

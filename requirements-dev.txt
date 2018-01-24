@@ -7,5 +7,6 @@ flake8
 pylint
 pytest
 sphinx
+sphinx-rtd-theme
 # main libs from requirements.txt
 -r requirements.txt

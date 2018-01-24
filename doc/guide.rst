@@ -1,149 +1,114 @@
 Getting Started
 ===============
 
-Now you have PAWS installed in your system we need to get inital files 
-from `WS repo <https://github.com/rhpit/ws.git>`_ to perform paws actions. 
-Each action will be covered with more detail along this documentation.
+Prerequisites
+-------------
+
+Make a local copy of the `ws repository <https://github.com/rhpit/ws.git>`_.
+This will provide you with paws files for getting started.
+
+.. code-block:: bash
+    :linenos:
+
+    # install git (if not already installed)
+    sudo dnf install -y git
+        -- or --
+    sudo yum install -y git
+
+    # clone ws git
+    cd ~
+    git clone https://github.com/rhpit/ws.git
 
 .. attention::
-	Git is needed in your system to download paws files.
-	it is not installed by PAWS, you can check if you have git in your system
-	by running:
-	::
 
-	$ git --version
-
-	if git is not in your system you can run the commands below:
-	::
-
-		# Yum package manager
-		$ sudo yum install -y git
-
-		# Dnf package manager
-		$ sudo dnf install -y git
-
-Paws Files
-----------
-
-PAWS files are to help get you started with paws and can be modified to 
-meet your needs. You can save PAWS WS files in any convenient location in 
-your system and use **-ud** parameter while running PAWS to load your files from
-any path. By default we recommend saving these files at your /home/$USER/ws
-
-PAWS default user directory **/home/$USER/ws**
-
-.. code:: bash
-
-	$ cd ~ 
-	$ mkdir ws
-	$ git clone https://github.com/rhpit/ws.git ws 
+    We recommend storing the ws repo within your users home directory. By
+    default paws will look for a ws directory at /home/$USER/ws to load files.
+    You can always override this by defining **-ud** option at runtime.
 
 .. important::
-	We strongly recommend that you visit the following page
-	`paws files <files.html>`_. This page will go into detail
-	about each key and their values.
+
+    We strongly recommend that you read about `paws files <files.html>`_.
 
 How To Run
 ----------
 
-Paws interface is very simple and easy to use open a terminal and run the
-following command:
+To run paws, just issue the following command in a terminal.
 
-.. code:: bash
+.. code-block:: bash
+    :linenos:
 
-	$ paws
+    paws
 
-It will display the help menu (by default) showing available paws tasks. Each
-task contains their own set of arguments. You can view them by passing the
-help argument to any task.
+You can view more about each paws task by providing the help option.
 
-.. code:: bash
+.. code-block:: bash
+    :linenos:
 
-	# Replace task with one of the available commands
-	$ paws task -h
-
-Paws also has bash completion, so you can [tab][tab] your way through the
-interface.
-
-.. code:: bash
-
-   $ paws -- [tab][tab]
-   --help   --userdir   --verbose   --version
-   $ paws --verbose [tab][tab]
-   group    provision    show    teardown    winsetup
-   $ paws --verbose provision -- [tab][tab]
-   --credentials    --help    --topology
-
-Now that you have seen how to use paws interface, lets dive into running each
-available task.
+    paws <task> --help
 
 .. note::
-	For each task below we will be using the default values for their arguments.
+
+    Each paws task walk through below will be using the default options values.
+    These can be overridden at anytime.
 
 Provision
 ^^^^^^^^^
 
-Provision task will provision system resource(s) in the provider(s) supplied
-by your paws files.
+Provision will provision Windows systems provider it was specified for.
 
-Details about credentials keys/values can be found here:
-`credentials.yaml <files.html#credentials-yaml>`_.
+You can find more details about configuring your providers credentials at the
+following: `provider credentials <files.html#credentials-yaml>`_.
 
-Next edit or create **/home/$USER/ws/resources.yaml** which contains the 
-system resource you want to provision.
+You will want to create or modify the **resources.yaml** file within your
+local copy of the ws repository. This file defines all systems to be
+provisioned.
 
 .. code:: yaml
 
-   resources:
-      - name: windows_2012
-        count: 1
-        image: win-2012-r2
-        flavor: 4
-        network: 192.168.1.0/22
-        keypair: my_key_pair
-        ssh_private_key: /home/user/.ssh/id_rsa
-        administrator_password: my_password@2016
+    resources:
+        - name: windows
+          count: 1
+          image: win-2012-r2
+          flavor: 4
+          network: 192.168.1.0
+          keypair: keypair
+          ssh_private_key: /home/user/.ssh/id_rsa
+          administrator_password: my_password@2018
 
-More details about resources keys/values can be found here:
-`resources.yaml <files.html#resources-yaml>`_.
+You can find more details about configuring your resources file at the
+following: `resources.yaml <files.html#resources-yaml>`_.
 
-Now that your files are set. Call paws to provision your system resource.
+Once your files are set, go ahead and call paws provision task. Shortly you
+should have your Windows system provisioned in the provider you defined.
 
-.. code:: bash
+.. code-block:: bash
+    :linenos:
 
-	$ paws provision
-
-That is it, paws will take it from here to create the instance in your provider
-and prepare your Windows system ready for you to use.
+    paws provision
 
 .. note::
 	More details about provision task can be found here:
 	`provision task <tasks.html#provision>`_.
 
-----
-
 Teardown
 ^^^^^^^^
 
-Teardown task will teardown a system resource in your provider and this task
-requires **credentials.yaml** and **resources.yaml** files. 
+Teardown will teardown Windows systems in its given provider. It requires both
+files (credentials.yaml & resources.yaml) from provision task. These files
+define provider credentials and which systems to delete.
 
-These files tell teardown which provider to connect too and which system
-resources to delete.
 
-Now that your files are set. Call paws to teardown your system resource.
+Once your files are set, go ahead and call paws teardown task. Shortly you
+should see your Windows systems deleted from your provider.
 
-.. code:: bash
+.. code-block:: bash
+    :linenos:
 
-	$ paws teardown
-
-That is it, paws will take it from here to delete the instance in your provider.
+    paws teardown
 
 .. note::
 	More details about teardown task can be found here:
 	`teardown task <tasks.html#teardown>`_.
-
-----
 
 Winsetup
 ^^^^^^^^
@@ -161,19 +126,14 @@ Following the standard scripts files can be found at
 Now that you have your PowerShell script you are ready to configure your Windows
 system. Call paws to configure your system resource.
 
-.. code:: bash
+.. code-block:: bash
+    :linenos:
 
-	$ paws winsetup -ps powershell/get_system_info.ps1
-
-That is it, paws will take it from here to run your PowerShell script on your
-Windows system. In the console output you will see all messages from your
-PowerShell script.
+    paws winsetup -ps powershell/get_system_info.ps1
 
 .. note::
 	More details about winsetup task can be found here:
 	`winsetup task <tasks.html#winsetup>`_.
-
-----
 
 Group
 ^^^^^
@@ -189,9 +149,10 @@ to run.
 Now that you have your group file you are ready to execute all tasks you have
 defined. Call paws to execute your group file.
 
-.. code:: bash
+.. code-block:: bash
+    :linenos:
 
-	$ paws group -n group/2012_winad.yaml
+	paws group -n group/2012_winad.yaml
 
 That is it, paws will take it from here to run your group. The group we passed
 to paws was **2012_winad.yaml**. This group will provision a Windows system and
@@ -202,8 +163,6 @@ you to simply run one paws command.
 .. note::
 	More details about group task can be found here:
 	`group task <tasks.html#group>`_.
-
-----
 
 Show
 ^^^^
@@ -218,9 +177,10 @@ Show will require files from
 
 To view system resources that may have been provisioned, just call paws to see.
 
-.. code:: bash
+.. code-block:: bash
+    :linenos:
 
-	$ paws show
+	paws show
 
 That is it, paws will take it from here to display any system resources that
 may still be active in your provider.

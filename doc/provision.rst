@@ -9,38 +9,52 @@ provisioning. Paws will invoke the teardown task automatically.
 
 **ARGUMENTS**
 
-.. csv-table::
-	:header: "Argument", "Default", "Required", "Description"
-	:widths: 100, 100, 100, 100
+.. list-table::
+    :widths: auto
+    :header-rows: 1
 
-	"-c, --credentials", "`credentials.yaml <files.html#credentials-yaml>`_", "Yes", "Providers credential file
-	which contains authentication information."
-	"-t, --topology", "`resources.yaml <files.html#resources-yaml>`_", "Yes", "System resources file which
-	contains systems you want to provision."
-	"-h, --help", "", "No", "Enable to show help menu."
+    *   - Argument
+        - Default
+        - Required
+        - Description
 
+    *   - -c, --credentials
+        - credentials.yaml
+        - Yes
+        - Providers credentials settings
+
+    *   - -t, --topology
+        - resources.yaml
+        - Yes
+        - System resources definition
+
+    *   - -h, --help
+        -
+        - No
+        - Enable to show help menu
 
 **EXAMPLES**
 
-.. code:: bash
+.. code-block:: bash
+    :linenos:
 
-	# Provision using default arguments
-	$ paws provision
+    # provision using default options
+    paws provision
 
-	# Provision using default arguments and verbose logging
-	$ paws -v provision
+    # provision using default options with verbose logging
+    paws -v provision
 
-	# Provision using specific user directory and verbose logging
-	$ paws -v -ud /home/user provision
+    # provision overriding user directory
+    paws provision -ud /tmp/ws
 
-	# Show provision help menu
-	$ paws provision -h
+    # show help menu
+    paws provision --help
 
 **OUTPUT**
 
 Here is an example output at the end of provision task.
 
-.. code:: bash
+.. code-block:: bash
 
 	2016-12-15 20:32:22 INFO *********************************************
 	2016-12-15 20:32:22 INFO         System Resources (provisioned)       
