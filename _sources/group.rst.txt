@@ -8,28 +8,43 @@ single paws call.
 
 **ARGUMENTS**
 
-.. csv-table::
-	:header: "Argument", "Default", "Required", "Description"
-	:widths: 100, 100, 100, 100
+.. list-table::
+    :widths: auto
+    :header-rows: 1
 
-	"-ud, --userdir", "/usr/user/ws", "Yes", "User directory where files
-	used by paws are stored."
-	"-n, --name", "", "Yes", "Group template filename."
-	"-v, --verbose", "", "No", "Enable to have verbose logging."
-	"-h, --help", "", "No", "Enable to see help menu."
+    *   - Argument
+        - Default
+        - Required
+        - Description
+
+    *   - -ud, --userdir
+        - /home/$USER/ws
+        - YES
+        - User directory
+
+    *   - -n, --name
+        -
+        - Yes
+        - Group template filename
+
+    *   - -h, --help
+        -
+        - No
+        - Enable to show help menu
+
 
 **EXAMPLES**
 
-.. code:: bash
+.. code-block:: bash
 
-	# Group using default user directory and specific group file
-	$ paws group -n group/my_group.yaml
+    # group using default options and setting group file
+    paws group -n group/my_group.yaml
 
-	# Group using specific user directory, specific group file and verbose logging
-	$ paws -v -ud /home/user group -n group/my_group.yaml
+    # group overriding user directory
+    paws -ud /tmp/ws group -n group/my_group.yaml
 
-	# Show group help menu
-	$ paws group -h
+    # show help menu
+    paws group --help
 
 **OUTPUT**
 

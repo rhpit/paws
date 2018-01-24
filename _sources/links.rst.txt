@@ -23,7 +23,7 @@ https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/
 Docker Hub
 ^^^^^^^^^^
 
-https://hub.docker.com/r/eduardomcerqueira/paws/
+https://hub.docker.com/r/rywillia/paws/
 
 PyPI
 ^^^^

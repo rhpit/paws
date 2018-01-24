@@ -1,273 +1,111 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Installation &#8212; PAWS 0.3.8.1 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.3.8.1',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="author" title="About these documents" href="about.html" />
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Getting Started" href="guide.html" />
-    <link rel="prev" title="PAWS documentation" href="index.html" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installation &mdash; PAWS 0.3.9 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="PAWS 0.3.9 documentation" href="index.html"/>
+        <link rel="next" title="Getting Started" href="guide.html"/>
+        <link rel="prev" title="Provision Automated Windows and Services" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
    
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  <div class="wy-grid-for-nav">
 
-  </head>
-  <body>
-  
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+          
+            <a href="index.html" class="icon icon-home"> PAWS
+          
+
+          
             
-  <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>PAWS is only supported in Linux systems and currently can be installed as
-regular application based on <strong>RPM</strong>, <strong>PIP</strong> or <strong>container</strong>.</p>
-<div class="section" id="support-matrix">
-<h2>Support matrix<a class="headerlink" href="#support-matrix" title="Permalink to this headline">¶</a></h2>
-<table border="1" class="colwidths-given docutils">
-<colgroup>
-<col width="32%" />
-<col width="24%" />
-<col width="22%" />
-<col width="22%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Operating System</th>
-<th class="head">Version</th>
-<th class="head">Application</th>
-<th class="head">Container</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td><a class="reference external" href="http://www.centos.org">CentOS</a></td>
-<td>7.2, 7.3, 7.4</td>
-<td>Yes</td>
-<td>Yes</td>
-</tr>
-<tr class="row-odd"><td><a class="reference external" href="http://www.fedoraproject.org">Fedora</a></td>
-<td><a class="reference external" href="https://fedoraproject.org/wiki/Releases#Current_Supported_Releases">Supported Releases</a></td>
-<td>Yes</td>
-<td>Yes</td>
-</tr>
-<tr class="row-even"><td><a class="reference external" href="https://www.redhat.com/en/technologies/linux-platforms">Red Hat Enterprise Linux</a></td>
-<td>7.2, 7.3, 7.4</td>
-<td>Yes</td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p>PAWS when installed by RPM runs automatically a post task to install
-some extra python pip modules to your system. They must be handled by pip
-because at this current date some of them are not distributed by RPM
-and others are outdated when installed by RP,M like the case of
-python-novaclient that by RPM the latest version is 3.3.1
-and by pip it is 9.1.0</p>
-<p>At this link you can see all pip modules that will be installed during
-post task: <a class="reference external" href="https://github.com/rhpit/paws/raw/master/requirements.txt">https://github.com/rhpit/paws/raw/master/requirements.txt</a></p>
-<p>Ansible requires two additional python packages to be installed in order
-to communicate with Windows systems.</p>
-<p><strong>pywinrm</strong>: This package is used for Windows remote management.
-At this time there is no RPM available.</p>
-<p><a class="reference external" href="https://pypi.python.org/pypi/pywinrm">https://pypi.python.org/pypi/pywinrm</a></p>
-<p><strong>shade</strong>: This package is required by Ansible to
-provision/teardown resources in a cloud infrastructure.</p>
-<p><a class="reference external" href="https://pypi.python.org/pypi/shade">https://pypi.python.org/pypi/shade</a></p>
-<p><a class="reference external" href="http://docs.openstack.org/infra/shade/">http://docs.openstack.org/infra/shade/</a></p>
-<p class="last"><a class="reference external" href="http://docs.ansible.com/ansible/list_of_cloud_modules.html#openstack">http://docs.ansible.com/ansible/list_of_cloud_modules.html#openstack</a></p>
-</div>
-</div>
-<div class="section" id="application">
-<h2>Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h2>
-<p><strong>Installing by PIP</strong></p>
-<div class="admonition attention">
-<p class="first admonition-title">Attention</p>
-<p>PAWS pip package name is <strong>paws-cli</strong> [1] and not only paws. It is because
-the project name paws [2] is already been used by other project with no
-relation with this project.</p>
-<p>[1] <a class="reference external" href="https://pypi.python.org/pypi/paws-cli">https://pypi.python.org/pypi/paws-cli</a></p>
-<p class="last">[2] <a class="reference external" href="https://pypi.python.org/pypi/paws">https://pypi.python.org/pypi/paws</a></p>
-</div>
-<p>Using pip the installation is basically running one command, <em>exception may
-occur if you are running a minimal OS version or don’t have python-pip and
-others required packages installed in your system</em>, installing packages required:</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Yum package manager</span>
-<span class="n">sudo</span> <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">gcc</span> <span class="n">make</span> <span class="n">python</span><span class="o">-</span><span class="n">devel</span> <span class="n">python</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">python</span><span class="o">-</span><span class="n">pip</span> \
-<span class="n">openssl</span> <span class="n">openssl</span><span class="o">-</span><span class="n">devel</span> <span class="n">libffi</span><span class="o">-</span><span class="n">devel</span> <span class="n">redhat</span><span class="o">-</span><span class="n">rpm</span><span class="o">-</span><span class="n">config</span>
+            <img src="_static/logo_no_bg.png" class="logo" />
+          
+          </a>
 
-<span class="c1"># Dnf package manager</span>
-<span class="n">sudo</span> <span class="n">dnf</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">gcc</span> <span class="n">make</span> <span class="n">python</span><span class="o">-</span><span class="n">devel</span> <span class="n">python</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">python</span><span class="o">-</span><span class="n">pip</span> \
-<span class="n">openssl</span> <span class="n">openssl</span><span class="o">-</span><span class="n">devel</span> <span class="n">libffi</span><span class="o">-</span><span class="n">devel</span> <span class="n">redhat</span><span class="o">-</span><span class="n">rpm</span><span class="o">-</span><span class="n">config</span>
-</pre></div>
-</div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo pip install paws-cli
-</pre></div>
-</div>
-<p><strong>Installing by RPM</strong></p>
-<p>RPM is available at <a class="reference external" href="https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/">https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/</a>
-Below follow the steps to install PAWS for each of supported OS</p>
-<div class="section" id="id1">
-<h3>CentOS<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
-sudo yum install -y paws
-</pre></div>
-</div>
-</div>
-<div class="section" id="id2">
-<h3>Fedora<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<p>Replace <strong>&lt;VERSION&gt;</strong> from repo url to match with your Fedora version or just
-use copr that does it automatically for you:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/fedora-&lt;VERSION&gt;/eduardocerqueira-paws-fedora-&lt;VERSION&gt;.repo
-sudo dnf install -y paws
-</pre></div>
-</div>
-<p>or by copr</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo dnf install dnf-plugins-core -y
-sudo dnf copr <span class="nb">enable</span> eduardocerqueira/paws -y
-sudo dnf install -y paws
-</pre></div>
-</div>
-</div>
-<div class="section" id="id3">
-<h3>Red Hat Enterprise Linux<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>On RHEL you need to have a valid subscription and enable repos below. EPEL is optional.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>    sudo subscription-manager register
-    sudo subscription-manager attach
-    sudo subscription-manager repos --enable rhel-7-&lt;variant&gt;-rpms
-sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
-    sudo yum install -y paws
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="container">
-<h2>Container<a class="headerlink" href="#container" title="Permalink to this headline">¶</a></h2>
-<p>To use paws in a container, you will need to have docker installed and running
-on your system. Please see the following link for details to setup your system
-with docker: <a class="reference external" href="https://docs.docker.com/engine/installation/">https://docs.docker.com/engine/installation/</a></p>
-<div class="admonition attention">
-<p class="first admonition-title">Attention</p>
-<p class="last">Make sure docker service is running and if you are running a Linux distro
-that has SELINUX make sure to manage it too otherwise it can cause
-permissions denied errors while running paws container.</p>
-</div>
-<p>PAWS docker images are based on official Centos and Fedora images and you can
-pull from at <a class="reference external" href="https://hub.docker.com/r/eduardomcerqueira/paws/">https://hub.docker.com/r/eduardomcerqueira/paws/</a> or running the
-commands below.</p>
-<p>You will notice the commands below are mounting the folder
-<strong>/home/user/ws/</strong> from host into the container. This folder contains
-the WS scripts that you will see at next section on <a class="reference external" href="guide.html">getting started</a></p>
-<p>PS: By default PAWS searches for /home/user/ws as folder for userdir where
-scripts should be saved. see <a class="reference external" href="tasks.html?highlight=userdir">userdir</a></p>
-<div class="section" id="id4">
-<h3>Centos<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8.1-centos-latest
-<span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git ws
-sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-centos-latest /bin/bash
-</pre></div>
-</div>
-</div>
-<div class="section" id="fedora-latest">
-<h3>Fedora latest<a class="headerlink" href="#fedora-latest" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-latest
-<span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git paws
-sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-latest /bin/bash
-</pre></div>
-</div>
-</div>
-<div class="section" id="fedora-26">
-<h3>Fedora 26<a class="headerlink" href="#fedora-26" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-26
-<span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git paws
-sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-26 /bin/bash
-</pre></div>
-</div>
-</div>
-<div class="section" id="fedora-25">
-<h3>Fedora 25<a class="headerlink" href="#fedora-25" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-25
-<span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git paws
-sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-25 /bin/bash
-</pre></div>
-</div>
-<hr class="docutils" />
-<p>You are now ready to begin using paws! To get started please navigate to the
-side bar on the left to see the <a class="reference external" href="guide.html">getting started</a>
-guide.</p>
-</div>
-</div>
+          
+            
+            
+              <div class="version">
+                0.3.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
 </div>
 
-
-          </div>
+          
         </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/logo_no_bg.png" alt="Logo"/>
-            </a></p>
-<h1 class="logo"><a href="index.html">PAWS</a></h1>
 
-
-
-<p class="blurb">Provision Automated Windows and Services</br>version: <b>0.3.8-1</b></p>
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=rhpit&repo=paws&type=watch&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#support-matrix">Support matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#support-matrix">Support Matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#application">Application</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">CentOS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Fedora</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">Red Hat Enterprise Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pip">PIP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rpm">RPM</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#container">Container</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id4">Centos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fedora-latest">Fedora latest</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fedora-26">Fedora 26</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fedora-25">Fedora 25</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#container">Container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#finally">Finally..</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.html">Getting Started</a></li>
@@ -277,57 +115,332 @@ guide.</p>
 <li class="toctree-l1"><a class="reference internal" href="create_group.html">Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="powershell.html">Windows PowerShell</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="questions.html">FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="about.html#benefits">Benefits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="about.html#examples-of-usage">Examples of usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="about.html#paws-layers">Paws layers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="links.html">Links</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contact.html">Contact</a></li>
 </ul>
 
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">PAWS documentation</a></li>
-      <li>Next: <a href="guide.html" title="next chapter">Getting Started</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+            
+          
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2017, Red Hat.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="_sources/install.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
+    </nav>
 
-    
-    <a href="https://github.com/rhpit/paws" class="github">
-        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
-    </a>
-    
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PAWS</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
     
-  </body>
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Installation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/install.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="support-matrix">
+<h2>Support Matrix<a class="headerlink" href="#support-matrix" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="colwidths-auto docutils">
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operating System</th>
+<th class="head">Version</th>
+<th class="head">Application</th>
+<th class="head">Container</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference external" href="http://www.centos.org">CentOS</a></td>
+<td>OS &gt;= 7.2</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td><a class="reference external" href="http://www.fedoraproject.org">Fedora</a></td>
+<td><a class="reference external" href="https://fedoraproject.org/wiki/Releases#Current_Supported_Releases">Supported Releases</a></td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td><a class="reference external" href="https://www.redhat.com/en/technologies/linux-platforms">Red Hat Enterprise Linux</a></td>
+<td>OS &gt;= 7.2</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>To install paws via pip, you will need to install the following system
+dependencies in order to have the install succeed.</p>
+<div class="highlight-bash"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># dnf package manager</span>
+sudo dnf install -y git gcc make python-devel python-setuptools <span class="se">\</span>
+python-pip openssl openssl-devel libffi-devel redhat-rpm-config
+
+<span class="c1"># yum package manager</span>
+sudo yum install -y git gcc make python-devel python-setuptools <span class="se">\</span>
+python-pip openssl openssl-devel libffi-devel redhat-rpm-config
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="application">
+<h2>Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pip">
+<h3>PIP<a class="headerlink" href="#pip" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://pypi.python.org/pypi/paws-cli">https://pypi.python.org/pypi/paws-cli</a></p>
+<div class="highlight-bash"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>pip install paws-cli
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="rpm">
+<h3>RPM<a class="headerlink" href="#rpm" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/">https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/</a></p>
+<p><strong>CentOS</strong></p>
+<div class="highlight-bash"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># install epel repo for package dependencies</span>
+sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+<span class="c1"># install paws repo</span>
+sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org<span class="se">\</span>
+/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
+
+<span class="c1"># install paws</span>
+sudo yum install -y paws
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fedora</strong></p>
+<div class="highlight-bash"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># install paws repo</span>
+sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org<span class="se">\</span>
+/coprs/eduardocerqueira/paws/repo/fedora-&lt;VERSION&gt;/eduardocerqueira-paws-<span class="se">\</span>
+fedora-&lt;VERSION&gt;.repo
+
+<span class="c1"># install paws</span>
+sudo dnf install -y paws
+</pre></div>
+</td></tr></table></div>
+<p>– OR –</p>
+<div class="highlight-bash"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># install dnf plugins core</span>
+sudo dnf install dnf-plugins-core -y
+
+<span class="c1"># enable paws copr repo</span>
+sudo dnf copr <span class="nb">enable</span> eduardocerqueira/paws -y
+
+<span class="c1"># install paws</span>
+sudo dnf install -y paws
+</pre></div>
+</td></tr></table></div>
+<p><strong>Red Hat Enterprise Linux</strong></p>
+<div class="highlight-bash"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># register system</span>
+sudo subscription-manager register
+
+<span class="c1"># attach and enable repos</span>
+sudo subscription-manager attach
+sudo subscription-manager repos --enable rhel-7-&lt;variant&gt;-rpms
+
+<span class="c1"># enable epel repo for package dependencies (optional)</span>
+sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+<span class="c1"># install paws repo</span>
+sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/<span class="se">\</span>
+coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
+
+<span class="c1"># install paws</span>
+sudo yum install -y paws
+</pre></div>
+</td></tr></table></div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>RPM installation will perform a post install task to install extra Python
+packages using pip. This is required because at this current point some
+required packages not available via RPM. You can view packages installed
+here: <a class="reference external" href="https://github.com/rhpit/paws/raw/master/requirements.txt">https://github.com/rhpit/paws/raw/master/requirements.txt</a></p>
+<p>Pywinrm: required for remote Windows management.</p>
+<p class="last">Shade: required for cloud infrastructure management via Ansible.</p>
+</div>
+</div>
+</div>
+<div class="section" id="container">
+<h2>Container<a class="headerlink" href="#container" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://hub.docker.com/r/rywillia/paws/">https://hub.docker.com/r/rywillia/paws/</a></p>
+<div class="highlight-bash"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># pull docker image</span>
+sudo docker pull rywillia/paws:latest
+
+<span class="c1"># clone ws repo</span>
+<span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> git clone https://github.com/rhpit/ws.git ws
+
+<span class="c1"># run docker and mount a new volume to the local ws repo folder</span>
+sudo docker run -it --name paws -v /home/user/ws/:/home/paws/ws rywillia/paws:latest bash
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="finally">
+<h2>Finally..<a class="headerlink" href="#finally" title="Permalink to this headline">¶</a></h2>
+<p>By default PAWS searches for /home/user/ws as folder for userdir where
+scripts should be saved. See <a class="reference external" href="tasks.html?highlight=userdir">userdir</a></p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="guide.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Provision Automated Windows and Services" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Red Hat.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.3.9',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>

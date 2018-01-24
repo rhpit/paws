@@ -8,52 +8,68 @@ Windows PowerShell script supplied by parameter input.
 
 **ARGUMENTS**
 
-.. csv-table::
-	:header: "Argument", "Default", "Required", "Description"
-	:widths: 100, 100, 100, 100
+.. list-table::
+    :widths: auto
+    :header-rows: 1
 
-	"-t, --topology", "`resources.yaml <files.html#resources-yaml>`_", "Yes", "System resources file which
-	contains systems you want to perform configuration on."
-	"-ps, --powershell", "", "Yes", "PowerShell script to be run."
-	"-psv, --powershell_vars", "", "No", "Variables used by PowerShell. Can be
-	a file which PS reads or the exact PS input arguments."
-	"-s, --system", "all system resources", "No", "Systems to configure."
-	"-h, --help", "", "No", "Enable to see help menu."
+    *   - Argument
+        - Default
+        - Required
+        - Description
+
+    *   - -t, --topology
+        - resources.yaml
+        - Yes
+        - System resources definition
+
+    *   - -ps, --powershell
+        -
+        - Yes
+        - PowerShell script to run
+
+    *   - -psv, --powershell_vars
+        -
+        - No
+        - PowerShell variables
+
+    *   - -s, --system
+        - All system resources
+        - No
+        - Systems to configure
+
+    *   - -h, --help
+        -
+        - No
+        - Enable to show help menu
 
 **EXAMPLES**
 
-.. code:: bash
+.. code-block:: bash
+    :linenos:
 
-	# Winsetup using default user directory and specific powershell
-	$ paws winsetup -ps powershell/my_ps.ps1
+    # winsetup using default options and setting powershell
+    paws winsetup -ps powershell/my_ps.ps1
 
-	# Winsetup using default user directory, specific powershell and verbose logging
-	$ paws -v winsetup -ps powershell/my_ps.ps1
+    # winsetup using default options, set powershell and enable verbose logging
+    paws -v winsetup -ps powershell/my_ps.ps1
 
-	# Winsetup using default user directory, specific powershell and
-	# specific powershell vars by a file
-	$ paws winetup -ps powershell/my_ps.ps1 -psv powershell/ps_vars.json
+    # winsetup overriding user directory and giving powershell vars file
+    paws winsetup -ud /tmp/ws -ps powershell/my_ps.ps1 -psv powershell/vars.json
 
-	# Winsetup using default user directory, specific powershell and
-	# specific system defined within resources topology
-	$ paws winsetup -ps powershell/my_ps.ps1 -s win2012_1
+    # winsetup giving set of systems to run powershell against
+    paws winsetup -ps powershell/my_ps.ps1 -s win2012_1
 
-	# Winsetup using default user directory, specific powershell and
-	# specific system(s) defined within resources topology
-	$ paws winsetup -ps powershell/my_ps.ps1 -s win2012_1 -s win2012_2
+    # winsetup setting powershell vars non file form
+    paws winsetup -ps powershell/set_uac.ps1 -psv '-uacValue 0'
 
-	# Winsetup using default user directory, specific powershell and
-	# powershell input parameters
-	$ paws winsetup -ps powershell/set_uac.ps1 -psv '-uacValue 0'
-
-	# Show winsetup help menu
-	$ paws winsetup -h
+    # show help menu
+    paws winsetup --help
 
 **OUTPUT**
 
 Here is an example of PowerShell output when run by paws.
 
-.. code:: bash
+.. code-block:: bash
 
 	2016-12-13 20:57:44 INFO [paws.remote.driver.run_playbook:243] PowerShell script to be run /usr/share/paws/powershell/get_system_info.ps1
 	2016-12-13 20:57:44 INFO [paws.remote.driver.run_playbook:248] *********************************************

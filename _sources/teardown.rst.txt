@@ -9,37 +9,52 @@ active instances.
 
 **ARGUMENTS**
 
-.. csv-table::
-	:header: "Argument", "Default", "Required", "Description"
-	:widths: 100, 100, 100, 100
+.. list-table::
+    :widths: auto
+    :header-rows: 1
 
-	"-c, --credentials", "`credentials.yaml <files.html#credentials-yaml>`_", "Yes", "Providers credential file
-	which contains authentication information."
-	"-t, --topology", "`resources.yaml <files.html#resources-yaml>`_", "Yes", "System resources file which
-	contains systems you want to teardown."
-	"-h, --help", "", "No", "Enable to see help menu."
+    *   - Argument
+        - Default
+        - Required
+        - Description
+
+    *   - -c, --credentials
+        - credentials.yaml
+        - Yes
+        - Providers credentials settings
+
+    *   - -t, --topology
+        - resources.yaml
+        - Yes
+        - System resources definition
+
+    *   - -h, --help
+        -
+        - No
+        - Enable to show help menu
 
 **EXAMPLES**
 
-.. code:: bash
+.. code-block:: bash
+    :linenos:
 
-	# Teardown using default arguments
-	$ paws teardown
+    # teardown using default options
+    paws teardown
 
-	# Teardown using default arguments and verbose logging
-	$ paws -v teardown
+    # teardown using default options with verbose logging
+    paws -v teardown
 
-	# Teardown using specific user directory and verbose logging
-	$ paws -v -ud /home/user teardown
+    # teardown overriding user directory
+    paws -ud /tmp/ws teardown
 
-	# Show teardown help menu
-	$ paws teardown -h
+    # show help menu
+    paws teardown --help
 
 **OUTPUT**
 
 You will see similar output as below when a system resource has been deleted.
 
-.. code:: bash
+.. code-block:: bash
 
 	2016-12-13 20:57:59 INFO [paws.util.log_resources:305] *********************************************
 	2016-12-13 20:57:59 INFO [paws.util.log_resources:306]           System Resources (deleted)         

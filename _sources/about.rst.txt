@@ -3,100 +3,69 @@
 	:width: 60%
 	:align: center
 
-About
------
+Provision Automated Windows and Services
+----------------------------------------
 
-Paws is a **Linux based tool** to provision Windows systems and configure 
-Windows services with a simpler way to test hybrid environments 
-**Linux and Windows** 
+A linux based tool focused on simplifying the process to provision Windows
+systems and configure Windows services. To easily test hybrid environments
+(Linux & Windows).
 
 Benefits
 --------
 
-1. Create, build and destroy Windows test environments within minutes.
+1. Build and destroy Windows environments within minutes.
 
-2. Ability to use evaluation Windows images or internal pre-defined QCOW 
-   Windows images during trial period.
+2. Use of Windows during trial evaluation period.
 
-3. Create fresh environments to validate bugs.
+3. Fresh environment to validate bugs.
 
-4. Reduce the time spent on support and maintenance of "golden-environments".
+4. Reduce time required to maintain "golden environments".
 
-5. Use native Windows language (PowerShell) to automate Windows server
-   configurations.
+5. Configure Windows using native PowerShell language.
 
-6. Easily share paws scripts to run in different test environments (eliminating 
-   need to create scripts that already exists).
+6. Share scripts to build Windows environments to eliminate need to
+   create scripts that may already exist.
 
+Usage
+-----
 
-Examples of usage
-------------------
+* Developers working on components that interact with Windows platforms can
+  benefit by paws to create a test environment to verify their code changes.
 
-* developers, working in components that interacts with Windows platform can
-  use PAWS to provision Windows with all configuration needed to verify their 
-  code changes.
+* Quality Engineers needing to test products within hybrid environments can
+  benefit by paws to create their fully configured test environment. Allowing
+  them to easily begin test execution.
 
-* quality engineer, executing any type of tests for products running on hybrid 
-  environment **Linux and Windows** can use PAWS to provision the Windows
-  environment with pre-defined configuration and ready to start the tests
-  execution.
+* DevOps can use paws to preview changes to production hybrid environments to
+  ensure changes are stable before making final deployment.
 
-* developers, quality engineers and release engineers, can use PAWS to 
-  provison the Windows environment for a release dry-run before go to production.
-  With PAWS groups the installation and workflow can be defined managing the
-  reproducibility and avoiding left over data reducing risks of a production
-  release.  
+Layers
+------
 
-* devOps, before apply changes in a hybrid environment **Linux and Windows** can
-  use PAWS to replicate the Windows environment based on scripts.
-
-Paws layers
------------
-
-Paws is composed of three elements (layers) shown below.
+Paws is composed of three layers as shown below:
 
 .. image:: _static/paws_overview.png
-	:align: center
+    :align: center
 
-**PAWS:** Command line tool installed on a Linux machine.
+**PAWS Client:** Paws command line client (Linux based).
 
-**Providers:** The infrastructure that will host the Windows machines. See 
-`providers <providers.html>`_ for all providers available at this current
-version and it might be expanded further for others such as AWS, GCE etc
-It is important to highlight that PAWS uses Ansible `cloud modules
-<http://docs.ansible.com/ansible/list_of_cloud_modules.html>`_  to
-perform tasks to provision and teardown systems.
+**Providers:** Infrastructure hosting the Windows systems. See `providers
+<providers.html>`_ to view the current available providers. Ansible cloud
+modules currently are used to handle provisioning in available infrastructures.
 
-**WS:** Is a centralized repository where all PowerShell scripts will live.
-PAWS users can use the PowerShells in the repository or they can set PAWS to
-use PowerShells from another local repo/folder. This is all configurable by
-parameters.
+**WS:** Centralized repository where all PowerShell scripts reside. Users
+can use the PowerShells in the repo or they can define a set of PowerShells
+from another repo or local folder. This is all configurable.
 
-Paws creates Windows environments using two main components:
+Finally..
+---------
 
-1. `Ansible <http://docs.ansible.com/>`_ to provision/teardown and communicate 
-via SSH to remote Windows systems provisioned in PAWS providers as example
-in an Openstack cloud computing or in a local virtualized environment 
-running on Libvirt.
+* Paws is NOT another tool to provision Windows systems and does not intend
+  replace any existing configuration management tool.
 
-2. Windows configuration scripts wrote in `Windows PowerShell
-<https://msdn.microsoft.com/en-us/powershell/mt173057.aspx>`_ language which
-perform configuration actions.
+* Paws is a great choice to be used for easily spinning up Windows systems and
+  performing a remote desktop connection or to be used in CI/CD environment.
 
-*Paws is NOT another tool to provision Windows systems and doesn't intend 
-to replace any configuration management tool.*
-
-Paws is a great choice to be used for spinning up Windows systems and
-performing a remote desktop connection or to be used by automation/CI
-requiring interactions with Windows environments.
-
-We envision paws as the solution to efficiently spin up and configure free
-Windows systems leaving hybrid environments no longer an issue for development
-or testing purposes.
-
-
-----
-
-To get started, navigate to the side bar on the left to see how to
-`install <install.html>`_, `use <guide.html>`_ or `contribute <contributing.html>`_
-to paws.
+* We envision paws as the solution to efficiently spin up and configure free
+  Windows systems leaving hybrid environments no longer an issue for
+  development or testing purposes.

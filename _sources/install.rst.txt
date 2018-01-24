@@ -1,195 +1,162 @@
 Installation
 ============
 
-PAWS is only supported in Linux systems and currently can be installed as 
-regular application based on **RPM**, **PIP** or **container**. 
-
-Support matrix
+Support Matrix
 --------------
 
-.. csv-table::
-	:header: "Operating System", "Version", "Application", "Container"
-	:widths: 100, 75, 70, 70
+.. list-table::
+    :widths: auto
+    :header-rows: 1
 
-	"`CentOS <http://www.centos.org>`_", "7.2, 7.3, 7.4", "Yes", "Yes"
-	"`Fedora <http://www.fedoraproject.org>`_", "`Supported Releases <https://fedoraproject.org/wiki/Releases#Current_Supported_Releases>`_", "Yes", "Yes"
-	"`Red Hat Enterprise Linux <https://www.redhat.com/en/technologies/linux-platforms>`_", "7.2, 7.3, 7.4", "Yes", "No"
+    *   - Operating System
+        - Version
+        - Application
+        - Container
 
-.. note::
+    *   - `CentOS <http://www.centos.org>`_
+        - OS >= 7.2
+        - Yes
+        - Yes
 
-	PAWS when installed by RPM runs automatically a post task to install 
-	some extra python pip modules to your system. They must be handled by pip
-	because at this current date some of them are not distributed by RPM 
-	and others are outdated when installed by RP,M like the case of 
-	python-novaclient that by RPM the latest version is 3.3.1 
-	and by pip it is 9.1.0 
+    *   - `Fedora <http://www.fedoraproject.org>`_
+        - `Supported Releases <https://fedoraproject.org/wiki/Releases#Current_Supported_Releases>`_
+        - Yes
+        - Yes
 
-	At this link you can see all pip modules that will be installed during
-	post task: https://github.com/rhpit/paws/raw/master/requirements.txt
-		 
-	Ansible requires two additional python packages to be installed in order
-	to communicate with Windows systems.
+    *   - `Red Hat Enterprise Linux <https://www.redhat.com/en/technologies/linux-platforms>`_
+        - OS >= 7.2
+        - Yes
+        - No
 
-	**pywinrm**: This package is used for Windows remote management.
-	At this time there is no RPM available.
+Prerequisites
+-------------
 
-	https://pypi.python.org/pypi/pywinrm
+To install paws via pip, you will need to install the following system
+dependencies in order to have the install succeed.
 
-	**shade**: This package is required by Ansible to
-	provision/teardown resources in a cloud infrastructure.
+.. code-block:: bash
+    :linenos:
 
-	https://pypi.python.org/pypi/shade
-	
-	http://docs.openstack.org/infra/shade/
-	
-	http://docs.ansible.com/ansible/list_of_cloud_modules.html#openstack
+    # dnf package manager
+    sudo dnf install -y git gcc make python-devel python-setuptools \
+    python-pip openssl openssl-devel libffi-devel redhat-rpm-config
 
+    # yum package manager
+    sudo yum install -y git gcc make python-devel python-setuptools \
+    python-pip openssl openssl-devel libffi-devel redhat-rpm-config
 
 Application
 -----------
 
-**Installing by PIP**
+PIP
++++
 
-.. attention::
-
-	PAWS pip package name is **paws-cli** [1] and not only paws. It is because 
-	the project name paws [2] is already been used by other project with no
-	relation with this project.
-	
-	[1] https://pypi.python.org/pypi/paws-cli
-	
-	[2] https://pypi.python.org/pypi/paws
-
-Using pip the installation is basically running one command, *exception may
-occur if you are running a minimal OS version or don't have python-pip and 
-others required packages installed in your system*, installing packages required:
-
-.. code:: bash
-
-	# Yum package manager
-	sudo yum install -y git gcc make python-devel python-setuptools python-pip \
-	openssl openssl-devel libffi-devel redhat-rpm-config
-
-	# Dnf package manager
-	sudo dnf install -y git gcc make python-devel python-setuptools python-pip \
-	openssl openssl-devel libffi-devel redhat-rpm-config
+https://pypi.python.org/pypi/paws-cli
 
 .. code-block:: bash
+    :linenos:
 
-	sudo pip install paws-cli
+    pip install paws-cli
 
+RPM
++++
 
-**Installing by RPM**
+https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/
 
-RPM is available at https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/ 
-Below follow the steps to install PAWS for each of supported OS
-
-CentOS
-++++++
-
-.. code-block:: bash
-
-	sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-	sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
-	sudo yum install -y paws
-
-Fedora
-++++++
-
-Replace **<VERSION>** from repo url to match with your Fedora version or just
-use copr that does it automatically for you:
+**CentOS**
 
 .. code-block:: bash
+    :linenos:
 
-	sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/fedora-<VERSION>/eduardocerqueira-paws-fedora-<VERSION>.repo
-	sudo dnf install -y paws
-	
-or by copr
-
-.. code-block:: bash
-
-	sudo dnf install dnf-plugins-core -y
-	sudo dnf copr enable eduardocerqueira/paws -y
-	sudo dnf install -y paws
-
-
-Red Hat Enterprise Linux
-++++++++++++++++++++++++
-
-On RHEL you need to have a valid subscription and enable repos below. EPEL is optional.
-
-.. code-block:: bash
-
-	sudo subscription-manager register
-	sudo subscription-manager attach
-	sudo subscription-manager repos --enable rhel-7-<variant>-rpms
+    # install epel repo for package dependencies
     sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-	sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
-	sudo yum install -y paws
 
+    # install paws repo
+    sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org\
+    /coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
+
+    # install paws
+    sudo yum install -y paws
+
+**Fedora**
+
+.. code-block:: bash
+    :linenos:
+
+    # install paws repo
+    sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org\
+    /coprs/eduardocerqueira/paws/repo/fedora-<VERSION>/eduardocerqueira-paws-\
+    fedora-<VERSION>.repo
+
+    # install paws
+    sudo dnf install -y paws
+
+-- OR --
+
+.. code-block:: bash
+    :linenos:
+
+    # install dnf plugins core
+    sudo dnf install dnf-plugins-core -y
+
+    # enable paws copr repo
+    sudo dnf copr enable eduardocerqueira/paws -y
+
+    # install paws
+    sudo dnf install -y paws
+
+**Red Hat Enterprise Linux**
+
+.. code-block:: bash
+    :linenos:
+
+    # register system
+    sudo subscription-manager register
+
+    # attach and enable repos
+    sudo subscription-manager attach
+    sudo subscription-manager repos --enable rhel-7-<variant>-rpms
+
+    # enable epel repo for package dependencies (optional)
+    sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+    # install paws repo
+    sudo curl -o /etc/yum.repos.d/paws.repo https://copr.fedorainfracloud.org/\
+    coprs/eduardocerqueira/paws/repo/epel-7/eduardocerqueira-paws-epel-7.repo
+
+    # install paws
+    sudo yum install -y paws
+
+.. warning::
+
+    RPM installation will perform a post install task to install extra Python
+    packages using pip. This is required because at this current point some
+    required packages not available via RPM. You can view packages installed
+    here: https://github.com/rhpit/paws/raw/master/requirements.txt
+
+    Pywinrm: required for remote Windows management.
+
+    Shade: required for cloud infrastructure management via Ansible.
 
 Container
 ---------
 
-To use paws in a container, you will need to have docker installed and running
-on your system. Please see the following link for details to setup your system
-with docker: https://docs.docker.com/engine/installation/
-
-.. attention::
-
-   Make sure docker service is running and if you are running a Linux distro
-   that has SELINUX make sure to manage it too otherwise it can cause 
-   permissions denied errors while running paws container.
-
-PAWS docker images are based on official Centos and Fedora images and you can 
-pull from at https://hub.docker.com/r/eduardomcerqueira/paws/ or running the 
-commands below.
-
-You will notice the commands below are mounting the folder 
-**/home/user/ws/** from host into the container. This folder contains
-the WS scripts that you will see at next section on `getting started <guide.html>`_ 
-
-PS: By default PAWS searches for /home/user/ws as folder for userdir where
-scripts should be saved. see `userdir <tasks.html?highlight=userdir>`_
-
-Centos
-++++++
+https://hub.docker.com/r/rywillia/paws/
 
 .. code-block:: bash
+    :linenos:
 
-	sudo docker pull eduardomcerqueira/paws:0.3.8.1-centos-latest
-	cd ~ && git clone https://github.com/rhpit/ws.git ws
-	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-centos-latest /bin/bash
+    # pull docker image
+    sudo docker pull rywillia/paws:latest
 
-Fedora latest
-+++++++++++++
+    # clone ws repo
+    cd ~ && git clone https://github.com/rhpit/ws.git ws
 
-.. code-block:: bash
+    # run docker and mount a new volume to the local ws repo folder
+    sudo docker run -it --name paws -v /home/user/ws/:/home/paws/ws rywillia/paws:latest bash
 
-	sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-latest
-	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-latest /bin/bash
+Finally..
+---------
 
-Fedora 26
-+++++++++
-
-.. code-block:: bash
-
-	sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-26
-	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-26 /bin/bash
-
-Fedora 25
-+++++++++
-
-.. code-block:: bash
-
-	sudo docker pull eduardomcerqueira/paws:0.3.8.1-fedora-25
-	cd ~ && git clone https://github.com/rhpit/ws.git paws
-	sudo docker run -it --name paws-dev -v /home/user/ws/:/home/paws/ws eduardomcerqueira/paws:0.3.8.1-fedora-25 /bin/bash
-
-----
-
-You are now ready to begin using paws! To get started please navigate to the
-side bar on the left to see the `getting started <guide.html>`_
-guide.
+By default PAWS searches for /home/user/ws as folder for userdir where
+scripts should be saved. See `userdir <tasks.html?highlight=userdir>`_
