@@ -76,7 +76,7 @@ disable=import-star-module-level,old-octal-literal,oct-method,print-statement,
  coerce-method,delslice-method,getslice-method,setslice-method,input-builtin,
  round-builtin,hex-method,nonzero-method,map-builtin-not-iterating,
  protected-access,super-init-not-called,missing-docstring,logging-not-lazy,
- pointless-string-statement,wrong-import-order
+ pointless-string-statement,wrong-import-order,inconsistent-return-statements
 
 [REPORTS]
 
