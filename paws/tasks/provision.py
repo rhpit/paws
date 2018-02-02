@@ -17,10 +17,9 @@
 #
 
 """Provision task."""
-from ansible.errors import AnsibleRuntimeError
 
 from paws.core import PawsTask, Namespace
-from paws.exceptions import NovaPasswordError, SSHError
+from paws.exceptions import ProvisionError
 from paws.helpers import log_resources
 from paws.providers import Provider
 
@@ -98,21 +97,16 @@ class Provision(PawsTask):
 
             # Run provider action
             self.resources_paws = self.provider.run_action(self.name.lower())
-        except (AnsibleRuntimeError, NovaPasswordError, SSHError,
-                KeyboardInterrupt, SystemExit) as ex:
-            # set exit code
-            self.exit_code = 1
-
-            if isinstance(ex, KeyboardInterrupt):
-                self.logger.warning("CTRL+C detected, interrupting execution")
-            # teardown system resources
-            self.provider.run_action('teardown')
-        finally:
-            # save end time
-            self.end()
 
             # log system resources details to console
             log_resources(self.resources_paws, 'provisioned')
+        except ProvisionError as ex:
+            # set exit code
+            self.exit_code = 1
+            self.logger.error(ex.message)
+        finally:
+            # save end time
+            self.end()
 
             self.logger.info("END: %s, TIME: %dh:%dm:%ds",
                              self.name, self.hours, self.minutes, self.seconds)

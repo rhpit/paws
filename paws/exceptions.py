@@ -16,34 +16,64 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-"""
-Paws exceptions.
-"""
+"""Custom paws exceptions."""
 
 
-class SSHError(Exception):
+class PawsError(Exception):
+    """Base class for all custom paws exceptions."""
+    pass
+
+
+class SSHError(PawsError):
     """Exception raised for errors with SSH connections."""
 
-    def __init__(self, msg):
-        """Constructor."""
-        self.msg = msg
+    def __init__(self, message):
+        """Constructor.
 
-    def __str__(self):
-        """Return the string given at time of exception raised."""
-        return repr(self.msg)
+        :param message: explanation about the error
+        """
+        self.message = message
 
 
 class NovaPasswordError(Exception):
     """Exception raised for errors with getting nova password."""
 
-    def __init__(self, msg):
-        """Constructor."""
-        self.msg = msg
+    def __init__(self, message):
+        """Constructor.
 
-    def __str__(self):
-        """Return the string given at time of exception raised."""
-        return repr(self.msg)
+        :param message: explanation about the error
+        """
+        self.message = message
 
 
-class PawsPreTaskError(Exception):
-    """Exception raised for errors with paws tasks pre_task actions."""
+class ProvisionError(PawsError):
+    """Exception raised for errors with provisioning."""
+
+    def __init__(self, message):
+        """Constructor.
+
+        :param message: explanation about the error
+        """
+        self.message = message
+
+
+class NotFound(PawsError):
+    """Exception raised for when objects are not found."""
+
+    def __init__(self, message):
+        """Constructor.
+
+        :param message: explanation about the error
+        """
+        self.message = message
+
+
+class BootError(PawsError):
+    """Exception raised for errors while attempting to boot a vm."""
+
+    def __init__(self, message):
+        """Constructor.
+
+        :param message: explanation about the error
+        """
+        self.message = message

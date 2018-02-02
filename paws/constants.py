@@ -69,10 +69,7 @@ ADMINISTRATOR = "Administrator"
 ADMINISTRADOR_PWD = "administrator_password"
 
 # Files name
-PROVISION_YAML = ".provision.yaml"
-TEARDOWN_YAML = ".teardown.yaml"
 WIN_EXEC_YAML = ".powershell_exec.yaml"
-GET_OPS_FACTS_YAML = ".get_ops_facts.yaml"
 
 SSH_IGNORE_ERROR = [
     "time out",
@@ -127,7 +124,7 @@ LIBVIRT_AUTH_HELP = "%s/providers.html#libvirt" % DOC
 # Register a new supported provider to PAWS
 PROVIDERS = [{'name': 'openstack',
               'module': 'paws.providers.openstack',
-              'class': 'Openstack'},
+              'class': 'OpenStack'},
              {'name': 'libvirt_kvm',
               'module': 'paws.providers.libvirt_kvm',
               'class': 'Libvirt'}]

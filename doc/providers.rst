@@ -132,40 +132,28 @@ Path: /home/$USER/paws/resources.yaml
 |                        | *login to the system via SSH*     |             |
 +------------------------+-----------------------------------+-------------+
 | snapshot               | Take a snapshot for a given       |      No     |
-|                        | resource. You can define a list of|             |
-|                        | tasks when to take a snapshot     |             |
+|                        | resource.                         |             |
 +------------------------+-----------------------------------+-------------+
 
 .. note::
-	**- snapshot:** Take a snapshot for a given resource. You can define a
-	list of tasks when to take a snapshot.
+	**- snapshot:** Take a snapshot for a given resource.
 
-	.. code:: yaml
+   .. code-block:: yaml
 
-	   # Example 1: Create snapshot & clean old server snapshots
-	   resources:
-	      - name: MY_WINDOWS_VM
-	        snapshot:
-	          - task: teardown
+      # example 1: create snapshot and clean previous snapshots for the vm
+      resources:
+         - name: MY_WINDOWS_VM
+           snapshot:
+             create: True
+             clean: True
 
-	The resource above will take a snapshot and clean any old snapshots
-	created for this VM (MY_WINDOWS_VM) during teardown task. The default
-	behavior is when you give a list of tasks to create snapshots it will
-	always create the snapshot and clean old snapshots. To override this
-	please see the following example:
-
-	.. code:: yaml
-
-	   # Example 2: Create snapshot & do not clean old server snapshots
-	   resources:
-	      - name: MY_WINDOWS_VM
-	        snapshot:
-	          - task: teardown
-	            clean: False
-
-	This resource will take a snapshot and will not clean old snapshots
-	created by paws for this server.
-
+      # example 2: do not create snapshot and only clean previous snapshots
+      for the vm:
+      resources:
+         - name: MY_WINDOWS_VM
+           snapshot:
+             create: False
+             clean: True
 
 single network
 ^^^^^^^^^^^^^^

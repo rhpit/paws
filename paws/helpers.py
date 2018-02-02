@@ -123,7 +123,7 @@ def file_mgmt(operation, file_path, content=None, cfg_parser=None):
     :type content: object
     :param cfg_parser: Config parser object (Only needed if the file being
         processed is a configuration file parser language)
-    :type cfg_parser: bool
+    :type cfg_parser: object
     :return: Data that was read from a file
     :rtype: object
     """
