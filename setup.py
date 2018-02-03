@@ -61,18 +61,16 @@ and configure Windows services with a simpler way to test hybrid environments \
     zip_safe=False,
     packages=[
               'paws',
+              'paws.lib',
               'paws.providers',
-              'paws.remote',
               'paws.tasks'
     ],
     install_requires=['paramiko',
                       'pywinrm',
                       'click',
-                      'shade',
+                      'apache-libcloud',
                       'ansible',
-                      'python-novaclient',
-                      'python-glanceclient',
-                      'python-keystoneclient'],
+                      'python-novaclient'],
     test_suite="nose.collector",
     tests_require="nose",
     entry_points={'console_scripts': ['paws=paws.cli:paws']}

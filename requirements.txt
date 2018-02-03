@@ -2,10 +2,8 @@
 paramiko
 pywinrm
 click
-shade
 ansible
 # paws providers
+apache-libcloud
 python-novaclient
-python-glanceclient
-python-keystoneclient
 #libvirt-python

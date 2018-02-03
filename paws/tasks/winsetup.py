@@ -25,9 +25,8 @@ from paws.constants import ADMIN, WIN_EXEC_YAML, LINE
 from paws.core import PawsTask, Namespace
 from paws.exceptions import SSHError
 from paws.helpers import cleanup, get_ssh_conn, file_mgmt
-from paws.remote import WinPsExecYAML
-from paws.remote.driver import Ansible
-from paws.remote.results import GenModuleResults
+from paws.lib.remote import PlaybookCall, GenModuleResults, create_inventory
+from paws.lib.windows import create_ps_exec_playbook
 
 
 class Winsetup(PawsTask):
@@ -86,7 +85,7 @@ class Winsetup(PawsTask):
         except KeyError:
             self.args = Namespace(kwargs)
 
-        self.ansible = Ansible(self.userdir)
+        self.playbook = PlaybookCall(self.userdir)
         self.winsetup_yaml = join(self.userdir, WIN_EXEC_YAML)
         self.pshell = join(self.userdir, self.args.powershell)
 
@@ -105,7 +104,7 @@ class Winsetup(PawsTask):
             self.resources = file_mgmt('r', self.resources_paws_file)
 
         # Create inventory file
-        self.ansible.create_hostfile(tp_obj=self.resources)
+        create_inventory(self.playbook.inventory_file, self.resources)
 
         # Verify PowerShell script exists
         if not exists(self.pshell):
@@ -198,7 +197,7 @@ class Winsetup(PawsTask):
                 pvars = self.psv
 
             # Create playbook to run PowerShell script on Windows resources
-            self.winsetup_yaml = WinPsExecYAML(self).create(pvars)
+            self.winsetup_yaml = create_ps_exec_playbook(self.userdir, pvars)
 
             # Test if remote machine is ready for SSH connection
             try:
@@ -217,7 +216,7 @@ class Winsetup(PawsTask):
                 )
 
                 # Playbook call - run PowerShell script on Windows resources
-                self.ansible.run_playbook(
+                self.playbook.run(
                     self.winsetup_yaml,
                     pb_vars,
                     results_class=GenModuleResults

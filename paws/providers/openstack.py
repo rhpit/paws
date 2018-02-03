@@ -15,1177 +15,727 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-"""Openstack provider."""
 
-from logging import getLogger
+import random
+from copy import deepcopy
 from time import sleep
 from uuid import uuid4
 
-from glanceclient.v2.client import Client as gclient
-from keystoneclient.v2_0.client import Client as kclient
-from novaclient.client import Client as nclient
-from novaclient.exceptions import ClientException, NotFound
-from novaclient.v2 import networks, images, flavors
+import urllib3
+from libcloud import security
+from libcloud.common.types import InvalidCredsError
+from libcloud.compute.providers import get_driver
+from libcloud.compute.types import Provider
+from novaclient.client import Client as NovaClient
 from os import getenv
-from os.path import join, exists
-from re import search, IGNORECASE
+from os.path import exists
 
-from paws.constants import ADMIN, GET_OPS_FACTS_YAML, ADMINISTRADOR_PWD, LINE
-from paws.constants import OPENSTACK_ENV_VARS, PROVISION_RESOURCE_KEYS
-from paws.constants import PROVISION_YAML, TEARDOWN_YAML, ADMINISTRATOR
-from paws.exceptions import NovaPasswordError, SSHError
-from paws.helpers import cleanup, file_mgmt, get_ssh_conn, \
-    update_resources_paws, retry
-from paws.remote.driver import Ansible
-from paws.remote.prep import WinPrep
-from paws.remote.results import CloudModuleResults
+from paws.constants import ADMIN, ADMINISTRADOR_PWD, ADMINISTRATOR, \
+    OPENSTACK_ENV_VARS, PROVISION_RESOURCE_KEYS
+from paws.core import LoggerMixin
+from paws.exceptions import NovaPasswordError, SSHError, ProvisionError, \
+    NotFound, BootError
+from paws.helpers import retry, get_ssh_conn, file_mgmt
+from paws.lib.remote import PlayCall
+from paws.lib.windows import create_inventory, set_administrator_password, \
+    ipconfig_release
 
-LOG = getLogger(__name__)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+MAX_ATTEMPTS = 3
+MAX_WAIT_TIME = 100
 
 
-class Openstack(object):
-    """ Openstack Provider """
+class LibCloud(LoggerMixin):
+    """Apache LibCloud OpenStack provider implementation."""
+
+    security.VERIFY_SSL_CERT = False
+
+    def __init__(self, credentials):
+        """Constructor.
+
+        :param credentials: provider credentials
+        """
+        self.driver = get_driver(Provider.OPENSTACK)(
+            credentials['os_username'],
+            credentials['os_password'],
+            ex_tenant_name=credentials['os_project_name'],
+            ex_force_auth_url=credentials['os_auth_url'].split('/v')[0],
+            ex_force_auth_version='2.0_password',
+            ex_force_service_region=credentials.get('os_region', 'regionOne')
+        )
+
+        # verify connection
+        try:
+            self.driver.ex_list_networks()
+        except InvalidCredsError:
+            raise ProvisionError('Connection to OpenStack provider failed.')
+
+    def get_image(self, name):
+        """Get the LibCloud image object.
+
+        :param name: image name or id
+        """
+        images = self.driver.list_images()
+
+        by_name = filter(lambda elm: elm.name == name, images)
+        by_id = filter(lambda elm: elm.id == name, images)
+
+        if by_name.__len__() != 0:
+            return by_name[0]
+        elif by_id.__len__() != 0:
+            return by_id[0]
+        else:
+            self.logger.error('Image %s does not exist.', name)
+            raise SystemExit(1)
+
+    def get_flavor(self, name):
+        """Get the LibCloud size 'flavor' object.
+
+        :param name: flavor name or id
+        """
+        sizes = self.driver.list_sizes()
+
+        by_name = filter(lambda elm: elm.name == name, sizes)
+        by_id = list()
+
+        for size in sizes:
+            try:
+                if name == int(size.id):
+                    by_id.append(size)
+                    break
+            except ValueError:
+                # base 10
+                continue
+
+        if by_name.__len__() != 0:
+            return by_name[0]
+        elif by_id.__len__() != 0:
+            return by_id[0]
+        else:
+            self.logger.error('Flavor %s does not exist.', name)
+            raise SystemExit(1)
+
+    def get_key_pair(self, name):
+        """Get the LibCloud key pair object.
+
+        :param name: key pair name
+        """
+        pairs = self.driver.list_key_pairs()
+
+        data = filter(lambda elm: elm.name == name, pairs)
+
+        if data.__len__() == 0:
+            self.logger.error('Key pair %s does not exist.', name)
+            raise SystemExit(1)
+        else:
+            return data[0]
+
+    def get_float_ip_pool(self, name):
+        """Get the LibCloud floating ip pool object.
+
+        :param name: floating ip pool name
+        """
+        pool = self.driver.ex_list_floating_ip_pools()
+
+        data = filter(lambda elm: elm.name == name, pool)
+
+        if data.__len__() == 0:
+            raise NotFound('Not found floating ip pool: %s.' % name)
+        else:
+            return data[0]
+
+    def get_node(self, name):
+        """Get the LibCloud node object.
+
+        :param name: vm name
+        """
+        nodes = self.driver.list_nodes()
+
+        data = filter(lambda elm: elm.name == name, nodes)
+
+        if data.__len__() == 0:
+            raise NotFound('Not found vm: %s.' % name)
+        else:
+            return data[0]
+
+    def boot_vm(self, name, image, flavor, key_pair, network=None):
+        """Boot a virtual machine.
+
+        :param name: vm name
+        :param image: image name
+        :param flavor: flavor name
+        :param key_pair: key pair name
+        :param network: network name
+        """
+        attempt = 1
+
+        while attempt <= MAX_ATTEMPTS:
+            try:
+                self.logger.info('Booting vm %s.', name)
+                if network is None:
+                    node = self.driver.create_node(
+                        name=name,
+                        image=self.get_image(image),
+                        size=self.get_flavor(flavor),
+                        ex_keyname=key_pair
+                    )
+                else:
+                    node = self.driver.create_node(
+                        name=name,
+                        image=self.get_image(image),
+                        size=self.get_flavor(flavor),
+                        ex_keyname=key_pair,
+                        networks=[network]
+                    )
+                self.logger.info('Successfully booted vm %s.', name)
+                return node
+            except KeyError as ex:
+                self.logger.error(ex.message)
+                delay = random.randint(10, MAX_WAIT_TIME)
+                self.logger.info('%s:%s: retrying in %s seconds.',
+                                 attempt, MAX_ATTEMPTS, delay)
+                sleep(delay)
+                attempt += 1
+        raise BootError('Maximum attempts reached to boot vm %s.' % name)
+
+    def wait_for_building_finish(self, node):
+        """Wait for a vm to finish building.
+
+        :param node: libcloud node object
+        """
+        self.logger.info('Wait for vm %s to finish building.', node.name)
+
+        attempt = 1
+        while attempt <= 30:
+            node = self.driver.ex_get_node_details(node.id)
+            state = getattr(node, 'state')
+            msg = '%s. VM %s, STATE=%s' % (attempt, node.name, state)
+
+            if state.lower() != 'running':
+                self.logger.info('%s, rechecking in 20 seconds.', msg)
+                sleep(20)
+            else:
+                self.logger.info(msg)
+                self.logger.info('VM %s successfully finished building!',
+                                 node.name)
+                return node
+            attempt += 1
+
+        raise BootError('VM %s was unable to finish building.' % node.name)
+
+    def attach_floating_ip(self, node, network):
+        """Attach floating IP to vm.
+
+        :param node: libcloud node object
+        :param network: external network address
+        """
+        try:
+            self.logger.info('Attach floating ip to vm %s.', node.name)
+            pool = self.get_float_ip_pool(network)
+
+            ip_obj = pool.create_floating_ip()
+
+            self.logger.info('VM %s FIP %s.', node.name, ip_obj.ip_address)
+
+            self.driver.ex_attach_floating_ip_to_node(node, ip_obj)
+            self.logger.info('Successfully attached floating ip to vm %s',
+                             node.name)
+            return str(ip_obj.ip_address)
+        except NotFound as ex:
+            raise BootError(ex)
+
+    @staticmethod
+    def get_floating_ip(node):
+        """Get the floating ip for a vm.
+
+        :param node: libcloud node object
+        """
+        for key in node.extra['addresses']:
+            for network in node.extra['addresses'][key]:
+                if network['OS-EXT-IPS:type'] != 'floating':
+                    continue
+                return network['addr']
+
+    def get_network(self, name):
+        """Get the LibCloud network object.
+
+        :param name: network name
+        """
+        networks = self.driver.ex_list_networks()
+
+        data = filter(lambda elm: elm.name == name, networks)
+
+        if data.__len__() == 0:
+            raise NotFound('Not found network: %s.' % name)
+        else:
+            return data[0]
+
+
+class Nova(LoggerMixin):
+    """OpenStack nova component implementation."""
+
+    def __init__(self, credentials):
+        """Constructor.
+
+        :param credentials: provider credentials
+        """
+        self.nova = NovaClient(
+            '2',
+            username=credentials['os_username'],
+            password=credentials['os_password'],
+            auth_url=credentials['os_auth_url'],
+            project_name=credentials['os_project_name']
+        )
+
+    @retry(NovaPasswordError, tries=20)
+    def get_password(self, name, key_pair):
+        """Get the admin password for a server.
+
+        :param name: server name
+        :param key_pair: key pair associated to server
+        """
+        try:
+            server = self.nova.servers.find(name=name)
+            password = server.get_password(key_pair)
+
+            if not password:
+                raise NovaPasswordError('Password is empty!')
+            if not isinstance(password, str):
+                raise NovaPasswordError('Password %s is not string type!' %
+                                        password)
+            self.logger.debug('VM %s admin password %s', name, password)
+        except NovaPasswordError as ex:
+            raise NovaPasswordError(ex.message)
+        return password
+
+    def get_admin_password(self, res):
+        """Get the pre-defined password for the admin account.
+
+        This is part of the Windows QCOW image build process. The password is
+        random each time. Nova client is used to retrieve the password.
+
+        :param res: vm resource
+        """
+        self.logger.info('Attempting to SSH into vm %s.', res['name'])
+        try:
+            get_ssh_conn(
+                res['public_v4'],
+                ADMIN,
+                ssh_key=res['ssh_private_key']
+            )
+        except SSHError:
+            self.logger.error('Unable to SSH into vm %s.', res['name'])
+            raise SSHError(1)
+
+        self.logger.info('Fetching vm %s admin account password.', res['name'])
+
+        res['win_username'] = ADMIN
+        res['win_password'] = None
+
+        try:
+            res['win_password'] = self.get_password(
+                res['name'],
+                res['ssh_private_key']
+            )
+            self.logger.info('Successfully retrieved VM %s admin password.',
+                             res['name'])
+        except NovaPasswordError:
+            self.logger.error('Unable to fetch admin password for vm %s.',
+                              res['name'])
+            raise NovaPasswordError(1)
+        return res
+
+
+class OpenStack(LibCloud, Nova):
+    """OpenStack provider class."""
 
     __provider_name__ = 'openstack'
 
+    _credentials = dict()
+    _resources = list()
+
     def __init__(self, args):
-        self.userdir = args.userdir
-        self.resources = args.resources
+        """Constructor."""
+        # set credentials
         self.credentials = args.credentials
+
+        self.user_dir = args.userdir
         self.resources_paws_file = args.resources_paws_file
         self.verbose = args.verbose
 
-        # create objects
-        self.conductor = Conductor(self.resources, self.credentials)
-        self.ansible = Ansible(self.userdir)
-        self.util = Util(self)
+        # set resources
+        self.set_resources(args.resources)
 
-        self.provision_yaml = object
-        self.teardown_yaml = object
-        self.resources_paws = None
+        LibCloud.__init__(self, self.credentials)
+        Nova.__init__(self, self.credentials)
 
     @property
     def name(self):
         """Return provider name."""
         return self.__provider_name__
 
-    def garbage_collector(self):
-        """Garbage collector method. it knows which files to collect for this
-        provider and when asked/invoked it return all files to be deletec
-        in a list
+    @property
+    def resources(self):
+        """Resources property.
 
-        :return garbage: all files to be deleted from this provider
-        :rtypr garbage: list
+        :return: windows resources
         """
-        garbage = [self.ansible.ansible_inventory,
-                   join(self.userdir, TEARDOWN_YAML),
-                   join(self.userdir, PROVISION_YAML),
-                   join(self.userdir, GET_OPS_FACTS_YAML),
-                   join(self.userdir, self.resources_paws_file)]
+        return self._resources
 
-        return garbage
+    @resources.setter
+    def resources(self, value):
+        """Set resources.
 
-    def clean_files(self):
-        """Clean files genereated by paws for Openstack provider. It will only
-        clean generated files when in non verbose mode.
+        :param value: windows resources
         """
-        if not self.verbose:
-            cleanup(self.garbage_collector())
+        self._resources = value
 
-    def provision(self):
-        """Provision system resource(s) in Openstack provider."""
-        # get provider credentials. This is only needed if no credentials
-        # were set by file. It will then check for credentials by env vars.
-        self.credentials = self.util.get_credentials()
+    def set_resources(self, resources):
+        """Handle setting resources when count > 1.
 
-        # create inventory for localhost calls
-        self.ansible.create_hostfile()
-
-        # resources key check
-        self.conductor.resource_keys_exist()
-
-        # resources provider key check
-        self.conductor.credentials = self.credentials
-        self.conductor.valid_openstack_keys()
-
-        # create provision playbook
-        self.provision_yaml = ProvisionYAML(self.userdir, self.resources)
-        self.provision_yaml.create()
-
-        # provision resources
-        self.ansible.run_playbook(
-            self.provision_yaml.playbook,
-            extra_vars=self.credentials,
-            results_class=CloudModuleResults
-        )
-
-        # craft resources paws data structure
-        self.resources_paws = self.util.generate_resources_paws()
-
-        if self.resources_paws['resources'].__len__() > 0:
-            for elem in self.resources_paws['resources']:
-                # Get the default admin username and password
-                elem = self.util.get_admin_password(elem)
-
-            # Update resources paws file with admin username and password
-            update_resources_paws(
-                self.resources_paws_file,
-                self.resources_paws
-            )
-
-            # Create updated inventory file
-            self.ansible.create_hostfile(tp_obj=self.resources_paws)
-
-        # Set Administrator account password
-        win_prep = WinPrep(
-            self.ansible,
-            self.resources_paws,
-            self.resources_paws_file
-        )
-        self.resources_paws = win_prep.set_administrator_password()
-
-        # Create snapshot
-        self.snapshots(self.resources_paws, task="provision")
-
-        self.clean_files()
-
-        return self.resources_paws
-
-    def teardown(self):
-        """ Teardown system resource(s) in Openstack provider."""
-        # get provider credentials. This is only needed if no credentials
-        # were set by file. It will then check for credentials by env vars.
-        self.credentials = self.util.get_credentials()
-
-        # create inventory for localhost calls
-        self.ansible.create_hostfile()
-
-        # Get instances facts from provider
-        GetServerFacts(self).get_facts()
-
-        # craft resources paws data structure
-        self.resources_paws = self.util.generate_resources_paws()
-
-        # Update username/password
-        for elem in self.resources_paws['resources']:
-            if ADMINISTRADOR_PWD in elem:
-                elem['win_username'] = ADMINISTRATOR
-                elem['win_password'] = elem[ADMINISTRADOR_PWD]
-            else:
-                elem['win_username'] = 'undefined'
-                elem['win_password'] = 'undefined'
-
-        # Create playbook to teardown resources
-        self.teardown_yaml = TeardownYAML(self.userdir, self.resources_paws)
-        self.teardown_yaml.create()
-
-        # Create updated inventory file
-        self.ansible.create_hostfile(tp_obj=self.resources_paws)
-
-        # Create snapshot
-        self.snapshots(self.resources_paws, task="teardown")
-
-        # Playbook call - teardown resources
-        self.ansible.run_playbook(
-            self.teardown_yaml.playbook,
-            extra_vars=self.credentials,
-            results_class=CloudModuleResults
-        )
-
-        self.clean_files()
-
-        return self.resources_paws
-
-    def show(self):
-        """ Show system resource(s) in Openstack provider"""
-        # get provider credentials. This is only needed if no credentials
-        # were set by file. It will then check for credentials by env vars.
-        self.credentials = self.util.get_credentials()
-
-        # create inventory for localhost calls
-        self.ansible.create_hostfile()
-
-        # Get instances facts from provider
-        GetServerFacts(self).get_facts()
-
-        # craft resources paws data structure
-        self.resources_paws = self.util.generate_resources_paws()
-
-        if self.resources_paws['resources'].__len__() > 0:
-            for elem in self.resources_paws['resources']:
-                if ADMINISTRADOR_PWD in elem:
-                    # password is defined up-front in resources.yaml
-                    elem['win_username'] = ADMINISTRATOR
-                    elem['win_password'] = elem[ADMINISTRADOR_PWD]
-                else:
-                    # password is not defined up-front in resources.yaml
-                    # get default password and user ADMIN
-                    elem = self.util.get_admin_password(elem)
-
-            # Update resources paws file with admin username and password
-            update_resources_paws(
-                self.resources_paws_file,
-                self.resources_paws
-            )
-
-        self.clean_files()
-
-        return self.resources_paws
-
-    def snapshots(self, resources, task):
-        """Handles creating and deleting snapshots of instances provisioned.
-
-        UC1. Take snapshot after provision & clean old instance snapshots.
-            resources:
-              - name: Windows
-                snapshot:
-                  - task: provision
-
-        UC2. Take snapshot after teardown & ! clean old instance snapshots.
-            resources:
-              - name: Windows
-                snapshot:
-                  - task: teardown
-                    clean: False
-
-        UC3. Do not take snapshot, just clean old instance snapshots.
-            resources:
-              - name: Windows
-                snapshot:
-                  - task: teardown
-                    create: False
-
-        UC4. Take snapshot after provision & before teardown. Also clean all
-        old instance snapshots.
-            resources:
-              - name: Windows
-                snapshot:
-                  - task: provision
-                  - task: teardown
-
-        :param resources: A list of resources.
-        :param task: Task name calling this method.
+        :param resources: windows resources
         """
-        LOG.debug('START: Create snapshot of running server')
-        for res in resources['resources']:
-            if "snapshot" not in res:
-                LOG.debug('Skipping creating snapshot, snapshot key undefined')
+        for res in resources:
+            count = 1
+
+            # first lets verify the resource has the req. keys
+            self.resource_check(res)
+
+            # count 1
+            if res['count'] == 1:
+                self._resources.append(res)
                 continue
 
-            # Snapshot feature requires administrator username/password
-            if 'Administrator' not in res['win_username']:
-                LOG.error('Administrator username/password is required to '
-                          'create snapshots.')
-                raise SystemExit(1)
+            if res['count'] > 1:
+                for pos in range(count, res['count'] + 1):
+                    res_copy = deepcopy(res)
+                    res_copy['name'] = res_copy['name'] + '_%s' % pos
+                    self._resources.append(res_copy)
 
-            # Get snapshot details for specific paws task
-            snapdata = {}
-            for item in res['snapshot']:
-                if task.lower() == item['task']:
-                    snapdata = item
-                    break
-                else:
-                    LOG.warn('Task: %s declared by user when to take snapshot'
-                             ' does not match the actual paws task running!',
-                             item['task'])
-            if not snapdata:
-                continue
+    @property
+    def credentials(self):
+        """Credentials property.
 
-            # Default will create snapshot (override by create=False)
-            try:
-                create = snapdata['create']
-            except KeyError:
-                create = True
-
-            # Default will clean old snapshots (override by clean=False)
-            try:
-                clean = snapdata['clean']
-            except KeyError:
-                clean = True
-
-            nova = Nova(self.credentials)
-
-            # Create snapshot
-            snapshot_id = ""
-            if create:
-                snapshot = res['name'] + "_paws_%s" % str(uuid4())[:5]
-                snapshot_id = nova.create_image(res, snapshot, self.ansible)
-
-            # Clean old snapshots for instance
-            if clean:
-                glance = Glance(self.credentials)
-                paws_images = glance.get_images_by_paws()
-
-                if paws_images.__len__() == 0:
-                    LOG.debug("No prior snapshots exist to be deleted for %s "
-                              % res['name'])
-                    continue
-
-                for image in paws_images:
-                    if snapshot_id == image.id:
-                        continue
-                    if image.created_from == res['name']:
-                        nova.delete_image(image_id=image.id)
-        LOG.debug('END: Create snapshot of running server')
-
-
-class Nova(object):
-    """Class to group interactions with Openstack nova client or api.
-    http://docs.openstack.org/developer/python-novaclient/
-    """
-
-    def __init__(self, user_credential):
-        self.version = "2"
-        self.user_cred = user_credential
-        self.nova = nclient(
-            self.version,
-            username=self.user_cred['OS_USERNAME'],
-            password=self.user_cred['OS_PASSWORD'],
-            auth_url=self.user_cred['OS_AUTH_URL'],
-            project_name=self.user_cred['OS_PROJECT_NAME']
-        )
-        self.neutron = networks.NeutronManager(self.nova)
-        self.images = images.GlanceManager(self.nova)
-        self.flavors = flavors.FlavorManager(self.nova)
-
-    @retry(NovaPasswordError, tries=20)
-    def get_password(self, server_name, keypair):
-        """Return the password for a server using the private key.
-
-        :param server_name: Name of the server to check password
-        :type server_name: str
-        :param keypair: SSH private key
-        :type keypair: str
-        :return: Admin password
-        :rtype: str
+        :return: provider credentials
         """
-        try:
-            server = self.get_server(server_name)
-            password = server.get_password(keypair)
+        return self._credentials
 
-            if not password:
-                raise NovaPasswordError("Password is empty!")
-            if not isinstance(password, str):
-                raise NovaPasswordError("Password: %s is not a string type!" %
-                                        password)
-            LOG.debug("Admin password for %s is %s", server_name, password)
-        except NovaPasswordError as ex:
-            raise NovaPasswordError(ex.msg)
+    @credentials.setter
+    def credentials(self, value):
+        """Set the credentials property.
 
-        return password
+        This will set the credentials from either file or env vars.
 
-    def get_server(self, instance_name):
-        """Get nova server and return all info"""
-        try:
-            return self.nova.servers.find(name=instance_name)
-        except Exception:
-            return None
-
-    def delete_instance(self, instance_id):
-        """Delete a server."""
-        self.nova.servers.delete(instance_id)
-
-    def flavor_exist(self, flavor):
-        """Verify flavor exists in tenant.
-
-        :param flavor: Size of vm to create.
+        :param value: provider credentials
         """
-        LOG.debug('Checking openstack flavor %s' % flavor)
+        auth = dict()
 
-        try:
-            try:
-                self.flavors.find(name=flavor)
-            except NotFound:
-                self.flavors.find(id=flavor)
-        except NotFound:
-            LOG.error("Flavor: %s size does not exist!", flavor)
-            raise ClientException(1)
+        self.logger.debug('%s credentials check.', self.name)
 
-    def image_exist(self, image_name):
-        """Check to see if image exists in tenant.
-
-        :param image_name: name of image declared in resources.yaml
-        """
-        LOG.debug('Checking openstack image %s' % image_name)
-        try:
-            self.images.find_image(image_name)
-        except ClientException:
-            LOG.error("Image: %s does not exist!", image_name)
-            raise ClientException(1)
-
-    def network_exist(self, network):
-        """Verify network exists in tenant.
-
-        :param network: Network to create vms on.
-        """
-        LOG.debug('Checking openstack network %s' % network)
-        try:
-            self.neutron.find_network(network)
-        except ClientException:
-            LOG.error("Network: %s does not exist!", network)
-            raise ClientException(1)
-
-    def keypair_exist(self, keypair):
-        """Verify key pair exists in tenant.
-
-        :param keypair: SSH keypair.
-        """
-        LOG.debug('Checking openstack keypair %s' % keypair)
-        try:
-            self.nova.keypairs.find(name=keypair)
-        except ClientException:
-            LOG.error("Keypair: %s does not exist!", keypair)
-            raise ClientException(1)
-
-    def start_server(self, server):
-        """Start a server.
-
-        :param server: Server name.
-        """
-        _status = "active"
-        count = 0
-        max_attempts, wait = (5,) * 2
-        sflag = True
-
-        # Start server
-        novares = self.get_server(server)
-        novares.start()
-
-        # Verify server was started
-        while count <= max_attempts:
-            count += 1
-            status = self.server_status(server)
-            if status != _status:
-                LOG.error("Attempt (%s:%s): Unable to start server: %s, "
-                          "status=%s. Retrying in %s seconds.." %
-                          (count, max_attempts, server, status, wait))
-                sflag = False
-                sleep(wait)
-                continue
-            else:
-                LOG.debug("Successfully started server: %s" % server)
-                sflag = True
-                break
-
-        if not sflag:
-            raise SystemExit(1)
-
-    def stop_server(self, server):
-        """Stop a server.
-
-        :param server: Server name.
-        """
-        _status = "shutoff"
-        count = 0
-        max_attempts, wait = (5,) * 2
-        sflag = True
-
-        # Stop server
-        novares = self.get_server(server)
-        novares.stop()
-
-        # Verify server was stopped
-        while count <= max_attempts:
-            count += 1
-            status = self.server_status(server)
-            if status != _status:
-                LOG.error("Attempt (%s:%s): Unable to stop server: %s, "
-                          "status=%s. Retrying in %s seconds.." %
-                          (count, max_attempts, server, status, wait))
-                sflag = False
-                sleep(wait)
-                continue
-            else:
-                LOG.debug("Successfully stopped server: %s" % server)
-                sflag = True
-                break
-
-        if not sflag:
-            raise SystemExit(1)
-
-    def server_status(self, server):
-        """Return the status of a server.
-
-        :param server: Server name.
-        """
-        return self.get_server(server).status.lower()
-
-    def create_image(self, server, image_name, ansible):
-        """Create an image (snapshot) based on an server.
-
-        :param server: Server information.
-        :param image_name: Name of the snapshot to create.
-        :param ansible: Ansible driver object.
-        :return: Image id
-        """
-        server_name = server['name']
-
-        # Metadata to inject
-        metadata = {
-            "author": "paws",
-            "created_from": server_name
-        }
-
-        # Rearm server and release IPv4 connections
-        win_prep = WinPrep(ansible, None, None)
-        # win_prep.rearm_server(server)
-        win_prep.ipconfig_release(server)
-
-        # Shutdown server
-        self.stop_server(server_name)
-
-        # Take cold snapshot
-        novares = self.get_server(server_name)
-        novares.create_image(image_name, metadata)
-
-        # Get image id
-        image_id = self.nova.images.find(name=image_name).id
-
-        LOG.info("Server: %s, Image: %s, ID: %s created." %
-                 (server_name, image_name, image_id))
-
-        try:
-            try:
-                # Is image uploaded?
-                self.is_image_uploaded(image_name, image_id)
-            finally:
-                # Start server
-                self.start_server(server_name)
-        except SystemExit:
-            raise SystemExit(1)
-
-        return image_id
-
-    def delete_image(self, image_name=None, image_id=None):
-        """Delete an image. Image name takes order over id.
-
-        :param image_name: Name of the image.
-        :param image_id: Id of the image.
-        """
-        if image_name is None and image_id is None:
-            LOG.error("Neither a image name or id was given. Cannot proceed.")
-            raise SystemExit(1)
-
-        try:
-            if image_name:
-                novaimg = self.nova.images.find(name=image_name)
-            elif image_id:
-                novaimg = self.nova.images.find(id=image_id)
-        except NotFound as ex:
-            LOG.error(ex.message)
-            raise SystemExit(1)
-
-        # Delete image
-        novaimg.delete()
-        LOG.info("Image: %s, ID: %s, deleted." % (novaimg.name, novaimg.id))
-
-    def is_image_uploaded(self, image_name, image_id):
-        """Is the image uploaded. Image uploading takes a couple minutes.
-
-        :param image_name: Image name.
-        :param image_id: ID of image.
-        """
-        count = 0
-        max_attempts = 25
-        wait = 20
-
-        LOG.info("Verifying the image was successfully uploaded.")
-
-        while True:
-            try:
-                result = self.nova.images.find(name=image_name)
-                status = result.status.lower()
-
-                if status == "active":
-                    LOG.info("Image: %s, ID: %s uploaded successfully!" %
-                             (image_name, image_id))
-                    break
-                else:
-                    LOG.debug("Attempt (%s of %s): Image: %s status=%s. "
-                              "Sleeping %s seconds.." %
-                              (count, max_attempts, image_name, status, wait))
-                    sleep(wait)
-                    count += 1
-                    continue
-            except AttributeError:
-                LOG.error("Unable to proceed, status key is missing!")
-                self.delete_image(image_name, image_id)
-                raise SystemExit(1)
-
-            if count == max_attempts:
-                LOG.error("Image: %s, ID: %s failed to become active!")
-                self.delete_image(image_name, image_id)
-                raise SystemExit(1)
-
-
-class Glance(object):
-    """Class to group interactions with Openstack glance client or api.
-    http://docs.openstack.org/developer/glance/
-    """
-
-    def __init__(self, user_credential):
-        self.user_cred = user_credential
-        self.images = []
-        self.keystonecli = kclient(
-            username=self.user_cred['OS_USERNAME'],
-            password=self.user_cred['OS_PASSWORD'],
-            tenant_name=self.user_cred['OS_PROJECT_NAME'],
-            auth_url=self.user_cred['OS_AUTH_URL'])
-        self.glance_ep = self.keystonecli.service_catalog.url_for(
-            service_type='image')
-        self.glance = gclient(self.glance_ep,
-                              token=self.keystonecli.auth_token)
-
-    def get_win_images(self):
-        """Get all available Windows images."""
-        try:
-            if self.images:
-                return 0
-
-            public_images = self.glance.images.list(
-                filter={'visibility': 'public'})
-            owner_id = "bf4de4c330bb47d6937af31fd5c71a18"
-
-            for image in public_images:
-                if search('win', image.name, IGNORECASE) and\
-                        image.owner != owner_id:
-                    self.images.append(image.name)
-
-            if self.images.__len__() == 0:
-                raise Exception("can't find Windows image")
-
-            LOG.info("Available Windows images")
-            LOG.info("-" * 80)
-            for counter, img in enumerate(self.images, start=1):
-                LOG.info("%s. %s" % (counter, img))
-            LOG.info("-" * 80)
-
-            return self.images
-
-        except Exception as ex:
-            raise Exception(ex)
-
-    def get_images(self):
-        """Get all available images."""
-        return self.glance.images.list()
-
-    def get_images_by_paws(self):
-        """Get all available images authored by paws."""
-        paws_images = []
-        _images = self.get_images()
-
-        for image in _images:
-            try:
-                if getattr(image, "author") != "paws":
-                    continue
-            except AttributeError:
-                continue
-            paws_images.append(image)
-        return paws_images
-
-
-class Util(object):
-    """
-    Util methods for Openstack provider
-    """
-
-    def __init__(self, args):
-        self.args = args
-
-    def get_credentials(self):
-        """
-        Check for Openstack credentials from file or user env variables
-        credentials.json file is optional but if it exists at userdir
-        PAWS uses this to authenticate with Openstack otherwise
-        will check OS_ environment variables.
-        Get Openstack credential values
-
-        :return credential: contains url, username, password and project
-        :type dict: class providers.openstack.Openstack
-        """
-        help_msg = "Please refer to documentation on how to set your "\
-            "providers credentials."
-        _creds = dict()
-
-        LOG.debug("Getting Openstack credentials.")
-
-        if self.args.credentials:
-            # credentials were set by file and already loaded
-            LOG.debug('Openstack credentials are set by file.')
-
+        if value:
+            self.logger.debug('%s credentials are set by file.', self.name)
             for key in OPENSTACK_ENV_VARS:
                 key = key.lower()
-                if key not in self.args.credentials:
-                    LOG.error('Provider credential %s is missing.' % key)
-                    LOG.error(help_msg)
+                if key not in value:
+                    self.logger.error('%s credential %s is undeclared.',
+                                      self.name, key)
                     raise SystemExit(1)
-                elif self.args.credentials[key] == '':
-                    LOG.error('Provider credential %s not set properly.' % key)
-                    LOG.error(help_msg)
+                elif value[key] == '' or value[key] is None:
+                    self.logger.error('%s credential %s not set properly.',
+                                      self.name, key)
                     raise SystemExit(1)
-                _creds[key.upper()] = self.args.credentials[key]
+                auth[key] = value[key]
         else:
-            # credentials were set by environment variables
-            LOG.debug('Openstack credentials are set by env vars.')
+            self.logger.debug('%s credentials are set by env vars.', self.name)
 
             for key in OPENSTACK_ENV_VARS:
-                _creds[key] = getenv(key)
-                if _creds[key] is None:
-                    LOG.error('Env var %s does not exist.' % key)
-                    LOG.error(help_msg)
-                    raise SystemExit(1)
-        return _creds
+                if key.lower() == 'os_project_name':
+                    auth[key.lower()] = getenv(key)
+                    if auth[key.lower()] is None:
+                        auth[key.lower()] = getenv('OS_TENANT_NAME')
+                        if auth[key.lower()] is None:
+                            self.logger.error(
+                                'Neither [os_project_name, os_tenant_name] env'
+                                ' vars is not found.'
+                            )
+                            raise SystemExit(1)
+                else:
+                    auth[key.lower()] = getenv(key)
+                    if auth[key.lower()] is None:
+                        self.logger.error(
+                            'Env variable: %s is not found.', key
+                        )
+                        raise SystemExit(1)
+        self._credentials = auth
 
     @staticmethod
-    def gen_res_list(servers, rlist):
-        """Return a list of provisioned resources information."""
-        for server in servers:
-            sut = {}
-            sut['id'] = server['id'].encode('utf8')
-            sut['name'] = server['name'].encode('utf8')
-            sut['element'] = server['metadata']['element'].encode('utf8')
-            sut['public_v4'] = server['public_v4'].encode('utf8')
-            sut['private_v4'] = server['private_v4'].encode('utf8')
-            rlist.append(sut)
-        return rlist
+    def garbage_collector():
+        """Garbage collector."""
+        return []
 
-    def generate_resources_paws(self):
-        """
-        Read Ansible callback resultset to get elements from vm provisioned.
-        Complement the data from resources.yaml matching the vm provisioned to
-        build resources.paws.
+    def provision(self):
+        """Provision OpenStack resources."""
+        for res in self.resources:
+            try:
+                self.get_node(res['name'])
+                raise ProvisionError(
+                    'Resource %s already exists in %s. Provision '
+                    'skipped.' % (res['name'], self.name)
+                )
+            except NotFound:
+                pass
 
-        content for resources.paws and [source where they come from]
-            id [ansible]
-            name [ansible]
-            ip [ansible]
-            keypair [resources.yaml]
-            ssh_private_key [resources.yaml]
-        """
-        LOG.debug("Generating %s" % self.args.resources_paws_file)
-        _rlist = []
+            # lets handle the networking details here..
+            ext_network = res['network']
+            int_network = None
+            if 'network' in res and 'floating_ip_pools' in res:
+                # network=internal
+                # floating_ip_pools=external
+                int_network = self.get_network(res['network'])
+                ext_network = res['floating_ip_pools']
 
-        # Generate list of resources from Ansible openstack server facts
-        for item in self.args.ansible.callback.contacted:
-            if 'ansible_facts' in item['results']:
-                # count == 1
-                child = item['results']['ansible_facts']
-                if 'openstack_servers' in child:
-                    _rlist = Util.gen_res_list(
-                        child['openstack_servers'], _rlist)
-            elif 'results' in item['results']:
-                # count > 1
-                for server in item['results']['results']:
-                    if 'ansible_facts' in server:
-                        child = server['ansible_facts']
-                        _rlist = Util.gen_res_list(
-                            child['openstack_servers'], _rlist)
-
-        # Resources are complemented with their data by matching metadata key
-        # (element) which refers to resource elements inside topology file
-        for elem in _rlist:
-            for curr_elem in self.args.resources:
-                if elem['element'] == curr_elem['name']:
-                    elem['keypair'] = curr_elem['keypair']
-                    try:
-                        elem['ssh_key_file'] = curr_elem['ssh_private_key']
-                    except KeyError:
-                        elem['ssh_key_file'] = curr_elem['ssh_key_file']
-                    elem['provider'] = curr_elem['provider']
-                    if ADMINISTRADOR_PWD in curr_elem:
-                        elem[ADMINISTRADOR_PWD] = \
-                            curr_elem[ADMINISTRADOR_PWD]
-                    if 'snapshot' in curr_elem:
-                        elem['snapshot'] = curr_elem['snapshot']
-                    del elem['element']
-                    break
-
-        # Write resources.paws
-        if _rlist.__len__() > 0:
-            file_mgmt(
-                'w',
-                self.args.resources_paws_file,
-                {"resources": _rlist}
+            # boot vm
+            node = self.boot_vm(
+                res['name'],
+                res['image'],
+                res['flavor'],
+                res['keypair'],
+                network=int_network
             )
-            LOG.debug("Successfully created %s", self.args.resources_paws_file)
 
-        return {"resources": _rlist}
+            # wait for vm to finish building
+            self.wait_for_building_finish(node)
 
-    def get_admin_password(self, elem):
-        """
-        Get pre-defined password for Admin account, it is part of
-        Windows QCOW image build process and password is random.
-        Paws uses Nova client to retrieve the password
-        """
-        # Create nova object
-        nova = Nova(self.args.credentials)
-
-        LOG.info("Attempting to establish SSH connection to %s",
-                 elem['public_v4'])
-        LOG.info(LINE)
-        LOG.info("This could take several minutes to complete.")
-        LOG.info(LINE)
-
-        # Test system connectivity
-        try:
-            get_ssh_conn(
-                elem['public_v4'],
-                ADMIN,
-                ssh_key=elem["ssh_key_file"]
+            # create/attach floating ip
+            res['public_v4'] = self.attach_floating_ip(
+                node,
+                ext_network
             )
-        except SSHError:
-            LOG.error("Unable to establish SSH connection to %s",
-                      elem['public_v4'])
-            raise SSHError(1)
 
-        try:
-            LOG.info("Retrieving Admin password for %s:%s", elem['name'],
-                     elem['public_v4'])
-            elem["win_username"] = ADMIN
-            elem["win_password"] = None
+            # get the admin password
+            self.get_admin_password(res)
 
-            # Retrieve admin password
-            elem['win_password'] = str(nova.get_password(
-                elem['name'],
-                elem['ssh_key_file']
-            ))
-
-            LOG.info("Successfully retrieved Admin password for %s:%s",
-                     elem['name'], elem['public_v4'])
-        except NovaPasswordError:
-            LOG.error("Unable to retrieve Admin password for %s:%s",
-                      elem['name'], elem['public_v4'])
-            raise NovaPasswordError(1)
-
-        return elem
-
-
-class ProvisionYAML(object):
-    """
-    Class which handles setting up the playbook data structure for
-    provisioning resources.
-    """
-
-    def __init__(self, userdir, resources):
-        """Constructor."""
-        self.userdir = userdir
-        self.resources = resources
-
-        self.playbook = join(self.userdir, PROVISION_YAML)
-        self.provision = []
-
-    def create(self):
-        """Setup data structure and create the provision YAML."""
-        playbook = {}
-        playbook['hosts'] = 'localhost'
-        playbook['tasks'] = []
-
-        for index, machine in enumerate(self.resources):
-            index += 1
-
-            # Setup task = os_server
-            sut = {
-                'name': 'Provision Resources',
-                'os_server': {
-                    'auth': {
-                        'auth_url': '{{ OS_AUTH_URL }}',
-                        'username': '{{ OS_USERNAME }}',
-                        'password': '{{ OS_PASSWORD }}',
-                        'project_name': '{{ OS_PROJECT_NAME }}'
-                    },
-                    'state': 'present',
-                    'name': machine['name'].encode('utf8'),
-                    'flavor': machine['flavor'],
-                    'image': machine['image'].encode('utf8'),
-                    'key_name': machine['keypair'].encode('utf8'),
-                    'timeout': 900,
-                    'wait': 'yes',
-                    'meta': {
-                        'hostname': machine['name'].encode('utf8'),
-                        'element': machine['name'].encode('utf8'),
-                        'provisioned': 'by PAWS'
-                    }
-                },
-                'register': 'vm%s' % index
-            }
-
-            # floating_ip_pools is required when a public network has two
-            # networks connected to it via routers.
-            if 'floating_ip_pools' in machine:
-                sut['os_server']['floating_ip_pools'] = \
-                    machine['floating_ip_pools'].encode('utf8')
-                sut['os_server']['network'] = machine['network'].encode('utf8')
-            else:
-                sut['os_server']['auto_ip'] = 'false'
-
-            # Setup task = os_floating_ip
-            sut_ip = {
-                'name': 'Assign Floating IP',
-                'os_floating_ip': {
-                    'auth': {
-                        'auth_url': '{{ OS_AUTH_URL }}',
-                        'username': '{{ OS_USERNAME }}',
-                        'password': '{{ OS_PASSWORD }}',
-                        'project_name': '{{ OS_PROJECT_NAME }}'
-                    },
-                    'state': 'present',
-                    'server': '{{ vm%s.openstack.name }}' % index,
-                    'reuse': 'yes',
-                    'network': machine['network'].encode('utf8'),
-                    'wait': 'yes'
-                },
-                'when':
-                'vm{0}|succeeded and vm{0}.openstack.public_v4 == ""'.format(
-                    index)
-            }
-
-            # Setup task = os_server_facts
-            sut_facts = {
-                'name': 'retrieve server facts',
-                'os_server_facts': {
-                    'auth': {
-                        'auth_url': '{{ OS_AUTH_URL }}',
-                        'username': '{{ OS_USERNAME }}',
-                        'password': '{{ OS_PASSWORD }}',
-                        'project_name': '{{ OS_PROJECT_NAME }}'
-                    },
-                    'server': '{{ vm%s.openstack.name }}' % index,
-                }
-            }
-
-            # Modify tasks keys when machine count > 1
-            if int(machine['count']) > 1:
-                # os_server module
-                sut['os_server']['name'] = machine['name'].encode(
-                    'utf8') + '_{{ item }}'
-                sut['os_server']['meta']['hostname'] = machine['name'].encode(
-                    'utf8') + '_{{ item }}'
-                sut['with_sequence'] = 'count=' + str(machine['count'])
-
-                # os_floating_ip
-                sut_ip['os_floating_ip']['server'] = \
-                    '{{ item.openstack.name }}'
-                sut_ip['when'] = \
-                    'item|succeeded and item.openstack.public_v4 == ""'
-                sut_ip['with_items'] = '{{ vm%s.results }}' % index
-
-                # os_server_facts
-                sut_facts['os_server_facts']['server'] = \
-                    '{{ item.openstack.name }}'
-                sut_facts['with_items'] = '{{ vm%s.results }}' % index
-
-            # Append tasks
-            playbook['tasks'].append(sut)
-            playbook['tasks'].append(sut_ip)
-            playbook['tasks'].append(sut_facts)
-
-        self.provision.append(playbook)
-
-        # Write Ansible Playbook
-        file_mgmt('w', self.playbook, self.provision)
-        LOG.debug("Playbook %s created.", self.playbook)
-
-
-class TeardownYAML(object):
-    """
-    Class which handles setting up the playbook data structure for
-    tearing down resources.
-    """
-
-    def __init__(self, userdir, resources):
-        """Constructor."""
-        self.teardown = []
-        self.resources = resources
-        self.playbook = join(userdir, TEARDOWN_YAML)
-
-    def create(self):
-        """Setup data structure and create the teardown YAML.
-
-        :param resources: resources.paws after provisioned
-        :type resources: list
-        """
-        playbook = {}
-        playbook['hosts'] = 'localhost'
-        playbook['tasks'] = []
-
-        for machine in self.resources['resources']:
-            # Setup task = os_floating_ip
-            sut_ip = {
-                'name': 'Un-assign Floating IP',
-                'os_floating_ip': {
-                    'auth': {
-                        'auth_url': '{{ OS_AUTH_URL }}',
-                        'username': '{{ OS_USERNAME }}',
-                        'password': '{{ OS_PASSWORD }}',
-                        'project_name': '{{ OS_PROJECT_NAME }}'
-                    },
-                    'state': 'absent',
-                    'purge': 'yes',
-                    'floating_ip_address': machine['public_v4'].encode('utf8'),
-                    'server': machine['name'].encode('utf8')
-                }
-            }
-
-            # Setup task = os_server
-            sut = {
-                'name': 'Teardown Resources',
-                'os_server': {
-                    'auth': {
-                        'auth_url': '{{ OS_AUTH_URL }}',
-                        'username': '{{ OS_USERNAME }}',
-                        'password': '{{ OS_PASSWORD }}',
-                        'project_name': '{{ OS_PROJECT_NAME }}'
-                    },
-                    'state': 'absent',
-                    'name': machine['name'].encode('utf8'),
-                    'key_name': machine['keypair'].encode('utf8'),
-                    'timeout': 600,
-                    'wait': 'yes'
-                },
-                'register': 'vm'
-            }
-
-            # Append tasks
-            playbook['tasks'].append(sut_ip)
-            playbook['tasks'].append(sut)
-
-        self.teardown.append(playbook)
-
-        # Write Ansible Playbook
-        file_mgmt('w', self.playbook, self.teardown)
-        LOG.debug("Playbook %s created.", self.playbook)
-
-
-class GetServerFacts(object):
-    """
-    Class generate ansible playbook to retrieve servers ansible facts
-    for openstack os_server and os_floating_ip modules
-    Main usage when execution is interrupted by user like CTRL+C and
-    this ansible playbook double check openstack resources provisioned
-    before to run teardown
-    """
-
-    def __init__(self, args):
-        """Constructor."""
-        self.getfacts = []
-        self.resources = args.resources
-        self.playbook = join(args.userdir, GET_OPS_FACTS_YAML)
-        if args.ansible:
-            self.ansible = args.ansible
-        self.credentials = args.credentials
-
-    def create(self):
-        """Setup data structure and create the get_servers_facts YAML.
-
-        :param resources: Resources to provision
-        :type resources: list
-        """
-        playbook = {}
-        playbook['hosts'] = 'localhost'
-        playbook['tasks'] = []
-
-        for index, machine in enumerate(self.resources):
-            index += 1
-
-            sut_facts = {
-                'name': 'retrieve server facts',
-                'os_server_facts': {
-                    'auth': {
-                        'auth_url': '{{ OS_AUTH_URL }}',
-                        'username': '{{ OS_USERNAME }}',
-                        'password': '{{ OS_PASSWORD }}',
-                        'project_name': '{{ OS_PROJECT_NAME }}'
-                    },
-                    'server': machine['name'].encode('utf8'),
-                }
-            }
-
-            # Modify tasks keys when machine count > 1
-            if int(machine['count']) > 1:
-                sut_facts['os_server_facts']['server'] = \
-                    machine['name'].encode('utf8') + "_{{ item }}"
-                sut_facts['with_sequence'] = 'count=' + str(machine['count'])
-
-            # Append tasks
-            playbook['tasks'].append(sut_facts)
-
-        self.getfacts.append(playbook)
-
-        # Write Ansible Playbook
-        file_mgmt('w', self.playbook, self.getfacts)
-        LOG.debug("Playbook %s created.", self.playbook)
-        return self.playbook
-
-    def get_facts(self):
-        """Create Ansible playbook to get instance facts and execute against
-        provider."""
-        # Create playbook to get server facts
-        getfacts_playbook = self.create()
-
-        # Playbook call - get system facts
-        self.ansible.run_playbook(
-            getfacts_playbook,
-            extra_vars=self.credentials,
-            results_class=CloudModuleResults
+        # create inventory file
+        resources_paws = dict(resources=self.resources)
+        create_inventory(
+            PlayCall(self.user_dir).inventory_file,
+            resources_paws
         )
 
+        # set administrator password
+        self.resources = set_administrator_password(
+            self.resources,
+            self.user_dir
+        )
 
-class Conductor(object):
-    """Conductor which acts like a 'train conductor'. This class will inspect
-    files, keys, etc before starting paws tasks 'passengers'.
-    """
+        # create resources.paws
+        resources_paws = dict(resources=self.resources)
+        file_mgmt('w', self.resources_paws_file, resources_paws)
 
-    def __init__(self, resources, credentials):
-        self.resources = resources
-        self.credentials = credentials
+        return resources_paws
 
-    def valid_openstack_keys(self):
-        """Verify openstack keys values are valid."""
-        try:
-            LOG.debug("Checking openstack keys are valid")
-            # Create instance of nova client
-            nova = Nova(self.credentials)
-            for res in self.resources:
-                nova.image_exist(res['image'])
-                nova.flavor_exist(str(res['flavor']))
-                nova.network_exist(res['network'])
-                nova.keypair_exist(res['keypair'])
-        except ClientException as cex:
-            LOG.error(cex)
-            raise ClientException(1)
-        except (IOError, Exception) as ex:
-            LOG.error(ex)
-            raise SystemExit(1)
+    def teardown(self):
+        """Teardown OpenStack resources."""
+        for res in self.resources:
+            self.logger.info('Deleting vm %s.', res['name'])
 
-    @staticmethod
-    def ssh_private_key_exist(sshkey):
-        """Verify private SSH key exists.
+            # get the vm object
+            try:
+                node = self.get_node(res['name'])
+            except NotFound as ex:
+                self.logger.warning(ex.message)
+                continue
 
-        :param sshkey: Private SSH key (absolute path).
+            # create snapshot
+            res['public_v4'] = self.get_floating_ip(node)
+            self.take_snapshot(res)
+
+            # detach the floating ip from vm
+            fip = self.get_floating_ip(node)
+
+            fip_obj = self.driver.ex_get_floating_ip(fip)
+            self.driver.ex_detach_floating_ip_from_node(node, fip_obj)
+            self.driver.ex_delete_floating_ip(fip_obj)
+
+            # delete the vm
+            self.driver.destroy_node(node)
+
+            self.logger.info('Successfully deleted vm %s!', res['name'])
+
+        resources_paws = dict(resources=self.resources)
+        return resources_paws
+
+    def show(self):
+        """Show OpenStack resources."""
+        for res in self.resources:
+            # get the vm object
+            node = self.get_node(res['name'])
+
+            # get the ip
+            res['public_v4'] = str(self.get_floating_ip(node))
+
+            # define the account
+            if ADMINISTRADOR_PWD in res:
+                res['win_username'] = ADMINISTRATOR
+                res['win_password'] = res[ADMINISTRADOR_PWD]
+            else:
+                self.get_admin_password(res)
+
+        # create resources.paws
+        resources_paws = dict(resources=self.resources)
+        file_mgmt('w', self.resources_paws_file, resources_paws)
+
+        return resources_paws
+
+    def resource_check(self, res):
+        """Check that the req. resource keys exist.
+
+        :param res: windows resource
         """
-        if not exists(sshkey):
-            LOG.error("Unable to find SSH private key: %s", sshkey)
-            raise SystemExit(1)
+        self.logger.info('Checking resource: %s keys.', res['name'])
+        for key in PROVISION_RESOURCE_KEYS:
+            if key not in res:
+                raise ProvisionError(
+                    'Resource: %s is missing required key: %s.' %
+                    (res['name'], self.name)
+                )
+            elif res[key] == '' or res[key] is None:
+                raise ProvisionError(
+                    'Resource: %s required key: %s has an invalid value.' %
+                    (res['name'], key)
+                )
+            if key == 'ssh_private_key':
+                if not exists(res[key]):
+                    raise ProvisionError(
+                        'SSH private key: %s not found.' % res[key]
+                    )
 
-    def resource_keys_exist(self):
-        """Verify resource keys exist."""
-        help_msg = "Please refer to documentation on how to set your "\
-            "topology file."
-        LOG.debug("Checking resource sections for required keys")
-        try:
-            # Read resources file
-            for res in self.resources:
-                for key in PROVISION_RESOURCE_KEYS:
-                    if key not in res:
-                        LOG.error("Required key: %s is missing!", key)
-                        LOG.error(help_msg)
-                        raise SystemExit(1)
-                    elif res[key] == "":
-                        LOG.error("Resource key: %s is not set properly!", key)
-                        LOG.error(help_msg)
-                        raise SystemExit(1)
-                    if key == "ssh_private_key":
-                        self.ssh_private_key_exist(res[key])
-        except IOError as ex:
-            LOG.error(ex)
-            raise SystemExit(1)
+    def take_snapshot(self, res):
+        """Take a snapshot before terminating a vm.
+
+        Use cases:
+            1. Take snapshot before delete vm and do not clean old snapshots
+            resources:
+              - name: windows
+                snapshot:
+                  create: True
+                  clean: False
+
+            2. Take snapshot before delete vm and clean old snapshots
+            resources:
+              - name: windows
+                snapshot:
+                  create: True
+                  clean: True
+
+            3. Do not take snapshot and only clean old snapshots
+            resources:
+              - name: windows
+                snapshot:
+                  create: False
+                  clean: True
+
+        :param res: windows resource
+        """
+        if 'snapshot' not in res:
+            return
+
+        self.logger.info('Taking snapshot for vm: %s.', res['name'])
+
+        snap_details = res['snapshot']
+
+        if ADMINISTRADOR_PWD not in res:
+            self.logger.warning(
+                'Administrator account is required to take snapshots. Take '
+                'snapshot skipped.'
+            )
+            return
+
+        if snap_details is None:
+            self.logger.warning(
+                'Snapshot key not set correctly. Please refer to docs.'
+            )
+            return
+
+        # create image
+        image_id = ''
+        if snap_details['create']:
+            # release ip addresses
+            res['win_username'] = ADMINISTRATOR
+            res['win_password'] = res[ADMINISTRADOR_PWD]
+            ipconfig_release(res)
+
+            # take snapshot
+            image_name = res['name'] + '_paws_%s' % (str(uuid4()))[:5]
+            metadata = dict(author='paws', created_from=res['name'])
+            node = self.get_node(res['name'])
+            image_node = self.driver.create_image(
+                node,
+                image_name,
+                metadata
+            )
+            image_id = image_node.id
+            self.logger.info(
+                'Snapshot: %s, id: %s successfully created!', image_name,
+                image_id
+            )
+
+            # wait for image upload to complete
+            attempt = 1
+            max_attempts = 30
+            while attempt <= max_attempts:
+                image = self.driver.get_image(image_id)
+                if image.extra['status'].lower() == 'active':
+                    self.logger.info('Image: %s, id: %s upload complete!',
+                                     image.name, image.id)
+                    break
+                else:
+                    self.logger.info('%s:%s. Image: %s, id: %s status: %s. '
+                                     'Rechecking in 20 seconds.', attempt,
+                                     max_attempts, image.name, image.id,
+                                     image.extra['status'])
+                    sleep(20)
+                    attempt += 1
+                if attempt == max_attempts:
+                    self.logger.error('Image: %s, id: %s failed to become '
+                                      'active!', image.name, image.id)
+                    self.driver.ex_hard_reboot_node(node)
+                    return
+
+            # reboot vm to come back online
+            sleep(25)
+            self.driver.ex_hard_reboot_node(node)
+
+        # clean previous images
+        if snap_details['clean']:
+            self.logger.info('Attempting to clean previous snapshot images '
+                             'for vm: %s.', res['name'])
+            _images = list()
+            images = self.driver.list_images(ex_only_active=False)
+
+            for image in images:
+                try:
+                    image.extra['metadata']['author']
+                except KeyError:
+                    continue
+                if image.extra['metadata']['author'] == 'paws':
+                    _images.append(image)
+
+            if _images.__len__() == 0:
+                self.logger.warn('No images to clean for vm: %s.', res['name'])
+                return
+
+            for image in _images:
+                if snap_details['create']:
+                    if image.id == image_id:
+                        continue
+                try:
+                    image.extra['metadata']['created_from']
+                except KeyError:
+                    continue
+
+                if image.extra['metadata']['created_from'] == res['name']:
+                    self.driver.delete_image(self.driver.get_image(image.id))
+                    self.logger.info('Image: %s, id: %s deleted.', image.name,
+                                     image.id)

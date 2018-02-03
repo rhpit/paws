@@ -30,11 +30,11 @@ from os import environ, getenv
 from os.path import join, exists
 from requests import HTTPError, RequestException, get
 
-from paws.constants import LIBVIRT_OUTPUT, LIBVIRT_AUTH_HELP
-from paws.exceptions import PawsPreTaskError
+from paws.constants import LIBVIRT_OUTPUT, LIBVIRT_AUTH_HELP, \
+    ANSIBLE_INVENTORY_FILENAME
 from paws.helpers import get_ssh_conn, file_mgmt, subprocess_call, cleanup, \
     retry
-from paws.remote.driver import Ansible
+from paws.lib.remote import create_inventory, inventory_init
 
 """
     Libvirt provider, It is a wrapper interacting with Libvirt
@@ -130,7 +130,7 @@ class Libvirt(object):
         self.verbose = args.verbose
 
         self.util = Util(self)
-        self.ansible = Ansible(self.userdir)
+        self.inventory = join(self.userdir, ANSIBLE_INVENTORY_FILENAME)
 
         self.resources_paws = None
 
@@ -164,7 +164,7 @@ class Libvirt(object):
         :return garbage: all files to be deleted from this provider
         :rtypr garbage: list
         """
-        garbage = [self.ansible.ansible_inventory,
+        garbage = [self.inventory,
                    join(self.userdir, LIBVIRT_OUTPUT)]
         return garbage
 
@@ -188,7 +188,7 @@ class Libvirt(object):
         self.set_libvirt_env_var()
 
         # Create empty inventory file for localhost calls
-        self.ansible.create_hostfile()
+        inventory_init(self.inventory)
 
         # check libvirt connection - validating authentication
         conn = self.util.get_connection()
@@ -202,7 +202,7 @@ class Libvirt(object):
                 LOG.error('File %s not found' % elem['disk_source'])
                 LOG.warn('check PAWS documentation %s' %
                          LIBVIRT_AUTH_HELP)
-                raise PawsPreTaskError
+                raise SystemExit(1)
 
             # check for VM and delete/undefine in case already exist
             if self.util.vm_exist(conn, elem['name']):
@@ -238,7 +238,7 @@ class Libvirt(object):
             res = {}
             list_resources = [elem]
             res['resources'] = list_resources
-            self.ansible.create_hostfile(tp_obj=res)
+            create_inventory(self.inventory, res)
 
         self.util.generate_resources_paws(conn)
 
@@ -297,7 +297,7 @@ class Util(object):
             LOG.error('Failed to open connection to %s',
                       creds['qemu_instance'])
             LOG.warn('check PAWS documentation %s' % LIBVIRT_AUTH_HELP)
-            raise PawsPreTaskError
+            raise SystemExit(1)
 
         LOG.debug("connected successfully to %s" % creds['qemu_instance'])
 
@@ -486,7 +486,7 @@ class Util(object):
         rs = subprocess_call(cmd, stdout=PIPE, stderr=PIPE)
         if rs == 0:
             LOG.error(rs['stderr'])
-            raise PawsPreTaskError
+            raise SystemExit(1)
 
         LOG.info("%s provisioned" % vm['name'])
 
