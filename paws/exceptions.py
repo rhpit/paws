@@ -57,6 +57,28 @@ class ProvisionError(PawsError):
         self.message = message
 
 
+class TeardownError(PawsError):
+    """Exception raised for errors with teardown."""
+
+    def __init__(self, message):
+        """Constructor.
+
+        :param message: explanation about the error
+        """
+        self.message = message
+
+
+class ShowError(PawsError):
+    """Exception raised for errors with show."""
+
+    def __init__(self, message):
+        """Constructor.
+
+        :param message: explanation about the error
+        """
+        self.message = message
+
+
 class NotFound(PawsError):
     """Exception raised for when objects are not found."""
 
@@ -70,6 +92,28 @@ class NotFound(PawsError):
 
 class BootError(PawsError):
     """Exception raised for errors while attempting to boot a vm."""
+
+    def __init__(self, message):
+        """Constructor.
+
+        :param message: explanation about the error
+        """
+        self.message = message
+
+
+class BuildError(PawsError):
+    """Exception raised for errors while vm attempts to finish building."""
+
+    def __init__(self, message):
+        """Constructor.
+
+        :param message: explanation about the error
+        """
+        self.message = message
+
+
+class NetworkError(PawsError):
+    """Exception raised for errors while vm attempts to set networking."""
 
     def __init__(self, message):
         """Constructor.

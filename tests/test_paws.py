@@ -38,9 +38,7 @@ import pytest
 
 from paws.helpers import file_mgmt
 from paws.tasks.group import Group
-from paws.tasks.provision import Provision
-from paws.tasks.show import Show
-from paws.tasks.teardown import Teardown
+from paws.tasks import Provision, Teardown, Show
 from paws.tasks.winsetup import Winsetup
 
 

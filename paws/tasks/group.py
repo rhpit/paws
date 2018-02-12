@@ -24,10 +24,10 @@ from time import sleep
 import re
 from os.path import join
 
-from paws.constants import GROUP_SECTIONS, PAWS_TASK_MODULES_PATH, GROUP_SCHEMA
-from paws.constants import TASK_ARGS, GROUP_REQUIRED, GROUP_HELP
+from paws.constants import GROUP_SECTIONS, GROUP_SCHEMA, TASK_ARGS, \
+    GROUP_HELP, GROUP_REQUIRED
 from paws.core import PawsTask, Namespace
-from paws.helpers import check_file, file_mgmt
+from paws.helpers import check_file, file_mgmt, get_task_module_path
 
 
 class Group(PawsTask):
@@ -263,7 +263,7 @@ in %s %s. Expected .yaml or .yml" % (_rule, krnd, key))
                 self.set_task_attr(self.map_task_args(args))
 
             # import task module
-            pmodule = import_module(PAWS_TASK_MODULES_PATH + task)
+            pmodule = import_module(get_task_module_path(task))
 
             # get task class
             task_cls = getattr(pmodule, task.title())
