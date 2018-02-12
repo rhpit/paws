@@ -32,7 +32,7 @@ from paramiko.ssh_exception import SSHException
 from yaml import dump as yaml_dump
 from yaml import load as yaml_load
 
-from paws.constants import LINE
+from paws.constants import LINE, PAWS_TASK_MODULES_PATH
 from paws.exceptions import SSHError
 
 LOG = getLogger(__name__)
@@ -195,7 +195,7 @@ def log_resources(resources_paws, action):
     """Log paws resources to console.
 
     :param resources_paws: Resources.paws file content
-    :type resources_paws: list
+    :type resources_paws: dict
     :param action: Paws action performed
     :type action: str
     """
@@ -210,7 +210,7 @@ def log_resources(resources_paws, action):
         LOG.info(LINE)
         return True
 
-    msg = "System Resources (%s)" % action
+    msg = "System Resources"
     LOG.info(LINE)
     LOG.info(msg.center(45))
     LOG.info(LINE)
@@ -224,7 +224,7 @@ def log_resources(resources_paws, action):
             LOG.info("    Public IPv4  : %s", resource['public_v4'])
         if 'ip' in resource and resource['ip'] != "":
             LOG.info("    Ip           : %s", resource['ip'])
-        if action != "deleted":
+        if action != "teardown":
             LOG.info("    Username     : %s", resource['win_username'])
             LOG.info("    Password     : %s", resource['win_password'])
         if "show" in action and 'libvirt' in resource['provider']:
@@ -375,3 +375,17 @@ def subprocess_call(cmd, fatal=True, cwd=None, stdout=None, stderr=None,
     results['stdout'] = output[0]
     results['stderr'] = output[1]
     return results
+
+
+def get_task_module_path(name):
+    """Return the task module path.
+
+    :param name: task name
+    :type name: str
+    :return: task module path
+    :rtype: str
+    """
+    _path = PAWS_TASK_MODULES_PATH + name
+    if name in ['provision', 'teardown', 'show']:
+        _path = PAWS_TASK_MODULES_PATH + 'action'
+    return _path

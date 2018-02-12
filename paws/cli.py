@@ -16,8 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-"""
-Paws cli
+"""Paws cli.
+
+This module is the main entry point to paws application.
 """
 
 from xmlrpclib import ServerProxy
@@ -27,9 +28,9 @@ from os import environ
 from os.path import dirname, join
 
 from paws import __file__ as paws_pathfile
-from paws.constants import DEFAULT_USERDIR, PAWS_TASK_MODULES_PATH, TASK_ARGS
+from paws.constants import DEFAULT_USERDIR, TASK_ARGS
 from paws.core import Namespace
-from paws.helpers import file_mgmt
+from paws.helpers import file_mgmt, get_task_module_path
 from paws.main import Paws
 
 # Allow CLI to accept short or long options for help
@@ -108,7 +109,7 @@ def run(args, task):
     # Create paws object
     paws_obj = Paws(
         task,
-        PAWS_TASK_MODULES_PATH + task,
+        get_task_module_path(task),
         args
     )
 
@@ -130,7 +131,7 @@ def paws(ctx=None, userdir=None, verbose=None):
     """
     # Custom ansible.cfg
     environ['ANSIBLE_CONFIG'] = join(DEFAULT_USERDIR, 'ansible.cfg')
-    ctx.obj = {}
+    ctx.obj = dict()
     ctx.obj['userdir'] = userdir
     ctx.obj['verbose'] = verbose
 

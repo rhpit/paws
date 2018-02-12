@@ -29,12 +29,13 @@ from libcloud.compute.types import Provider
 from novaclient.client import Client as NovaClient
 from os import getenv
 from os.path import exists
+from requests.exceptions import ConnectionError
 
 from paws.constants import ADMIN, ADMINISTRADOR_PWD, ADMINISTRATOR, \
     OPENSTACK_ENV_VARS, PROVISION_RESOURCE_KEYS
 from paws.core import LoggerMixin
 from paws.exceptions import NovaPasswordError, SSHError, ProvisionError, \
-    NotFound, BootError
+    NotFound, BootError, BuildError, NetworkError, TeardownError, ShowError
 from paws.helpers import retry, get_ssh_conn, file_mgmt
 from paws.lib.remote import PlayCall
 from paws.lib.windows import create_inventory, set_administrator_password, \
@@ -68,7 +69,7 @@ class LibCloud(LoggerMixin):
         # verify connection
         try:
             self.driver.ex_list_networks()
-        except InvalidCredsError:
+        except (ConnectionError, InvalidCredsError):
             raise ProvisionError('Connection to OpenStack provider failed.')
 
     def get_image(self, name):
@@ -86,8 +87,7 @@ class LibCloud(LoggerMixin):
         elif by_id.__len__() != 0:
             return by_id[0]
         else:
-            self.logger.error('Image %s does not exist.', name)
-            raise SystemExit(1)
+            raise NotFound('Not found image: %s.' % name)
 
     def get_flavor(self, name):
         """Get the LibCloud size 'flavor' object.
@@ -113,8 +113,7 @@ class LibCloud(LoggerMixin):
         elif by_id.__len__() != 0:
             return by_id[0]
         else:
-            self.logger.error('Flavor %s does not exist.', name)
-            raise SystemExit(1)
+            raise NotFound('Not found flavor: %s.' % name)
 
     def get_key_pair(self, name):
         """Get the LibCloud key pair object.
@@ -126,8 +125,7 @@ class LibCloud(LoggerMixin):
         data = filter(lambda elm: elm.name == name, pairs)
 
         if data.__len__() == 0:
-            self.logger.error('Key pair %s does not exist.', name)
-            raise SystemExit(1)
+            raise NotFound('Not found key pair: %s.' % name)
         else:
             return data[0]
 
@@ -176,15 +174,15 @@ class LibCloud(LoggerMixin):
                 if network is None:
                     node = self.driver.create_node(
                         name=name,
-                        image=self.get_image(image),
-                        size=self.get_flavor(flavor),
+                        image=image,
+                        size=flavor,
                         ex_keyname=key_pair
                     )
                 else:
                     node = self.driver.create_node(
                         name=name,
-                        image=self.get_image(image),
-                        size=self.get_flavor(flavor),
+                        image=image,
+                        size=flavor,
                         ex_keyname=key_pair,
                         networks=[network]
                     )
@@ -222,7 +220,7 @@ class LibCloud(LoggerMixin):
                 return node
             attempt += 1
 
-        raise BootError('VM %s was unable to finish building.' % node.name)
+        raise BuildError('VM %s was unable to finish building.' % node.name)
 
     def attach_floating_ip(self, node, network):
         """Attach floating IP to vm.
@@ -232,9 +230,8 @@ class LibCloud(LoggerMixin):
         """
         try:
             self.logger.info('Attach floating ip to vm %s.', node.name)
-            pool = self.get_float_ip_pool(network)
 
-            ip_obj = pool.create_floating_ip()
+            ip_obj = network.create_floating_ip()
 
             self.logger.info('VM %s FIP %s.', node.name, ip_obj.ip_address)
 
@@ -242,8 +239,8 @@ class LibCloud(LoggerMixin):
             self.logger.info('Successfully attached floating ip to vm %s',
                              node.name)
             return str(ip_obj.ip_address)
-        except NotFound as ex:
-            raise BootError(ex)
+        except Exception as ex:
+            raise NetworkError(ex)
 
     @staticmethod
     def get_floating_ip(node):
@@ -438,13 +435,11 @@ class OpenStack(LibCloud, Nova):
             for key in OPENSTACK_ENV_VARS:
                 key = key.lower()
                 if key not in value:
-                    self.logger.error('%s credential %s is undeclared.',
-                                      self.name, key)
-                    raise SystemExit(1)
+                    raise NotFound('%s credential: %s is not set.' %
+                                   (self.name, key))
                 elif value[key] == '' or value[key] is None:
-                    self.logger.error('%s credential %s not set properly.',
-                                      self.name, key)
-                    raise SystemExit(1)
+                    raise NotFound('%s credential: %s is not set '
+                                   'properly.' % (self.name, key))
                 auth[key] = value[key]
         else:
             self.logger.debug('%s credentials are set by env vars.', self.name)
@@ -455,18 +450,14 @@ class OpenStack(LibCloud, Nova):
                     if auth[key.lower()] is None:
                         auth[key.lower()] = getenv('OS_TENANT_NAME')
                         if auth[key.lower()] is None:
-                            self.logger.error(
-                                'Neither [os_project_name, os_tenant_name] env'
-                                ' vars is not found.'
+                            raise NotFound(
+                                'Neither [os_project_name|os_tenant_name] env'
+                                ' vars is not set.'
                             )
-                            raise SystemExit(1)
                 else:
                     auth[key.lower()] = getenv(key)
                     if auth[key.lower()] is None:
-                        self.logger.error(
-                            'Env variable: %s is not found.', key
-                        )
-                        raise SystemExit(1)
+                        raise NotFound('Env variable: %s is not found.' % key)
         self._credentials = auth
 
     @staticmethod
@@ -477,44 +468,62 @@ class OpenStack(LibCloud, Nova):
     def provision(self):
         """Provision OpenStack resources."""
         for res in self.resources:
+            node = None
+
             try:
                 self.get_node(res['name'])
                 raise ProvisionError(
-                    'Resource %s already exists in %s. Provision '
-                    'skipped.' % (res['name'], self.name)
+                    'Resource %s exits. Skipping provision!' % res['name']
                 )
             except NotFound:
-                pass
+                self.logger.debug('Resource %s does not exist. Lets '
+                                  'provision!', res['name'])
 
-            # lets handle the networking details here..
-            ext_network = res['network']
-            int_network = None
+            # lets handle getting libcloud objects
+            ext_net = res['network']
+            int_net = None
             if 'network' in res and 'floating_ip_pools' in res:
-                # network=internal
-                # floating_ip_pools=external
-                int_network = self.get_network(res['network'])
-                ext_network = res['floating_ip_pools']
+                # more than one internal network
+                # network=internal & floating_ip_pools=external
+                try:
+                    int_net = self.get_network(res['network'])
+                    ext_net = self.get_float_ip_pool(res['floating_ip_pools'])
+                except NotFound as ex:
+                    raise ProvisionError(ex.message + ' for %s.' % res['name'])
+            else:
+                try:
+                    ext_net = self.get_float_ip_pool(res['network'])
+                except NotFound as ex:
+                    raise ProvisionError(ex.message + ' for %s.' % res['name'])
 
-            # boot vm
-            node = self.boot_vm(
-                res['name'],
-                res['image'],
-                res['flavor'],
-                res['keypair'],
-                network=int_network
-            )
+            try:
+                image = self.get_image(res['image'])
+                flavor = self.get_flavor(res['flavor'])
+                self.get_key_pair(res['keypair'])
+            except NotFound as ex:
+                raise ProvisionError(ex.message + ' for %s.' % res['name'])
 
-            # wait for vm to finish building
-            self.wait_for_building_finish(node)
+            try:
+                # boot vm
+                node = self.boot_vm(res['name'], image, flavor, res['keypair'],
+                                    network=int_net)
 
-            # create/attach floating ip
-            res['public_v4'] = self.attach_floating_ip(
-                node,
-                ext_network
-            )
+                # wait for vm to finish building
+                self.wait_for_building_finish(node)
 
-            # get the admin password
-            self.get_admin_password(res)
+                # create/attach floating ip
+                res['public_v4'] = self.attach_floating_ip(node, ext_net)
+
+                # get the admin password
+                self.get_admin_password(res)
+            except BootError as ex:
+                raise ProvisionError(ex.message)
+            except (BuildError, NetworkError, NovaPasswordError,
+                    SSHError) as ex:
+                self.logger.error(ex.message)
+                self.logger.info('Tearing down vm: %s.', res['name'])
+                self.driver.destroy_node(node)
+                raise ProvisionError('Provision task failed.')
 
         # create inventory file
         resources_paws = dict(resources=self.resources)
@@ -540,28 +549,31 @@ class OpenStack(LibCloud, Nova):
         for res in self.resources:
             self.logger.info('Deleting vm %s.', res['name'])
 
-            # get the vm object
             try:
                 node = self.get_node(res['name'])
             except NotFound as ex:
-                self.logger.warning(ex.message)
+                self.logger.warning(ex.message + ' Skipping teardown.')
                 continue
 
-            # create snapshot
-            res['public_v4'] = self.get_floating_ip(node)
-            self.take_snapshot(res)
+            try:
+                # create snapshot
+                res['public_v4'] = self.get_floating_ip(node)
+                self.take_snapshot(res)
 
-            # detach the floating ip from vm
-            fip = self.get_floating_ip(node)
+                # detach the floating ip from vm
+                fip = self.get_floating_ip(node)
 
-            fip_obj = self.driver.ex_get_floating_ip(fip)
-            self.driver.ex_detach_floating_ip_from_node(node, fip_obj)
-            self.driver.ex_delete_floating_ip(fip_obj)
+                if fip is not None:
+                    fip_obj = self.driver.ex_get_floating_ip(fip)
+                    self.driver.ex_detach_floating_ip_from_node(node, fip_obj)
+                    self.driver.ex_delete_floating_ip(fip_obj)
 
-            # delete the vm
-            self.driver.destroy_node(node)
+                # delete the vm
+                self.driver.destroy_node(node)
 
-            self.logger.info('Successfully deleted vm %s!', res['name'])
+                self.logger.info('Successfully deleted vm %s!', res['name'])
+            except Exception as ex:
+                raise TeardownError(ex.message)
 
         resources_paws = dict(resources=self.resources)
         return resources_paws
@@ -569,18 +581,26 @@ class OpenStack(LibCloud, Nova):
     def show(self):
         """Show OpenStack resources."""
         for res in self.resources:
-            # get the vm object
-            node = self.get_node(res['name'])
+            try:
+                node = self.get_node(res['name'])
+            except NotFound as ex:
+                self.logger.warning(ex.message)
+                res['win_username'] = 'n/a'
+                res['win_password'] = 'n/a'
+                continue
 
             # get the ip
             res['public_v4'] = str(self.get_floating_ip(node))
 
-            # define the account
-            if ADMINISTRADOR_PWD in res:
-                res['win_username'] = ADMINISTRATOR
-                res['win_password'] = res[ADMINISTRADOR_PWD]
-            else:
-                self.get_admin_password(res)
+            try:
+                # define the account
+                if ADMINISTRADOR_PWD in res:
+                    res['win_username'] = ADMINISTRATOR
+                    res['win_password'] = res[ADMINISTRADOR_PWD]
+                else:
+                    self.get_admin_password(res)
+            except (NovaPasswordError, SSHError) as ex:
+                raise ShowError(ex.message)
 
         # create resources.paws
         resources_paws = dict(resources=self.resources)
@@ -596,18 +616,18 @@ class OpenStack(LibCloud, Nova):
         self.logger.info('Checking resource: %s keys.', res['name'])
         for key in PROVISION_RESOURCE_KEYS:
             if key not in res:
-                raise ProvisionError(
+                raise NotFound(
                     'Resource: %s is missing required key: %s.' %
                     (res['name'], self.name)
                 )
             elif res[key] == '' or res[key] is None:
-                raise ProvisionError(
+                raise NotFound(
                     'Resource: %s required key: %s has an invalid value.' %
                     (res['name'], key)
                 )
             if key == 'ssh_private_key':
                 if not exists(res[key]):
-                    raise ProvisionError(
+                    raise NotFound(
                         'SSH private key: %s not found.' % res[key]
                     )
 

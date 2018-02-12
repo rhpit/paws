@@ -16,3 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 """Paws tasks package."""
+
+from paws.tasks.action import Provision, Teardown, Show
+from paws.tasks.group import Group
+from paws.tasks.winsetup import Winsetup
+
+__all__ = ['Group', 'Provision', 'Teardown', 'Show', 'Winsetup']
