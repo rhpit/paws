@@ -6,6 +6,10 @@
 # Python
 *.pyc
 
+# pytest
+.pytest_cache
+tests/**/*.xml
+
 /venv_paws/
 /rpmbuild/
 /paws.1
