@@ -460,10 +460,9 @@ class OpenStack(LibCloud, Nova):
                         raise NotFound('Env variable: %s is not found.' % key)
         self._credentials = auth
 
-    @staticmethod
-    def garbage_collector():
+    def garbage_collector(self):
         """Garbage collector."""
-        return []
+        return [self.resources_paws_file]
 
     def provision(self):
         """Provision OpenStack resources."""
