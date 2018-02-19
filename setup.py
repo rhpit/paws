@@ -65,7 +65,7 @@ and configure Windows services with a simpler way to test hybrid environments \
               'paws.providers',
               'paws.tasks'
     ],
-    install_requires=['paramiko',
+    install_requires=['paramiko==2.2.1',
                       'pywinrm',
                       'click',
                       'apache-libcloud',
