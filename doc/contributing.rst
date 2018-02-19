@@ -153,9 +153,8 @@ List of actions that need to be performed for a new release:
 3. make codecheck -- fix if needed
 4. commit your changes
 5. make doc ( access locally and double check before update upstream doc )
-6. make gh-pages -- if needed
-7. make copr-dev
-8. make copr-upstream
+6. make copr-dev
+7. make copr-upstream
 
 IDE
 ----

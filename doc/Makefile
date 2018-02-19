@@ -24,7 +24,6 @@ help:
 	@echo -e "\t$(WARN_COLOR)html$(NO_COLOR)       to make html doc available at $(GHPAGES)"
 	@echo -e "\t$(WARN_COLOR)man$(NO_COLOR)        to make manpage available at $(MANPAGES)"
 	@echo -e "\t$(WARN_COLOR)doc$(NO_COLOR)        to make man and html"
-	@echo -e "\t$(WARN_COLOR)gh-pages$(NO_COLOR)   to make doc and push gh-pages branch to github pages"
 	@echo -e "$(NO_COLOR)"
 	@echo
 
@@ -59,14 +58,4 @@ html:
 doc: prep
 	make man
 	make html
-	@echo
-	
-# generate html documentation and push to github pages
-gh-pages: doc
-	cd $(GHPAGES) && git fetch --all
-	cd $(GHPAGES) && git add . 
-	cd $(GHPAGES) && git commit -m "Generated gh-pages for `git log origin/master -1 --pretty=short --abbrev-commit`"
-	cd $(GHPAGES) && git push origin gh-pages
-	@echo -e "$(OK_COLOR)documentation published to https://rhpit.github.io/paws/$(NO_COLOR)"	
-	@echo -e "$(WARN_COLOR)might take some seconds/minute to update$(NO_COLOR)"
 	@echo

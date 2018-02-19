@@ -61,7 +61,6 @@ help:
 
 	@echo -e "\t$(OK_COLOR)--- doc ---$(NO_COLOR)"
 	@echo -e "\t$(WARN_COLOR)doc$(NO_COLOR)                generate sphinx doc html and man pages"
-	@echo -e "\t$(WARN_COLOR)gh-pages$(NO_COLOR)           publish html doc to github pages"
 
 	@echo -e "\t$(OK_COLOR)--- pip ---$(NO_COLOR)"	
 	@echo -e "\t$(WARN_COLOR)pip$(NO_COLOR)                build source codes and generate tar.gz file"
@@ -140,9 +139,6 @@ doc: prep set-version
 	@echo -e "$(OK_COLOR)html doc saved at: ../paws-doc/html/index.html$(NO_COLOR)"
 	@echo -e "$(OK_COLOR)man page saved at: ../paws-doc/man/paws.1$(NO_COLOR)"
 	@echo
-
-gh-pages:
-	make -C doc/ gh-pages
 
 copr-dev: srpm
 	# for devel and ci we use internal copr

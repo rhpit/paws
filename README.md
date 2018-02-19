@@ -1,4 +1,6 @@
 [![PyPI version](https://badge.fury.io/py/paws-cli.svg)](https://badge.fury.io/py/paws-cli)
+[![Documentation Status](https://readthedocs.com/projects/rhpit-paws/badge/?version=latest)](https://rhpit-paws.readthedocs-hosted.com/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.org/rhpit/paws.svg?branch=master)](https://travis-ci.org/rhpit/paws)
 
 # PAWS :: Provision Automated Windows and Services
 
@@ -52,7 +54,8 @@ use PAWS to replicate the Windows environment based on scripts.
 
 ## Full documentation
 
-To know more access the full documentation at https://rhpit.github.io/paws/
+To know more access the full documentation at
+https://rhpit-paws.readthedocs-hosted.com/en/latest/
 
 
 ## Report an issue
