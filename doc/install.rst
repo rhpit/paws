@@ -136,8 +136,6 @@ https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/
 
     Pywinrm: required for remote Windows management.
 
-    Shade: required for cloud infrastructure management via Ansible.
-
 Container
 ---------
 

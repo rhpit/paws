@@ -154,13 +154,8 @@ List of actions that need to be performed for a new release:
 4. commit your changes
 5. make doc ( access locally and double check before update upstream doc )
 6. make gh-pages -- if needed
-7. update docker images running
-8. make build-centos
-9. make build-fedora
-10. make push-centos
-11. make push-fedora
-12. make copr-dev
-13. make copr-upstream
+7. make copr-dev
+8. make copr-upstream
 
 IDE
 ----

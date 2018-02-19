@@ -157,27 +157,7 @@ From terminal run the following command.
 
 .. code:: bash
 
-	$ glance image-list |grep -i win
-
-Results for [1] Internal dev Openstack
-
-.. code:: bash
-
-	| 84162b52-9d03-42db-a454-aa78b0628355 | win-2008r2sp1-serverstandard-x86_x64-latest               |
-	| 73980dc1-bf77-47ad-867a-99dc0d598bec | win-2008r2sp1-serverstandard-x86_x64-released-pretest     |
-	| 4ccc764b-164d-4108-8444-0246c41cc648 | win-2012-r2                                               |
-	| 8b2ff407-b7d3-441f-93b1-fbd300201f3e | win-7sp1-enterprise-x86_x64-latest                        |
-	| f83400cb-9c24-4fdb-aceb-90b1fd0cebb5 | win2012-ad-preconfigured-eval                             |
-	| 43860089-1bd0-4024-9ba3-9f64b2b86418 | Windows 10 Ent x64                                        |
-	| 5509a595-be50-454f-8782-534f38c02aa8 | Windows 7 Ent SP1 x64                                     |
-	| 13f19445-fda1-4c8e-ba96-9eacf1b2bfb0 | Windows 7 Pro SP1 x64                                     |
-	| 0314273e-28c0-4712-a1bc-b55415a7fe27 | Windows 8.1 Ent x64                                       |
-	| ce854f4f-b99f-404f-ab98-7a33f8af525d | Windows 8.1 Pro x64                                       |
-	| dafbc4c9-e489-41da-8e00-89044a5524af | Windows Server 2008 R2 Std SP1 x64                        |
-	| 0d343fd6-d9a2-411d-b5b8-c1b15ef044f0 | Windows Server 2012 R2 Std Eval x64                       |
-	| e59b2fa9-5ae4-46e4-bc06-8a70cd2c4104 | Windows Server 2016 Tech Prev                             |
-	| 568e95b9-fee1-48a9-b5f3-c2423170ab8e | Windows2012R2New                                          |
-
+    $ glance image-list | grep -i win
 
 .. _q5:
 

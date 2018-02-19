@@ -1,45 +1,35 @@
 Links
 -----
 
-Git repos
-^^^^^^^^^
+.. list-table::
+    :widths: auto
+    :header-rows: 0
 
-https://github.com/rhpit/paws
+    *   - **Copr RPM**
+        - https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/
 
-https://github.com/rhpit/ws
+    *   - **Documentation**
+        - https://rhpit.github.io/paws/
 
-https://github.com/rhpit/paws-imgsrv
+    *   - **Docker Images**
+        - https://hub.docker.com/r/rywillia/paws/
 
-Web Documentation
-^^^^^^^^^^^^^^^^^
+    *   - **GitHub Repositories**
+        - https://github.com/rhpit/paws
 
-https://rhpit.github.io/paws/
+          https://github.com/rhpit/ws
 
-Copr RPM build
-^^^^^^^^^^^^^^
+          https://github.com/rhpit/paws-imgsrv
 
-https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/
+    *   - **PyPI**
+        - https://pypi.org/project/paws-cli/
 
-Docker Hub
-^^^^^^^^^^
+          https://pypi.python.org/pypi/paws-cli
 
-https://hub.docker.com/r/rywillia/paws/
+    *   - **Ansible Roles**
+        - https://galaxy.ansible.com/rywillia/paws-install/
 
-PyPI
-^^^^
+          https://galaxy.ansible.com/rywillia/paws-run/
 
-https://pypi.org/project/paws-cli/
-
-https://pypi.python.org/pypi/paws-cli
-
-Test PyPI
-^^^^^^^^^
-
-https://testpypi.python.org/pypi/paws-cli/
-
-Ansible Roles
-^^^^^^^^^^^^^
-
-https://galaxy.ansible.com/rywillia/paws-install/
-
-https://galaxy.ansible.com/rywillia/paws-run/
+    *   - **Test PyPI**
+        - https://testpypi.python.org/pypi/paws-cli/
