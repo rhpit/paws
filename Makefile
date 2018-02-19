@@ -68,20 +68,12 @@ help:
 	@echo -e "\t$(WARN_COLOR)pypi$(NO_COLOR)               upload tar.gz to pypi"
 
 	@echo -e "\t$(OK_COLOR)--- rpm ---$(NO_COLOR)"	
-	@echo -e "\t$(WARN_COLOR)rpm$(NO_COLOR)                 build source codes and generate rpm file"
-	@echo -e "\t$(WARN_COLOR)tarball$(NO_COLOR)             generate tarball of project"
-	@echo -e "\t$(WARN_COLOR)srpm$(NO_COLOR)                generate srpm of project"
-	@echo -e "\t$(WARN_COLOR)copr-dev$(NO_COLOR)            generate srpm and send to build in copr-devel internal Red Hat"
-	@echo -e "\t$(WARN_COLOR)copr-upstream$(NO_COLOR)       generate srpm and send to build in upstream copr-fedora"
-	@echo -e "\t$(WARN_COLOR)all$(NO_COLOR)                 clean test doc rpm"
-	@echo -e "\t$(WARN_COLOR)dev$(NO_COLOR)                 clean, rpm and install PAWS locally"
-
-	@echo -e "\t$(OK_COLOR)--- docker ---$(NO_COLOR)"
-	@echo -e "\t$(WARN_COLOR)build-latest-image$(NO_COLOR)  build paws latest docker image"
-	@echo -e "\t$(WARN_COLOR)build-devel-image$(NO_COLOR)   build paws devel docker image"
-	@echo -e "\t$(WARN_COLOR)push-latest-image$(NO_COLOR)   push paws latest docker image to hub.docker.com"
-	@echo -e "\t$(WARN_COLOR)push-devel-image$(NO_COLOR)    push paws devel docker image to hub.docker.com"
-	@echo -e "\t$(WARN_COLOR)clean-images$(NO_COLOR)        delete paws tagged images"
+	@echo -e "\t$(WARN_COLOR)rpm$(NO_COLOR)                build source codes and generate rpm file"
+	@echo -e "\t$(WARN_COLOR)tarball$(NO_COLOR)            generate tarball of project"
+	@echo -e "\t$(WARN_COLOR)srpm$(NO_COLOR)               generate srpm of project"
+	@echo -e "\t$(WARN_COLOR)copr-upstream$(NO_COLOR)      generate srpm and send to build in upstream copr-fedora"
+	@echo -e "\t$(WARN_COLOR)all$(NO_COLOR)                clean test doc rpm"
+	@echo -e "\t$(WARN_COLOR)dev$(NO_COLOR)                clean, rpm and install PAWS locally"
 	@echo -e "$(NO_COLOR)"
 
 all: clean test rpm
@@ -140,13 +132,6 @@ doc: prep set-version
 	@echo -e "$(OK_COLOR)man page saved at: ../paws-doc/man/paws.1$(NO_COLOR)"
 	@echo
 
-copr-dev: srpm
-	# for devel and ci we use internal copr
-	# you need to have a valid ~/.config/copr-devel file to use copr-cli
-	@echo "building source-code from branch $(BRANCH)"
-	@echo -e "$(OK_COLOR)running build in https://copr.devel.redhat.com/coprs/rhpit/paws-devel$(NO_COLOR)"
-	@copr-cli --config /home/$(USER)/.config/copr-devel build rhpit/paws-devel $(RPMTOP)/SRPMS/$(SRPM) 
-
 copr-upstream: srpm
 	# build in fedora copr
 	# you need to have a valid ~/.config/copr-fedora file to use copr-cli
@@ -197,34 +182,6 @@ endif
 	@echo 
 	paws --version
 	@echo
-
-# Docker tasks
-build-latest-image:
-	@echo -e "$(OK_COLOR)building paws:latest docker image$(NO_COLOR)"
-	@sudo docker build -t paws:latest -f Dockerfile-latest .
-	@echo -e "$(OK_COLOR)image built$(NO_COLOR)"
-	@sudo docker images paws:latest
-
-build-devel-image:
-	@echo -e "$(OK_COLOR)building paws:latest docker image$(NO_COLOR)"
-	@sudo docker build -t paws:devel -f Dockerfile-devel .
-	@echo -e "$(OK_COLOR)image built$(NO_COLOR)"
-	@sudo docker images paws:devel
-
-push-latest-image:
-	@sudo docker login
-	@echo -e "$(OK_COLOR)push paws:latest docker image to hub.docker.com$(NO_COLOR)"
-	@sudo docker push rywillia/paws:latest
-
-push-devel-image:
-	@sudo docker login
-	@echo -e "$(OK_COLOR)push paws:devel docker image to hub.docker.com$(NO_COLOR)"
-	@sudo docker push rywillia/paws:devel
-
-clean-images:
-	# TODO: need a better solution
-	@sudo docker rmi paws:latest
-	@sudo docker rmi paws:devel
 
 # pip tasks
 pip: clean
