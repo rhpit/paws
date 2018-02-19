@@ -50,38 +50,20 @@ provisioning. Paws will invoke the teardown task automatically.
     # show help menu
     paws provision --help
 
-**OUTPUT**
-
-Here is an example output at the end of provision task.
-
-.. code-block:: bash
-
-	2016-12-15 20:32:22 INFO *********************************************
-	2016-12-15 20:32:22 INFO         System Resources (provisioned)       
-	2016-12-15 20:32:22 INFO *********************************************
-	2016-12-15 20:32:22 INFO 1.
-	2016-12-15 20:32:22 INFO     Name         : ryan_windows
-	2016-12-15 20:32:22 INFO     Public IPv4  : 10.8.175.135
-	2016-12-15 20:32:22 INFO     Username     : Admin
-	2016-12-15 20:32:22 INFO     Password     : rBFXHL6eiuHOcGnQBiK9
-	2016-12-15 20:32:22 INFO *********************************************
-	2016-12-15 20:32:22 INFO END: Provision, TIME: 0h:0m:10s
-	2016-12-15 20:32:22 INFO End paws execution in 0h:0m:14s
-
-
 .. note::
-	When the provision task is finished you will find a resources.paws file
-	located within your user directory. This contains information about the
-	system provisioned.
 
-   .. code:: yaml
+    One completion, you will find a new file **resources.paws** stored within
+    your user directory. This file contains updated information for the
+    system resource provisioned.
+
+    .. code-block:: yaml
 
       resources:
-         - name: windows_2012_server
-           public_v4: 10.8.174.162
-           private_v4: 172.16.5.184
-           ssh_key_file: /home/user/.ssh/id_rsa
+         - name: windows_server_01
+           public_v4: 192.168.0.1
+           private_v4: 127.0.0.1
+           ssh_key_file: /home/$USER/.ssh/id_rsa
            keypair: my_key_pair
            id: 79f0dd24-28f0-45e1-b560-a299767fa969
-           win_password: my_password@2016
+           win_password: my_password@2018
            win_username: Administrator

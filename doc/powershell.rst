@@ -1,5 +1,5 @@
-Windows PowerShell
-==================
+PowerShell
+==========
 
 PowerShell (including Windows PowerShell and PowerShell Core) [1]_ *is a task
 automation and configuration management framework from Microsoft, consisting

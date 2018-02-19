@@ -46,10 +46,7 @@ single paws call.
     # show help menu
     paws group --help
 
-**OUTPUT**
-
-Group output will be the same as all other paws tasks just combined.
-
 .. note::
-	To learn how to create a group visit the following: `Create group file
-	<create_group.html>`_.
+
+    To learn how to create a paws group file, visit the following:
+    `Create group file <create_group.html>`_.
