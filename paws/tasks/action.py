@@ -71,6 +71,8 @@ class Action(PawsTask):
             self.logger.info('Starting %s task', self.name)
             self.start()
             self.resources_paws = self.provider.run_action(self.name.lower())
+            if self.resources_paws['resources']:
+                log_resources(self.resources_paws, self.name.lower())
         except (NotFound, ProvisionError, TeardownError) as ex:
             self.logger.error(ex.message)
             self.exit_code = 1
@@ -79,8 +81,6 @@ class Action(PawsTask):
             self.exit_code = 1
         finally:
             self.end()
-            if self.resources_paws['resources']:
-                log_resources(self.resources_paws, self.name.lower())
             self.logger.info(
                 'Ending %s task in %dh:%dm:%ds', self.name.lower(),
                 self.hours, self.minutes, self.seconds

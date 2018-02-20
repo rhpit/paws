@@ -10,6 +10,8 @@
 #
 
 FROM python:2
+RUN apt-get -qq update
+RUN apt-get install -y libvirt-dev
 RUN git clone https://github.com/rhpit/paws.git -b devel /tmp/paws
 RUN pip install --no-cache-dir /tmp/paws/.
 RUN rm -rf /tmp/paws
