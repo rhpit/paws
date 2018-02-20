@@ -393,6 +393,9 @@ class OpenStack(LibCloud, Nova):
 
         :param resources: windows resources
         """
+        # empty out resources
+        self.resources = list()
+
         for res in resources:
             count = 1
 
@@ -538,7 +541,7 @@ class OpenStack(LibCloud, Nova):
         )
 
         # create resources.paws
-        resources_paws = dict(resources=self.resources)
+        resources_paws = dict(resources=deepcopy(self.resources))
         file_mgmt('w', self.resources_paws_file, resources_paws)
 
         return resources_paws
@@ -575,7 +578,7 @@ class OpenStack(LibCloud, Nova):
             except Exception as ex:
                 raise TeardownError(ex.message)
 
-        resources_paws = dict(resources=self.resources)
+        resources_paws = dict(resources=deepcopy(self.resources))
         return resources_paws
 
     def show(self):
@@ -602,7 +605,7 @@ class OpenStack(LibCloud, Nova):
                 raise ShowError(ex.message)
 
         # create resources.paws
-        resources_paws = dict(resources=self.resources)
+        resources_paws = dict(resources=deepcopy(self.resources))
         file_mgmt('w', self.resources_paws_file, resources_paws)
 
         return resources_paws
