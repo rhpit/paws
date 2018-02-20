@@ -6,4 +6,4 @@ ansible
 # paws providers
 apache-libcloud
 python-novaclient
-#libvirt-python
+libvirt-python

@@ -154,8 +154,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-        (master_doc, 'paws', u'PAWS :: Provision Automated Windows and Services',
-         [author], 1)
+    (master_doc, 'paws', u'PAWS :: Provision Automated Windows and Services',
+     [author], 1)
 ]
 
 
@@ -165,6 +165,6 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-        (master_doc, 'PAWS', u'PAWS :: Provision Automated Windows and Services',
-         author, 'PAWS', 'One line description of project.', 'Miscellaneous'),
+    (master_doc, 'PAWS', u'PAWS :: Provision Automated Windows and Services',
+     author, 'PAWS', 'One line description of project.', 'Miscellaneous'),
 ]

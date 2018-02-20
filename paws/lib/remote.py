@@ -19,7 +19,6 @@
 """Module containing classes and functions regarding remote connections."""
 
 import sys
-from ConfigParser import ConfigParser
 from collections import namedtuple
 from logging import getLogger
 from pprint import pformat
@@ -42,6 +41,7 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.playbook.play import Play
 from ansible.plugins.callback import CallbackBase
 
+from paws.compat import ConfigParser
 from paws.constants import ANSIBLE_INVENTORY_FILENAME as ANSIBLE_INVENTORY, \
     LINE
 from paws.helpers import retry

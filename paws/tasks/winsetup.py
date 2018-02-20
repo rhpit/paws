@@ -21,6 +21,7 @@
 from ansible.errors import AnsibleRuntimeError
 from os.path import join, exists, isfile
 
+from paws.compat import string_types
 from paws.constants import ADMIN, WIN_EXEC_YAML, LINE
 from paws.core import PawsTask, Namespace
 from paws.exceptions import SSHError
@@ -185,7 +186,7 @@ class Winsetup(PawsTask):
                     # PowerShell vars is a file
                     pb_vars["psv"] = _psvfile
                     pvars = "file"
-                elif isinstance(self.psv, (str, unicode)):
+                elif isinstance(self.psv, string_types):
                     # PowerShell vars is a string
                     pvars = "str"
                     pb_vars["psv"] = self.psv

@@ -79,7 +79,7 @@ class Action(PawsTask):
             self.exit_code = 1
         finally:
             self.end()
-            if self.resources_paws:
+            if self.resources_paws['resources']:
                 log_resources(self.resources_paws, self.name.lower())
             self.logger.info(
                 'Ending %s task in %dh:%dm:%ds', self.name.lower(),

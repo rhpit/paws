@@ -9,6 +9,7 @@
 # pytest
 .pytest_cache
 tests/**/*.xml
+.eggs/
 
 /venv_paws/
 /rpmbuild/
@@ -19,3 +20,4 @@ tests/**/*.xml
 /paws.egg-info/
 /paws_cli.egg-info/
 /.settings/
+/.tox

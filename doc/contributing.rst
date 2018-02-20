@@ -62,7 +62,8 @@ Create a python virtual environment, activate it and install required libs:
 
 	virtualenv -p /usr/bin/python2.7 venv_paws
 	source venv_paws/bin/activate
-	pip install -r requirements-dev.txt --upgrade
+	pip install -r test-requirements.txt --upgrade
+    pip install -e .
 
 
 Build

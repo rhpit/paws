@@ -91,7 +91,8 @@ set-version:
 clean:
 	$(RM) -r dist build paws_cli.egg-info
 	$(RM) $(NAME)*.tar.gz
-	$(RM) -r rpmbuild build doc/build 
+	$(RM) -r rpmbuild build doc/build
+	$(RM) -r .tox .pytest_cache
 	@find -name '*.py[co]' -delete
 	@echo -e "$(OK_COLOR)deleted rpmbuild, dist and build$(NO_COLOR)"
 	make clean -C doc/
@@ -143,20 +144,8 @@ else
 	@echo -e "$(ERROR_COLOR)can't run build for branch != master to upstream$(NO_COLOR)"
 endif
 
-flake8:
-	@echo "------Starting flake8 code analysis------"
-	flake8 --max-line-length=100 --benchmark --exclude=.eggs
-	@echo
-
-pylint:
-	@echo "------Starting Pylint code analysis------"
-	# TODO: pls enable me again after Libvirt code is integrated
-	# find paws/ tests/ -name "*.py" | xargs pylint --rcfile=.pylintrc
-	find paws/ -name "*.py" | grep -v libvirt | xargs pylint \
-	--rcfile=.pylintrc
-	@echo
-
-codecheck: flake8 pylint
+codecheck:
+	tox -e pep8
 
 # get distro and set package manager DNF or YUM depending of distro
 distro:

@@ -331,10 +331,10 @@ class Nova(LoggerMixin):
         res['win_password'] = None
 
         try:
-            res['win_password'] = self.get_password(
+            res['win_password'] = str(self.get_password(
                 res['name'],
                 res['ssh_private_key']
-            )
+            ))
             self.logger.info('Successfully retrieved VM %s admin password.',
                              res['name'])
         except NovaPasswordError:
@@ -545,13 +545,14 @@ class OpenStack(LibCloud, Nova):
 
     def teardown(self):
         """Teardown OpenStack resources."""
-        for res in self.resources:
+        for index, res in enumerate(self.resources):
             self.logger.info('Deleting vm %s.', res['name'])
 
             try:
                 node = self.get_node(res['name'])
             except NotFound as ex:
                 self.logger.warning(ex.message + ' Skipping teardown.')
+                self.resources.pop(index)
                 continue
 
             try:
@@ -579,13 +580,12 @@ class OpenStack(LibCloud, Nova):
 
     def show(self):
         """Show OpenStack resources."""
-        for res in self.resources:
+        for index, res in enumerate(self.resources):
             try:
                 node = self.get_node(res['name'])
             except NotFound as ex:
                 self.logger.warning(ex.message)
-                res['win_username'] = 'n/a'
-                res['win_password'] = 'n/a'
+                self.resources.pop(index)
                 continue
 
             # get the ip

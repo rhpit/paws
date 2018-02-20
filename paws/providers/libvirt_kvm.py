@@ -17,7 +17,6 @@
 #
 
 import sys
-import urllib2
 from logging import getLogger
 from subprocess import PIPE
 from xml.etree import ElementTree as ET
@@ -30,6 +29,7 @@ from os import environ, getenv
 from os.path import join, exists
 from requests import HTTPError, RequestException, get
 
+from paws.compat import urlopen
 from paws.constants import LIBVIRT_OUTPUT, LIBVIRT_AUTH_HELP, \
     ANSIBLE_INVENTORY_FILENAME
 from paws.helpers import get_ssh_conn, file_mgmt, subprocess_call, cleanup, \
@@ -329,7 +329,7 @@ class Util(object):
         pbar_label = label + extra
         LOG.debug("Starting download %s" % link)
         try:
-            req = urllib2.urlopen(link)
+            req = urlopen(link)
             remote_file_size = int(req.headers.get('content-length'))
             CHUNK = 16 * 1024
             with open(file_dst, 'wb') as fp:

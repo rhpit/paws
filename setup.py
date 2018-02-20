@@ -70,12 +70,7 @@ and configure Windows services with a simpler way to test hybrid environments \
                       'click',
                       'apache-libcloud',
                       'ansible',
-                      'python-novaclient'],
-    test_suite="nose.collector",
-    tests_require="nose",
+                      'python-novaclient',
+                      'libvirt-python'],
     entry_points={'console_scripts': ['paws=paws.cli:paws']}
 )
-
-print "-" * 80
-print "Python build target complete"
-print "-" * 80

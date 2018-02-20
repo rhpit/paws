@@ -21,13 +21,12 @@
 This module is the main entry point to paws application.
 """
 
-from xmlrpclib import ServerProxy
-
 import click
 from os import environ
 from os.path import dirname, join
 
 from paws import __file__ as paws_pathfile
+from paws.compat import ServerProxy
 from paws.constants import DEFAULT_USERDIR, TASK_ARGS
 from paws.core import Namespace
 from paws.helpers import file_mgmt, get_task_module_path

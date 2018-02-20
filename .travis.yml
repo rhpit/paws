@@ -1,5 +1,14 @@
 language: python
+matrix:
+  include:
+    - python: 2.7
+      env: TOXENV=py27,pep8
+    - python: 3.6
+      env: TOXENV=py36,pep8
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libvirt-dev
 install:
-  - pip install -r requirements-dev.txt
+  - pip install -r test-requirements.txt
 script:
-  - make codecheck
+  - tox
