@@ -1,3 +1,4 @@
+docker
 flake8
 pytest
 sphinx
