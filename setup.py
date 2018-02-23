@@ -70,7 +70,9 @@ and configure Windows services with a simpler way to test hybrid environments \
                       'click',
                       'apache-libcloud',
                       'ansible',
-                      'python-novaclient',
-                      'libvirt-python'],
+                      'python-novaclient'],
+    extras_require={
+        'libvirt': ['libvirt-python']
+    },
     entry_points={'console_scripts': ['paws=paws.cli:paws']}
 )

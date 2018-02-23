@@ -30,7 +30,7 @@ You also should have docker installed and the service running.
 Description:
 
 This pytest class contains 6 tests to validate the paws supported docker
-imaegs.
+images.
     1. Test downloading docker image.
     2. Start container (based on paws image) and run paws provision task.
     3. Start container (based on paws image) and run paws show task.

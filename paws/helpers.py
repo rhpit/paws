@@ -73,8 +73,10 @@ def retry(exception_to_check, tries=4, delay=10, backoff=1, logger=LOG):
                     return function_name(*args, **kwargs)
                 except exception_to_check as ex:
                     try:
-                        msg = "%s, retrying in %d seconds..." %\
-                            (str(ex), mdelay)
+                        msg = "%s Retrying in %d seconds.." %\
+                              (str(ex.message), mdelay)
+                        # msg = "%s, retrying in %d seconds..." %\
+                        #    (str(ex), mdelay)
                         if logger:
                             logger.debug(msg)
                         else:
@@ -288,11 +290,8 @@ def get_ssh_conn(host, username, password=None, ssh_key=None):
                         timeout=5)
         ssh.close()
         LOG.info("Successfully established SSH connection to %s", host)
-    except (error, SSHException, timeout) as ex:
-        try:
-            raise SSHError(ex.strerror)
-        except AttributeError:
-            raise SSHError(ex.message)
+    except (error, SSHException, timeout):
+        raise SSHError('Port 22 is unreachable.')
 
 
 @retry(SSHError, tries=60)

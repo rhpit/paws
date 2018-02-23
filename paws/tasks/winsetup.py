@@ -245,4 +245,4 @@ class Winsetup(PawsTask):
                     self.minutes, self.seconds
                 )
 
-            return self.exit_code
+        return self.exit_code
