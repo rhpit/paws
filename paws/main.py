@@ -22,9 +22,10 @@ Main class
 
 from importlib import import_module
 
-from os.path import join
+from os import environ, getcwd
+from os.path import join, isdir
 
-from paws.constants import LINE, PAWS_NAME
+from paws.constants import DEFAULT_USERDIR, LINE, PAWS_NAME
 from paws.core import LoggerMixin, TimeMixin
 from paws.helpers import file_mgmt
 
@@ -47,21 +48,40 @@ class Paws(LoggerMixin, TimeMixin):
         self.args = args
 
         # create logger
-        self.create_logger(PAWS_NAME, self.args.verbose)
+        self.create_logger(PAWS_NAME, getattr(self.args, 'verbose'))
 
     def run(self):
         """Run a paws task."""
         # save start time
         self.start()
 
-        # log commands options
-        self.logger.info("Begin paws execution")
-        self.logger.debug(LINE)
-        self.logger.debug("Paws options".center(45))
-        self.logger.debug(LINE)
+        self.logger.info(LINE)
+        self.logger.info('PAWS'.center(45))
+        self.logger.info(LINE)
+
+        # determine the user directory location
+        user_dir = getattr(self.args, 'userdir')
+        delattr(self.args, 'userdir')
+
+        if not user_dir:
+            user_dir = DEFAULT_USERDIR
+            if isdir(join(getcwd(), 'ws')):
+                user_dir = join(getcwd(), 'ws')
+
+        if not isdir(user_dir):
+            self.logger.error('User directory ~ %s not found!' % user_dir)
+            raise SystemExit(1)
+
+        self.logger.info('User directory ~ %s' % user_dir)
+
+        environ['ANSIBLE_CONFIG'] = join(user_dir, 'ansible.cfg')
+
+        self.logger.info(LINE)
+        self.logger.info('Options'.center(45))
+        self.logger.info(LINE)
+
         for key, value in vars(self.args).items():
-            self.logger.debug("%s: %s", key, value)
-        self.logger.debug(LINE)
+            self.logger.info('%s ~ %s' % (key.title(), value))
 
         # import paws task
         pmodule = import_module(self.task_module)
@@ -73,14 +93,14 @@ class Paws(LoggerMixin, TimeMixin):
         if self.task.lower() == 'group':
             # read files
             try:
-                group = file_mgmt('r', join(self.args.userdir, self.args.name))
+                group = file_mgmt('r', join(user_dir, self.args.name))
             except IOError as ex:
                 self.logger.error('Group file %s' % ex.message)
                 raise SystemExit(1)
 
             # create task object
             task = task_cls(
-                self.args.userdir,
+                user_dir,
                 group,
                 self.args.verbose,
                 args=self.args
@@ -90,19 +110,24 @@ class Paws(LoggerMixin, TimeMixin):
             try:
                 credentials = file_mgmt(
                     'r',
-                    join(self.args.userdir, self.args.credentials)
+                    join(user_dir, self.args.credentials)
                 )
-            except (AttributeError, IOError):
-                credentials = None
+            except (AttributeError, IOError) as ex:
+                self.logger.error(ex)
+                raise SystemExit(1)
 
-            resources = file_mgmt(
-                'r',
-                join(self.args.userdir, self.args.topology)
-            )
+            try:
+                resources = file_mgmt(
+                    'r',
+                    join(user_dir, self.args.topology)
+                )
+            except (AttributeError, IOError) as ex:
+                self.logger.error(ex)
+                raise SystemExit(1)
 
             # create task object
             task = task_cls(
-                self.args.userdir,
+                user_dir,
                 resources,
                 credentials,
                 self.args.verbose,
