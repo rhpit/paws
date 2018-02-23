@@ -22,12 +22,11 @@ This module is the main entry point to paws application.
 """
 
 import click
-from os import environ
 from os.path import dirname, join
 
 from paws import __file__ as paws_pathfile
 from paws.compat import ServerProxy
-from paws.constants import DEFAULT_USERDIR, TASK_ARGS
+from paws.constants import TASK_ARGS
 from paws.core import Namespace
 from paws.helpers import file_mgmt, get_task_module_path
 from paws.main import Paws
@@ -117,7 +116,7 @@ def run(args, task):
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
-@click.option(USERDIR_SHORT, USERDIR_LONG, default=DEFAULT_USERDIR,
+@click.option(USERDIR_SHORT, USERDIR_LONG, default=None,
               help="User directory", metavar="")
 @click.option("-v", "--verbose", count=True, help="Verbose mode")
 @click.option("--version", is_flag=True, callback=get_version,
@@ -128,8 +127,6 @@ def paws(ctx=None, userdir=None, verbose=None):
     """PAWS - Provision Automated Windows and Services
        https://rhpit.github.io/paws
     """
-    # Custom ansible.cfg
-    environ['ANSIBLE_CONFIG'] = join(DEFAULT_USERDIR, 'ansible.cfg')
     ctx.obj = dict()
     ctx.obj['userdir'] = userdir
     ctx.obj['verbose'] = verbose
