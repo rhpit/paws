@@ -113,8 +113,7 @@ class Paws(LoggerMixin, TimeMixin):
                     join(user_dir, self.args.credentials)
                 )
             except (AttributeError, IOError) as ex:
-                self.logger.error(ex)
-                raise SystemExit(1)
+                credentials = None
 
             try:
                 resources = file_mgmt(
