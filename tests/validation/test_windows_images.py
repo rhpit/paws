@@ -216,6 +216,14 @@ class TestWindowsImages(object):
         proc.communicate()
         assert proc.returncode == 0
 
+    def test_show(self, param):
+        LOG.info('\n' + DIV + ' SHOW ' + DIV)
+        cmd = 'paws -v -ud %s show' % USER_DIR
+        LOG.info('Command to run: %s' % cmd)
+        proc = subprocess.Popen(cmd, shell=True)
+        proc.communicate()
+        assert proc.returncode == 0
+
     def test_teardown(self, param):
         LOG.info('\n' + DIV + ' TEARDOWN ' + DIV)
         cmd = 'paws -v -ud %s teardown' % USER_DIR
