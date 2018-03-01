@@ -68,6 +68,7 @@ and configure Windows services with a simpler way to test hybrid environments \
     install_requires=['paramiko==2.2.1',
                       'pywinrm',
                       'click',
+                      'click_spinner',
                       'apache-libcloud',
                       'ansible',
                       'python-novaclient'],

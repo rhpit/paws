@@ -24,6 +24,7 @@ from logging import getLogger
 from pprint import pformat
 
 import os
+from click_spinner import spinner
 
 try:
     # < 2.4
@@ -393,12 +394,6 @@ class PlayCall(BaseCall):
 
         LOG.info('Running play:\n%s' % getattr(play, '_ds'))
 
-        if 'password' not in play.name:
-            LOG.info(LINE)
-            LOG.info("PLEASE WAIT WHILE ANSIBLE MODULE IS RUNNING")
-            LOG.info("This could take several minutes to complete.")
-            LOG.info(LINE)
-
         if default_callback:
             callback = None
         else:
@@ -416,7 +411,8 @@ class PlayCall(BaseCall):
             )
 
             # run play
-            result = tqm.run(play)
+            with spinner():
+                result = tqm.run(play)
 
             # process results
             if not default_callback:
@@ -507,14 +503,9 @@ class PlaybookCall(BaseCall):
 
         LOG.info('Running playbook: %s' % playbook)
         if 'ps' in extra_vars:
-            LOG.info("PowerShell script to be run %s", extra_vars['ps'])
+            LOG.info('Executing PowerShell %s' % extra_vars['ps'])
         if 'psv' in extra_vars:
             LOG.debug("PowerShell vars %s", extra_vars['psv'])
-
-        LOG.info(LINE)
-        LOG.info("PLEASE WAIT WHILE ANSIBLE PLAYBOOK IS RUNNING")
-        LOG.info("This could take several minutes to complete.")
-        LOG.info(LINE)
 
         # load playbook
         runner = PlaybookExecutor(
@@ -537,8 +528,9 @@ class PlaybookCall(BaseCall):
         sys.stderr = open(os.devnull, 'w')
 
         try:
-            # Run playbook
-            result = runner.run()
+            # run playbook
+            with spinner():
+                result = runner.run()
 
             # Process results
             proc = results_class(result, self.callback, default_callback)

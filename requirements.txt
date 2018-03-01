@@ -2,6 +2,7 @@
 paramiko
 pywinrm
 click
+click_spinner
 ansible
 # paws providers
 apache-libcloud

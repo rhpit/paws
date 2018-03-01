@@ -25,6 +25,8 @@ from socket import error, timeout
 from subprocess import Popen
 from time import sleep
 
+from click_spinner import spinner
+
 from os import remove, listdir
 from os.path import join, exists, splitext
 from paramiko import AutoAddPolicy, SSHClient
@@ -274,24 +276,25 @@ def get_ssh_conn(host, username, password=None, ssh_key=None):
     :param ssh_key: SSH private key for authentication
     :type ssh_key: str
     """
-    try:
-        ssh = SSHClient()
-        ssh.load_system_host_keys()
-        ssh.set_missing_host_key_policy(AutoAddPolicy())
-        if ssh_key:
-            ssh.connect(hostname=host,
-                        username=username,
-                        key_filename=ssh_key,
-                        timeout=5)
-        if password:
-            ssh.connect(hostname=host,
-                        username=username,
-                        password=password,
-                        timeout=5)
-        ssh.close()
-        LOG.info("Successfully established SSH connection to %s", host)
-    except (error, SSHException, timeout):
-        raise SSHError('Port 22 is unreachable.')
+    with spinner():
+        try:
+            ssh = SSHClient()
+            ssh.load_system_host_keys()
+            ssh.set_missing_host_key_policy(AutoAddPolicy())
+            if ssh_key:
+                ssh.connect(hostname=host,
+                            username=username,
+                            key_filename=ssh_key,
+                            timeout=5)
+            if password:
+                ssh.connect(hostname=host,
+                            username=username,
+                            password=password,
+                            timeout=5)
+            ssh.close()
+            LOG.info("Successfully established SSH connection to %s", host)
+        except (error, SSHException, timeout):
+            raise SSHError('Port 22 is unreachable.')
 
 
 @retry(SSHError, tries=60)
@@ -311,30 +314,35 @@ def exec_cmd_by_ssh(host, username, cmd, password=None, ssh_key=None):
     :param ssh_key: SSH private key for authentication
     :type ssh_key: str
     """
-    try:
-        ssh = SSHClient()
-        ssh.load_system_host_keys()
-        ssh.set_missing_host_key_policy(AutoAddPolicy())
-        if ssh_key:
-            ssh.connect(hostname=host,
-                        username=username,
-                        key_filename=ssh_key,
-                        timeout=30)
-        if password:
-            ssh.connect(hostname=host,
-                        username=username,
-                        password=password,
-                        timeout=30)
-
-        ssh.exec_command(cmd)
-
-        ssh.close()
-        LOG.info("Successfully executed command: %s", cmd)
-    except (error, SSHException, timeout) as ex:
+    with spinner():
         try:
-            raise SSHError(ex.strerror)
-        except AttributeError:
-            raise SSHError(ex.message)
+            ssh = SSHClient()
+            ssh.load_system_host_keys()
+            ssh.set_missing_host_key_policy(AutoAddPolicy())
+            if ssh_key:
+                ssh.connect(hostname=host,
+                            username=username,
+                            key_filename=ssh_key,
+                            timeout=30)
+            if password:
+                ssh.connect(hostname=host,
+                            username=username,
+                            password=password,
+                            timeout=30)
+
+            results = ssh.exec_command(cmd)
+            return_code = results[1].channel.recv_exit_status()
+            if return_code:
+                LOG.error('Command %s failed to execute.' % cmd)
+                LOG.error(results[2].read())
+                ssh.close()
+                raise SystemExit(return_code)
+            else:
+                LOG.debug(results[1].read().strip())
+                LOG.info("Successfully executed command: %s", cmd)
+                ssh.close()
+        except (SSHException, timeout):
+            raise SSHError('Port 22 is unreachable.')
 
 
 def subprocess_call(cmd, fatal=True, cwd=None, stdout=None, stderr=None,
