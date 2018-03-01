@@ -43,8 +43,7 @@ from ansible.playbook.play import Play
 from ansible.plugins.callback import CallbackBase
 
 from paws.compat import ConfigParser
-from paws.constants import ANSIBLE_INVENTORY_FILENAME as ANSIBLE_INVENTORY, \
-    LINE
+from paws.constants import ANSIBLE_INVENTORY_FILENAME as ANSIBLE_INVENTORY
 from paws.helpers import retry
 from paws.helpers import file_mgmt
 

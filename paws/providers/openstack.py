@@ -27,20 +27,19 @@ from libcloud import security
 from libcloud.common.types import InvalidCredsError
 from libcloud.compute.providers import get_driver
 from libcloud.compute.types import Provider
-from novaclient.client import Client as NovaClient
 from os import getenv
 from os.path import exists
 from requests.exceptions import ConnectionError
 
-from paws.constants import ADMIN, ADMINISTRADOR_PWD, ADMINISTRATOR, \
+from paws.constants import ADMINISTRADOR_PWD, ADMINISTRATOR, \
     OPENSTACK_ENV_VARS, PROVISION_RESOURCE_KEYS
 from paws.core import LoggerMixin
-from paws.exceptions import NovaPasswordError, SSHError, ProvisionError, \
-    NotFound, BootError, BuildError, NetworkError, TeardownError, ShowError
-from paws.helpers import retry, get_ssh_conn, file_mgmt
+from paws.exceptions import SSHError, ProvisionError, \
+    NotFound, BootError, BuildError, NetworkError, TeardownError
+from paws.helpers import file_mgmt
 from paws.lib.remote import PlayCall
-from paws.lib.windows import create_inventory, set_administrator_password, \
-    ipconfig_release
+from paws.lib.remote import create_inventory
+from paws.lib.windows import set_administrator_password, ipconfig_release
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -271,82 +270,7 @@ class LibCloud(LoggerMixin):
             return data[0]
 
 
-class Nova(LoggerMixin):
-    """OpenStack nova component implementation."""
-
-    def __init__(self, credentials):
-        """Constructor.
-
-        :param credentials: provider credentials
-        """
-        self.nova = NovaClient(
-            '2',
-            username=credentials['os_username'],
-            password=credentials['os_password'],
-            auth_url=credentials['os_auth_url'],
-            project_name=credentials['os_project_name']
-        )
-
-    @retry(NovaPasswordError, tries=20)
-    def get_password(self, name, key_pair):
-        """Get the admin password for a server.
-
-        :param name: server name
-        :param key_pair: key pair associated to server
-        """
-        try:
-            server = self.nova.servers.find(name=name)
-            password = server.get_password(key_pair)
-
-            if not password:
-                raise NovaPasswordError('Password is empty!')
-            if not isinstance(password, str):
-                raise NovaPasswordError('Password %s is not string type!' %
-                                        password)
-            self.logger.debug('VM %s admin password %s', name, password)
-        except NovaPasswordError as ex:
-            raise NovaPasswordError(ex.message)
-        return password
-
-    def get_admin_password(self, res):
-        """Get the pre-defined password for the admin account.
-
-        This is part of the Windows QCOW image build process. The password is
-        random each time. Nova client is used to retrieve the password.
-
-        :param res: vm resource
-        """
-        self.logger.info('Attempting to SSH into vm %s.', res['name'])
-        try:
-            get_ssh_conn(
-                res['public_v4'],
-                ADMIN,
-                ssh_key=res['ssh_private_key']
-            )
-        except SSHError:
-            self.logger.error('Unable to SSH into vm %s.', res['name'])
-            raise SSHError(1)
-
-        self.logger.info('Fetching vm %s admin account password.', res['name'])
-
-        res['win_username'] = ADMIN
-        res['win_password'] = None
-
-        try:
-            res['win_password'] = str(self.get_password(
-                res['name'],
-                res['ssh_private_key']
-            ))
-            self.logger.info('Successfully retrieved VM %s admin password.',
-                             res['name'])
-        except NovaPasswordError:
-            self.logger.error('Unable to fetch admin password for vm %s.',
-                              res['name'])
-            raise NovaPasswordError(1)
-        return res
-
-
-class OpenStack(LibCloud, Nova):
+class OpenStack(LibCloud):
     """OpenStack provider class."""
 
     __provider_name__ = 'openstack'
@@ -366,8 +290,7 @@ class OpenStack(LibCloud, Nova):
         # set resources
         self.set_resources(args.resources)
 
-        LibCloud.__init__(self, self.credentials)
-        Nova.__init__(self, self.credentials)
+        super(OpenStack, self).__init__(self.credentials)
 
     @property
     def name(self):
@@ -517,29 +440,25 @@ class OpenStack(LibCloud, Nova):
 
                 # create/attach floating ip
                 res['public_v4'] = self.attach_floating_ip(node, ext_net)
-
-                # get the admin password
-                self.get_admin_password(res)
             except BootError as ex:
                 raise ProvisionError(ex.message)
-            except (BuildError, NetworkError, NovaPasswordError,
-                    SSHError) as ex:
+            except (BuildError, NetworkError, SSHError) as ex:
                 self.logger.error(ex.message)
                 self.logger.info('Tearing down vm: %s.', res['name'])
                 self.driver.destroy_node(node)
                 raise ProvisionError('Provision task failed.')
+
+        # set administrator password
+        self.resources = set_administrator_password(
+            self.resources,
+            self.user_dir
+        )
 
         # create inventory file
         resources_paws = dict(resources=self.resources)
         create_inventory(
             PlayCall(self.user_dir).inventory_file,
             resources_paws
-        )
-
-        # set administrator password
-        self.resources = set_administrator_password(
-            self.resources,
-            self.user_dir
         )
 
         # create resources.paws
@@ -596,15 +515,9 @@ class OpenStack(LibCloud, Nova):
             # get the ip
             res['public_v4'] = str(self.get_floating_ip(node))
 
-            try:
-                # define the account
-                if ADMINISTRADOR_PWD in res:
-                    res['win_username'] = ADMINISTRATOR
-                    res['win_password'] = res[ADMINISTRADOR_PWD]
-                else:
-                    self.get_admin_password(res)
-            except (NovaPasswordError, SSHError) as ex:
-                raise ShowError(ex.message)
+            if ADMINISTRADOR_PWD in res:
+                res['win_username'] = ADMINISTRATOR
+                res['win_password'] = res[ADMINISTRADOR_PWD]
 
         # create resources.paws
         resources_paws = dict(resources=deepcopy(self.resources))
@@ -622,7 +535,7 @@ class OpenStack(LibCloud, Nova):
             if key not in res:
                 raise NotFound(
                     'Resource: %s is missing required key: %s.' %
-                    (res['name'], self.name)
+                    (res['name'], key)
                 )
             elif res[key] == '' or res[key] is None:
                 raise NotFound(

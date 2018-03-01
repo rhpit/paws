@@ -124,13 +124,7 @@ Path: /home/$USER/ws/resources.yaml
 +------------------------+-----------------------------------+-------------+
 | administrator_password | The administrator password to set |      No     |
 |                        | on the Windows system after       |             |
-|                        | provisioning has finished         |             |
-|                        | *If you do not want to set an*    |             |
-|                        | *administrator password initially*|             |
-|                        | *you can remove this key from*    |             |
-|                        | *your resource section. It will*  |             |
-|                        | *then use the Admin account to*   |             |
-|                        | *login to the system via SSH*     |             |
+|                        | provisioning has finished.        |             |
 +------------------------+-----------------------------------+-------------+
 | snapshot               | Take a snapshot for a given       |      No     |
 |                        | resource.                         |             |

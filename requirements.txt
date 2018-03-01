@@ -6,5 +6,4 @@ click_spinner
 ansible
 # paws providers
 apache-libcloud
-python-novaclient
 libvirt-python

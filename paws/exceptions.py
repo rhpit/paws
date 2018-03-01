@@ -35,17 +35,6 @@ class SSHError(PawsError):
         self.message = message
 
 
-class NovaPasswordError(Exception):
-    """Exception raised for errors with getting nova password."""
-
-    def __init__(self, message):
-        """Constructor.
-
-        :param message: explanation about the error
-        """
-        self.message = message
-
-
 class ProvisionError(PawsError):
     """Exception raised for errors with provisioning."""
 
