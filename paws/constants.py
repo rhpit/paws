@@ -107,7 +107,8 @@ PROVISION_RESOURCE_KEYS = [
     'flavor',
     'network',
     'keypair',
-    'ssh_private_key'
+    'ssh_private_key',
+    'administrator_password'
 ]
 
 # line divisor

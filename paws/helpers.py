@@ -26,7 +26,6 @@ from subprocess import Popen
 from time import sleep
 
 from click_spinner import spinner
-
 from os import remove, listdir
 from os.path import join, exists, splitext
 from paramiko import AutoAddPolicy, SSHClient
@@ -341,7 +340,7 @@ def exec_cmd_by_ssh(host, username, cmd, password=None, ssh_key=None):
                 LOG.debug(results[1].read().strip())
                 LOG.info("Successfully executed command: %s", cmd)
                 ssh.close()
-        except (SSHException, timeout):
+        except (error, SSHException, timeout):
             raise SSHError('Port 22 is unreachable.')
 
 

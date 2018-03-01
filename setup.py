@@ -70,8 +70,7 @@ and configure Windows services with a simpler way to test hybrid environments \
                       'click',
                       'click_spinner',
                       'apache-libcloud',
-                      'ansible',
-                      'python-novaclient'],
+                      'ansible'],
     extras_require={
         'libvirt': ['libvirt-python']
     },

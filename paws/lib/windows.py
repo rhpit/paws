@@ -22,11 +22,11 @@ from logging import getLogger
 
 from os.path import join
 
-from paws.constants import ADMINISTRATOR, ADMINISTRADOR_PWD
+from paws.constants import ADMINISTRATOR, ADMINISTRADOR_PWD, ADMIN
 from paws.constants import WIN_EXEC_YAML
+from paws.exceptions import SSHError
 from paws.helpers import exec_cmd_by_ssh, get_ssh_conn
 from paws.helpers import file_mgmt
-from paws.lib.remote import GenModuleResults, create_inventory, PlayCall
 
 LOG = getLogger(__name__)
 
@@ -95,8 +95,6 @@ def set_administrator_password(resources, user_dir):
     :param resources: system resources
     :param user_dir: user directory
     """
-    play = PlayCall(user_dir)
-
     for res in resources:
         if ADMINISTRADOR_PWD not in res:
             # administrator password not required for resource, skipping..
@@ -104,23 +102,24 @@ def set_administrator_password(resources, user_dir):
 
         LOG.info('Setting vm %s administrator password.', res['name'])
         cmd = 'net user Administrator %s' % res[ADMINISTRADOR_PWD]
-        play.run(
-            dict(
-                name="Set Administrator password",
-                hosts=res["name"],
-                gather_facts='no',
-                tasks=[dict(action=dict(module='raw', args=cmd))]),
-            results_class=GenModuleResults
-        )
+
+        try:
+            exec_cmd_by_ssh(
+                res['public_v4'],
+                ADMIN,
+                cmd,
+                ssh_key=res['ssh_private_key']
+            )
+        except SSHError:
+            LOG.error('Unable to set Administrator password for vm: %s.' %
+                      res['name'])
+            raise SSHError(1)
 
         res["win_username"] = ADMINISTRATOR
         res["win_password"] = res[ADMINISTRADOR_PWD]
         res.pop(ADMINISTRADOR_PWD)
 
         LOG.info('Successfully set vm %s administrator password!', res['name'])
-
-    # create an updated inventory file
-    create_inventory(play.inventory_file, dict(resources=resources))
 
     return resources
 
