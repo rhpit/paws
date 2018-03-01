@@ -22,6 +22,7 @@ from time import sleep
 from uuid import uuid4
 
 import urllib3
+from click_spinner import spinner
 from libcloud import security
 from libcloud.common.types import InvalidCredsError
 from libcloud.compute.providers import get_driver
@@ -212,7 +213,8 @@ class LibCloud(LoggerMixin):
 
             if state.lower() != 'running':
                 self.logger.info('%s, rechecking in 20 seconds.', msg)
-                sleep(20)
+                with spinner():
+                    sleep(20)
             else:
                 self.logger.info(msg)
                 self.logger.info('VM %s successfully finished building!',

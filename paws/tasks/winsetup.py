@@ -22,7 +22,7 @@ from ansible.errors import AnsibleRuntimeError
 from os.path import join, exists, isfile
 
 from paws.compat import string_types
-from paws.constants import ADMIN, WIN_EXEC_YAML, LINE
+from paws.constants import WIN_EXEC_YAML, ADMIN
 from paws.core import PawsTask, Namespace
 from paws.exceptions import SSHError
 from paws.helpers import cleanup, get_ssh_conn, file_mgmt
@@ -205,9 +205,6 @@ class Winsetup(PawsTask):
                 self.logger.info(
                     "Attempting to establish SSH connection to %s", sut_ip
                 )
-                self.logger.info(LINE)
-                self.logger.info("This could take several minutes to finish.")
-                self.logger.info(LINE)
 
                 get_ssh_conn(
                     sut_ip,
