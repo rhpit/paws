@@ -504,12 +504,13 @@ class OpenStack(LibCloud):
 
     def show(self):
         """Show OpenStack resources."""
+        resources = list()
+
         for index, res in enumerate(self.resources):
             try:
                 node = self.get_node(res['name'])
             except NotFound as ex:
                 self.logger.warning(ex.message)
-                self.resources.pop(index)
                 continue
 
             # get the ip
@@ -518,9 +519,10 @@ class OpenStack(LibCloud):
             if ADMINISTRADOR_PWD in res:
                 res['win_username'] = ADMINISTRATOR
                 res['win_password'] = res[ADMINISTRADOR_PWD]
+            resources.append(res)
 
         # create resources.paws
-        resources_paws = dict(resources=deepcopy(self.resources))
+        resources_paws = dict(resources=deepcopy(resources))
         file_mgmt('w', self.resources_paws_file, resources_paws)
 
         return resources_paws
