@@ -21,7 +21,6 @@ Main class
 """
 
 from importlib import import_module
-
 from os import environ, getcwd
 from os.path import join, isdir
 
