@@ -1,5 +1,5 @@
 # main packages needed by paws core
-paramiko
+paramiko==2.2.1
 pywinrm
 click
 click_spinner
