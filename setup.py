@@ -40,15 +40,18 @@ def get_version():
 setup(
     name='paws-cli',
     version=get_version(),
-    description='tool to provision Windows and configure Windows services',
-    long_description='Paws is a Linux based tool to provision Windows systems \
-and configure Windows services with a simpler way to test hybrid environments \
-(Linux and Windows)',
-    classifiers=['Development Status :: 4 - Beta',
-                 'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-                 'Programming Language :: Python :: 2.7',
-                 'Topic :: Software Development :: Quality Assurance',
-                 ],
+    description='A tool used to provision Windows systems and configure '
+                'Windows services.',
+    long_description='Paws is a Linux based tool to provision Windows systems '
+                     'and configure Windows services. Providing a simple '
+                     'way to test hybrid environments (Linux and Windows).',
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.6',
+        'Topic :: Software Development :: Quality Assurance'
+    ],
     keywords='Provision Automation Windows Quality Assurance Tests Hybrid',
     url='https://rhpit.github.io/paws/',
     author='Eduardo Cerqueira,Ryan Williams',
