@@ -16,13 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import random
-from copy import deepcopy
 from time import sleep
 from uuid import uuid4
 
+import random
 import urllib3
 from click_spinner import spinner
+from copy import deepcopy
 from libcloud import security
 from libcloud.common.types import InvalidCredsError
 from libcloud.compute.providers import get_driver
@@ -79,8 +79,8 @@ class LibCloud(LoggerMixin):
         """
         images = self.driver.list_images()
 
-        by_name = filter(lambda elm: elm.name == name, images)
-        by_id = filter(lambda elm: elm.id == name, images)
+        by_name = list(filter(lambda elm: elm.name == name, images))
+        by_id = list(filter(lambda elm: elm.id == name, images))
 
         if by_name.__len__() != 0:
             return by_name[0]
@@ -96,7 +96,7 @@ class LibCloud(LoggerMixin):
         """
         sizes = self.driver.list_sizes()
 
-        by_name = filter(lambda elm: elm.name == name, sizes)
+        by_name = list(filter(lambda elm: elm.name == name, sizes))
         by_id = list()
 
         for size in sizes:
@@ -122,7 +122,7 @@ class LibCloud(LoggerMixin):
         """
         pairs = self.driver.list_key_pairs()
 
-        data = filter(lambda elm: elm.name == name, pairs)
+        data = list(filter(lambda elm: elm.name == name, pairs))
 
         if data.__len__() == 0:
             raise NotFound('Not found key pair: %s.' % name)
@@ -136,7 +136,7 @@ class LibCloud(LoggerMixin):
         """
         pool = self.driver.ex_list_floating_ip_pools()
 
-        data = filter(lambda elm: elm.name == name, pool)
+        data = list(filter(lambda elm: elm.name == name, pool))
 
         if data.__len__() == 0:
             raise NotFound('Not found floating ip pool: %s.' % name)
@@ -150,7 +150,7 @@ class LibCloud(LoggerMixin):
         """
         nodes = self.driver.list_nodes()
 
-        data = filter(lambda elm: elm.name == name, nodes)
+        data = list(filter(lambda elm: elm.name == name, nodes))
 
         if data.__len__() == 0:
             raise NotFound('Not found vm: %s.' % name)
@@ -262,7 +262,7 @@ class LibCloud(LoggerMixin):
         """
         networks = self.driver.ex_list_networks()
 
-        data = filter(lambda elm: elm.name == name, networks)
+        data = list(filter(lambda elm: elm.name == name, networks))
 
         if data.__len__() == 0:
             raise NotFound('Not found network: %s.' % name)

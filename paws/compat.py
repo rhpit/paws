@@ -21,9 +21,9 @@
 import sys
 
 try:
-    from ConfigParser import ConfigParser
+    from ConfigParser import RawConfigParser
 except ImportError:
-    from configparser import ConfigParser
+    from configparser import RawConfigParser
 
 try:
     from xmlrpclib import ServerProxy

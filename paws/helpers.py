@@ -17,7 +17,6 @@
 #
 """Helpers module."""
 
-from functools import wraps
 from json import dump as json_dump
 from json import load as json_load
 from logging import getLogger
@@ -26,6 +25,7 @@ from subprocess import Popen
 from time import sleep
 
 from click_spinner import spinner
+from functools import wraps
 from os import remove, listdir
 from os.path import join, exists, splitext
 from paramiko import AutoAddPolicy, SSHClient

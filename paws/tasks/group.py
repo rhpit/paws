@@ -18,10 +18,10 @@
 
 """Group task."""
 
-from importlib import import_module
 from time import sleep
 
 import re
+from importlib import import_module
 from os.path import join
 
 from paws.constants import GROUP_SECTIONS, GROUP_SCHEMA, TASK_ARGS, \

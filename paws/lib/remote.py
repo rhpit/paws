@@ -19,12 +19,12 @@
 """Module containing classes and functions regarding remote connections."""
 
 import sys
-from collections import namedtuple
 from logging import getLogger
 from pprint import pformat
 
 import os
 from click_spinner import spinner
+from collections import namedtuple
 
 try:
     # < 2.4
@@ -42,7 +42,7 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.playbook.play import Play
 from ansible.plugins.callback import CallbackBase
 
-from paws.compat import ConfigParser
+from paws.compat import RawConfigParser
 from paws.constants import ANSIBLE_INVENTORY_FILENAME as ANSIBLE_INVENTORY
 from paws.helpers import retry
 from paws.helpers import file_mgmt
@@ -117,14 +117,14 @@ def create_inventory(filename, resources=None):
     if inventory_reuse(filename, resources):
         return
 
-    config = ConfigParser()
+    config = RawConfigParser()
 
     for item in resources['resources']:
         section = item['name'].replace(" ", "")
         config.add_section(section)
 
         try:
-            config.set(section, item['public_v4'])
+            config.set(section, str(item['public_v4']))
         except KeyError:
             config.set(section, item['ip'])
 
