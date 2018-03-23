@@ -11,4 +11,4 @@ before_install:
 install:
   - pip install -r test-requirements.txt
 script:
-  - tox
+  - tox -e pep8
