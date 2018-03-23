@@ -152,7 +152,8 @@ def ipconfig_release(res):
         res['public_v4'],
         res['win_username'],
         'ipconfig /release',
-        password=res['win_password']
+        password=res['win_password'],
+        fire_forget=True
     )
 
     LOG.info('Successfully released IPv4 addresses for vm: %s.', res['name'])

@@ -297,7 +297,8 @@ def get_ssh_conn(host, username, password=None, ssh_key=None):
 
 
 @retry(SSHError, tries=60)
-def exec_cmd_by_ssh(host, username, cmd, password=None, ssh_key=None):
+def exec_cmd_by_ssh(host, username, cmd, password=None, ssh_key=None,
+                    fire_forget=False):
     """Connect to a remote system by SSH port 22 and run a command.
 
     By default it will retry 60 times until it establishes an ssh connection.
@@ -312,6 +313,8 @@ def exec_cmd_by_ssh(host, username, cmd, password=None, ssh_key=None):
     :type password: str
     :param ssh_key: SSH private key for authentication
     :type ssh_key: str
+    :param fire_forget: fire and forget the command
+    :type fire_forget: bool
     """
     with spinner():
         try:
@@ -329,17 +332,25 @@ def exec_cmd_by_ssh(host, username, cmd, password=None, ssh_key=None):
                             password=password,
                             timeout=30)
 
-            results = ssh.exec_command(cmd)
-            return_code = results[1].channel.recv_exit_status()
-            if return_code:
-                LOG.error('Command %s failed to execute.' % cmd)
-                LOG.error(results[2].read())
-                ssh.close()
-                raise SystemExit(return_code)
+            if fire_forget:
+                # fire and forget the command given, will return no output
+                _timeout = 0.5
+                channel = ssh.get_transport().open_session(timeout=_timeout)
+                channel.settimeout(_timeout)
+                channel.exec_command(cmd)
+                LOG.info('Successfully executed command: %s' % cmd)
             else:
-                LOG.debug(results[1].read().strip())
-                LOG.info("Successfully executed command: %s", cmd)
-                ssh.close()
+                results = ssh.exec_command(cmd)
+                return_code = results[1].channel.recv_exit_status()
+                if return_code:
+                    LOG.error('Command %s failed to execute.' % cmd)
+                    LOG.error(results[2].read())
+                    ssh.close()
+                    raise SystemExit(return_code)
+                else:
+                    LOG.debug(results[1].read().strip())
+                    LOG.info("Successfully executed command: %s", cmd)
+                    ssh.close()
         except (error, SSHException, timeout):
             raise SSHError('Port 22 is unreachable.')
 
