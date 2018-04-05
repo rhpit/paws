@@ -18,7 +18,8 @@
 """Paws tasks package."""
 
 from paws.tasks.action import Provision, Teardown, Show
+from paws.tasks.configure import Configure
 from paws.tasks.group import Group
 from paws.tasks.winsetup import Winsetup
 
-__all__ = ['Group', 'Provision', 'Teardown', 'Show', 'Winsetup']
+__all__ = ['Group', 'Provision', 'Teardown', 'Show', 'Winsetup', 'Configure']

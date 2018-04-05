@@ -98,11 +98,11 @@ should see your Windows systems deleted.
     More details about teardown task can be found at the following:
     `teardown task <tasks.html#teardown>`_.
 
-Winsetup
-^^^^^^^^
+Configure
+^^^^^^^^^
 
-Winsetup task will configure services on a Windows system by running a
-Windows PowerShell script.
+Configure task will configure Windows services on Windows systems by either
+running Ansible Playbooks or Windows PowerShell scripts.
 
 At top of this page you saw how to clone `ws repository
 <https://github.com/rhpit/ws.git>`_ repo that contains some samples of
@@ -111,18 +111,29 @@ powershell and scripts you can use here.
 Example powershell scripts can be found at the following:
 **/home/$USER/ws/powershell**.
 
+Example ansible playbooks can be found at the following:
+**/home/$USER/ws/ansible**.
+
 Below is an example calling a powershell script to list system information
 for the defined resources within **resources.yaml**.
 
 .. code-block:: bash
     :linenos:
 
-    paws winsetup -ps powershell/get_system_info.ps1
+    paws configure powershell/get_system_info.ps1
+
+Here is an example calling an ansible playbook to install packages on the
+defined resources within **resources.yaml**.
+
+.. code-block:: bash
+    :linenos:
+
+    paws configure ansible/install_packages.yml
 
 .. note::
 
-    More details about winsetup task can be found at the following:
-    `winsetup task <tasks.html#winsetup>`_.
+    More details about configure task can be found at the following:
+    `configure task <tasks.html#configure>`_.
 
 Group
 ^^^^^

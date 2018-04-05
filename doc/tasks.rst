@@ -33,7 +33,7 @@ Global options available to all paws commands.
 
 .. include:: teardown.rst
 
-.. include:: winsetup.rst
+.. include:: configure.rst
 
 .. include:: group.rst
 

@@ -45,6 +45,14 @@ TASK_ARGS = {
         'default': 'credentials.yaml',
         'options': ('-c', '--credentials')
     },
+    'script': {
+        'dest': 'script',
+        'options': ('-s', '--script')
+    },
+    'script_vars': {
+        'dest': 'script_vars',
+        'options': ('-sv', '--script_vars')
+    },
     'powershell': {
         'dest': 'powershell',
         'options': ('-ps', '--powershell')
@@ -58,7 +66,7 @@ TASK_ARGS = {
         'options': ('-n', '--name')
     },
     'systems': {
-        'dest': 'systems',
+        'dest': 'system',
         'options': ('-s', '--system')
     }
 }

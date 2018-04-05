@@ -51,37 +51,28 @@ def create_ps_exec_playbook(user_dir, play_vars):
         playbook['vars'] = dict(win_var_path='c:/my_vars.json')
         playbook['tasks'] = [
             dict(
-                name='Print PSV content',
-                debug="msg={{ lookup('file', psv) }}"
-            ),
-            dict(
                 name='Copy JSON vars to Windows system',
                 win_copy='src={{ psv }} dest={{ win_var_path }}'
             ),
             dict(
                 name='Execute PowerShell on Windows system',
-                script='{{ ps }} {{ win_var_path }}',
-                register='powershell_stdout'
+                script='{{ ps }} {{ win_var_path }}'
             )
         ]
     elif play_vars == 'str':
         playbook['tasks'] = [
             dict(
                 name='Execute PowerShell on Windows system',
-                script='{{ ps }} {{ psv }}',
-                register='powershell_stdout'
+                script='{{ ps }} {{ psv }}'
             )
         ]
     elif play_vars is None:
         playbook['tasks'] = [
             dict(
                 name='Execute PowerShell on Windows system',
-                script='{{ ps }}',
-                register='powershell_stdout'
+                script='{{ ps }}'
             )
         ]
-
-    playbook['tasks'].append(dict(debug='var=powershell_stdout'))
 
     file_mgmt('w', filename, [playbook])
     LOG.debug('Playbook %s created.', filename)

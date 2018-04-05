@@ -16,7 +16,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-"""Winsetup task."""
+"""DEPRECATED Winsetup task.
+
+Replaced by configure task. Last supported release with updates is 0.4.1 for
+winsetup task. Any bugs found or enhancements will be made to configure
+task. Configure provides capabilities to configure via a playbook or powershell
+script.
+"""
+
 
 from ansible.errors import AnsibleRuntimeError
 from os.path import join, exists, isfile
@@ -79,6 +86,11 @@ class Winsetup(PawsTask):
         self.resources = resources
         self.credentials = credentials
         self.verbose = verbose
+
+        self.logger.warning('**** DEPRECATED SINCE 0.5.0 ****')
+        self.logger.warning('WINSETUP REPLACED BY CONFIGURE TASK.')
+        self.logger.warning('PROVIDES ABILITY TO CONFIGURE BY ANSIBLE PLAYBOOK'
+                            ' OR WINDOWS POWERSHELL')
 
         try:
             if isinstance(kwargs['args'], Namespace):

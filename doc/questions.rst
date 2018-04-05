@@ -191,7 +191,7 @@ call paws to perform the reboot.
 
 .. code:: bash
 
-	$ paws winsetup -ps powershell/reboot.ps1
+	$ paws configure powershell/reboot.ps1
 
 The reboot.ps1 script will create a scheduled task in Windows to reboot the
 system in 10 seconds.
