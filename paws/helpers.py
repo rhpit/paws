@@ -17,6 +17,7 @@
 #
 """Helpers module."""
 
+from functools import wraps
 from json import dump as json_dump
 from json import load as json_load
 from logging import getLogger
@@ -24,8 +25,8 @@ from socket import error, timeout
 from subprocess import Popen
 from time import sleep
 
+import warnings
 from click_spinner import spinner
-from functools import wraps
 from os import remove, listdir
 from os.path import join, exists, splitext
 from paramiko import AutoAddPolicy, SSHClient
@@ -92,6 +93,19 @@ def retry(exception_to_check, tries=4, delay=10, backoff=1, logger=LOG):
         return f_retry  # true decorator
 
     return deco_retry
+
+
+def ignore_warnings(method):
+    """Decorator to suppress warning messages.
+
+    :param method: method to be called
+    """
+    @wraps(method)
+    def ignore(*args, **kwargs):
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            return method(*args, **kwargs)
+    return ignore
 
 
 def cleanup(purge_list, userdir=None):
@@ -260,6 +274,7 @@ def check_file(file_path, error_msg=None):
             raise IOError("%s file not found!" % file_path)
 
 
+@ignore_warnings
 @retry(SSHError, tries=60)
 def get_ssh_conn(host, username, password=None, ssh_key=None):
     """Connect to a remote system by SSH port 22.
@@ -296,6 +311,7 @@ def get_ssh_conn(host, username, password=None, ssh_key=None):
             raise SSHError('Port 22 is unreachable.')
 
 
+@ignore_warnings
 @retry(SSHError, tries=60)
 def exec_cmd_by_ssh(host, username, cmd, password=None, ssh_key=None,
                     fire_forget=False):
