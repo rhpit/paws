@@ -51,7 +51,7 @@ LOG = getLogger(__name__)
 
 __all__ = ['inventory_init', 'inventory_reuse', 'create_inventory',
            'PawsCallback', 'ResultsHandler', 'PlayCall', 'PlaybookCall',
-           'GenModuleResults']
+           'GenModuleResults', 'ParsePSResults']
 
 
 def inventory_init(filename):
@@ -235,44 +235,81 @@ class ResultsHandler(object):
         self.abort()
 
 
-class GenModuleResults(ResultsHandler):
-    """Process generic ansible modules results."""
+class ParsePSResults(ResultsHandler):
+    """Parse Windows PowerShell script results run via Ansible."""
 
     def __init__(self, exit_code, callback, def_callback):
         """Constructor."""
-        ResultsHandler.__init__(self, exit_code, callback, def_callback)
+        super(ParsePSResults, self).__init__(exit_code, callback, def_callback)
 
     def process(self):
         """Process results."""
-        if not self.def_callback:
-            LOG.info("-" * 15)
-            LOG.info("Results")
-            LOG.info("-" * 15)
+        length = 25
+        for item in self.callback.contacted:
+            LOG.info('-' * length)
+            LOG.info('System : %s' % item['host'])
+            LOG.info('-' * length)
 
-            for item in self.callback.contacted:
-                try:
-                    if 'results' in item and item['results']['changed'] \
-                            and 'rc' in item['results']:
-                        LOG.info("** %s **", item['host'])
+            if item['results']['stdout']:
+                    LOG.info("-" * length)
+                    LOG.info('Standard Output'.center(length))
+                    LOG.info("-" * length)
+                    LOG.info(item['results']['stdout'])
 
-                        # Standard output
-                        if self.exit_code == 0:
-                            LOG.info("Standard output:")
-                            for line in item['results']['stdout_lines']:
-                                LOG.info(line)
+            if item['results']['stderr']:
+                LOG.info("-" * length)
+                LOG.info('Standard Error'.center(length))
+                LOG.info("-" * length)
+                LOG.info(item['results']['stderr'])
 
-                        # Standard error
-                        if self.exit_code != 0:
-                            LOG.info("Standard error:")
-                            LOG.error(item['results']['stderr'])
-                            for line in item['results']['stdout_lines']:
-                                LOG.error(line)
-                except KeyError:
-                    pass
+        if self.callback.contacted.__len__() == 0:
+            LOG.error("Failed to contact remote hosts.")
+            self.exit_code = 1
 
-            if self.callback.contacted.__len__() == 0:
-                LOG.error("Failed to contact remote hosts.")
-                self.exit_code = 1
+        self.message()
+        self.abort()
+
+
+class GenModuleResults(ResultsHandler):
+    """Process generic ansible modules results.
+
+    DEPRECATED with 0.5.0 release. This class aligns with winsetup task.
+    """
+
+    def __init__(self, exit_code, callback):
+        """Constructor."""
+        ResultsHandler.__init__(self, exit_code, callback)
+
+    def process(self):
+        """Process results."""
+        LOG.info("-" * 15)
+        LOG.info("Results")
+        LOG.info("-" * 15)
+
+        for item in self.callback.contacted:
+            try:
+                if 'results' in item and item['results']['changed']\
+                        and 'rc' in item['results']:
+                    LOG.info("** %s **", item['host'])
+
+                    # Standard output
+                    if self.exit_code == 0:
+                        LOG.info("Standard output:")
+                        for line in item['results']['stdout_lines']:
+                            LOG.info(line)
+
+                    # Standard error
+                    if self.exit_code != 0:
+                        LOG.info("Standard error:")
+                        LOG.error(item['results']['stderr'])
+                        for line in item['results']['stdout_lines']:
+                            LOG.error(line)
+            except KeyError:
+                pass
+
+        if self.callback.contacted.__len__() == 0:
+            LOG.error("Failed to contact remote hosts.")
+            self.exit_code = 1
 
         self.message()
         self.abort()

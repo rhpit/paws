@@ -50,7 +50,7 @@ start using with paws and more can be found here [3]_.
 you to build and share your Windows pipeline. You can see more about groups at
 `group task <create_group.html>`_.
 
-Users can use all these scripts provided to run winsetup or group tasks. Users
+Users can use all these scripts provided to run configure or group tasks. Users
 can pull or push their scripts/groups to this repository.
 
 

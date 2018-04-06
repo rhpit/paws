@@ -135,27 +135,24 @@ Here is an example of a tasks section:
            task: provision
 
          - name: Get Windows system information
-           task: winsetup
+           task: configure
            args:
-            - powershell: powershell/get_system_info.ps1
+            - script: powershell/get_system_info.ps1
 
          - name: Reboot Windows
-           task: winsetup
+           task: configure
            args:
-            - powershell: powershell/reboot.ps1
+            - script: powershell/reboot.ps1
 
 As you can see we have declared three tasks to run:
 
 1. First it will run the provision task to create a Windows system based on
    the system defined in the topology file set in the vars section.
 
-2. Second it will run the winsetup task. This will run the ad_preparation.ps1
-   PowerShell script against the provisioned system. Take note of the args
-   key, they have defined the name of the powershell and powershell vars. This
-   is the same as if you were to define them running a single paws winsetup
-   call.
+2. Second it will run the configure task. It will execute the script that
+   was specified.
 
-3. Third it will run the winsetup task again. This will run the reboot.ps1
+3. Third it will run the configure task again. This will run the reboot.ps1
    PowerShell script to reboot the system.
 
 Example of a group
@@ -178,18 +175,18 @@ Example of a group
            task: provision
 
          - name: Get Windows system information
-           task: winsetup
+           task: configure
            args:
-            - powershell: powershell/get_system_info.ps1
+            - script: powershell/get_system_info.ps1
 
          - name: Reboot Windows
-           task: winsetup
+           task: configure
            args:
-            - powershell: powershell/reboot.ps1
+            - script: powershell/reboot.ps1
 
 Paws version 0.3.6 supports multiple resources. This means that you can
 define multiple resources inside your resources.yaml and then configure them.
-By default winsetup task will run PowerShell scripts on all resources defined
+By default configure task will run PowerShell scripts on all resources defined
 inside resources.yaml. If you want to set only a certain system to run the
 PowerShell against you can pass the --system argument. This goes the same for
 groups. The system name you give must match the one inside your resources.yaml.
@@ -215,16 +212,16 @@ Example of a group with multiple resources
            task: provision
 
          - name: Get Windows system information
-           task: winsetup
+           task: configure
            args:
-            - powershell: powershell/get_system_info.ps1
+            - script: powershell/get_system_info.ps1
             - system:
               - windows2012
 
          - name: Reboot Windows
-           task: winsetup
+           task: configure
            args:
-            - powershell: powershell/reboot.ps1
+            - script: powershell/reboot.ps1
 
 How you can create your own group?
 ----------------------------------
@@ -235,7 +232,7 @@ default group templates as a starting point and expand from there!
 
 .. attention::
 
-	One thing to note is if your group contains a number of winsetup tasks. You
+	One thing to note is if your group contains a number of configure tasks. You
 	will need to keep all the PowerShell scripts and necessary variable files
 	stored within your user directory where your group file is located.
 
@@ -253,25 +250,25 @@ default group templates as a starting point and expand from there!
 
       - tasks:
          - name: Windows preparation
-           task: winsetup
+           task: configure
            args:
-            - powershell: powershell/2012_ad_preparation.ps1
-            - powershell_vars: powershell/my_vars.json
+            - script: powershell/2012_ad_preparation.ps1
+            - script_vars: powershell/my_vars.json
 
          - name: Reboot Windows
-           task: winsetup
+           task: configure
            args:
-            - powershell: powershell/reboot.ps1
+            - script: powershell/reboot.ps1
 
          - name: Wait for Windows to come back online
            task: wait
            duration: 30
 
          - name: Windows setup step 1
-           task: winsetup
+           task: configure
            args:
-            - powershell: powershell/ad_setup_step1.ps1
-            - powershell_vars: powershell/my_vars.json
+            - script: powershell/ad_setup_step1.ps1
+            - script_vars: powershell/my_vars.json
 
 	As you can see the wait is given after the reboot and will wait 30 seconds
 	before running the next task in the list. This allows users to easily

@@ -55,6 +55,12 @@ PS_LONG = TASK_ARGS['powershell']['options'][1]
 PSV_SHORT = TASK_ARGS['powershell_vars']['options'][0]
 PSV_LONG = TASK_ARGS['powershell_vars']['options'][1]
 
+SCRIPT_SHORT = TASK_ARGS['script']['options'][0]
+SCRIPT_LONG = TASK_ARGS['script']['options'][1]
+
+VARS_SHORT = TASK_ARGS['script_vars']['options'][0]
+VARS_LONG = TASK_ARGS['script_vars']['options'][1]
+
 SYSTEMS_SHORT = TASK_ARGS['systems']['options'][0]
 SYSTEMS_LONG = TASK_ARGS['systems']['options'][1]
 
@@ -171,7 +177,7 @@ def teardown(ctx, credentials, topology):
               multiple=True)
 @click.pass_context
 def winsetup(ctx, topology, powershell, powershell_vars, system):
-    """Configure Windows systems"""
+    """DEPRECATED USE CONFIGURE COMMAND"""
     ctx.obj['topology'] = topology
     ctx.obj['powershell'] = powershell
     ctx.obj['powershell_vars'] = powershell_vars
@@ -181,6 +187,32 @@ def winsetup(ctx, topology, powershell, powershell_vars, system):
         ctx.obj['systems'] = systems
 
     run(ctx.obj, "winsetup")
+
+
+@paws.command()
+@click.argument('script', metavar='SCRIPT', type=str, default='')
+@click.option(TOP_SHORT, TOP_LONG, default=TOP_DEFAULT,
+              help="System resources topology", metavar="")
+@click.option(VARS_SHORT, VARS_LONG, metavar='', help='Script variables')
+@click.option(SYSTEMS_SHORT, SYSTEMS_LONG,
+              help="Systems to configure (default=all)", metavar="",
+              multiple=True)
+@click.pass_context
+def configure(ctx, script, topology, script_vars, system):
+    """Configure Windows services"""
+    if not script:
+        click.echo('Please define a script to run.')
+        raise SystemExit(1)
+
+    ctx.obj['script'] = script
+    ctx.obj['topology'] = topology
+    ctx.obj['script_vars'] = script_vars
+    if len(system) > 0:
+        ctx.obj['systems'] = [item for item in system]
+    else:
+        ctx.obj['systems'] = 'all'
+
+    run(ctx.obj, 'configure')
 
 
 @paws.command()
