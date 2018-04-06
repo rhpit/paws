@@ -47,7 +47,7 @@ class Configure(PawsTask):
     script_type = ''
     extra_vars = dict()
     results_class = None
-    systems = list()
+    res = list()
 
     def __init__(self, userdir, resources, credentials, verbose=0, **kwargs):
         """Constructor.
@@ -200,21 +200,21 @@ class Configure(PawsTask):
     def set_sut(self):
         """Set the systems under test."""
         if self.systems == 'all':
-            self.systems = getattr(self.resources, 'resources')
+            self.res = self.resources['resources']
             return
 
         _active, _res = list(), list()
 
         try:
-            for sut in getattr(self.resources, 'resources'):
+            for sut in self.resources['resources']:
                 if sut['name'] in self.systems:
                     _res.append(sut)
                 _active.append(sut['name'])
-            self.systems = _res
+            self.res = _res
         except AttributeError:
-            self.systems = self.resources['resources']
+            self.res = self.resources['resources']
 
-        if len(self.systems) == 0:
+        if len(self.res) == 0:
             self.logger.error('Systems supplied do not map to active systems. '
                               'Supplied resources : %s\n'
                               'Active resources   : %s' %
@@ -229,7 +229,7 @@ class Configure(PawsTask):
         """
         self.start()
 
-        for res in self.systems:
+        for res in self.res:
             try:
                 # cloud providers
                 host = res['public_v4']
