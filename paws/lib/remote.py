@@ -276,9 +276,9 @@ class GenModuleResults(ResultsHandler):
     DEPRECATED with 0.5.0 release. This class aligns with winsetup task.
     """
 
-    def __init__(self, exit_code, callback):
+    def __init__(self, exit_code, callback, def_callback):
         """Constructor."""
-        ResultsHandler.__init__(self, exit_code, callback)
+        ResultsHandler.__init__(self, exit_code, callback, def_callback)
 
     def process(self):
         """Process results."""
