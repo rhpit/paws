@@ -147,6 +147,15 @@ class TestDockerImages(object):
         assert not results
 
     @staticmethod
+    def test_configure(client):
+        container = start_container(client)
+        results = run_cmd(
+            container, 'paws -v configure powershell/get_system_info.ps1'
+        )
+        delete_container(container)
+        assert not results
+
+    @staticmethod
     def test_teardown(client):
         container = start_container(client)
         results = run_cmd(container, 'paws -v teardown')
