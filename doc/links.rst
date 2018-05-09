@@ -27,7 +27,7 @@ Links
           https://pypi.python.org/pypi/paws-cli
 
     *   - **Ansible Roles**
-        - https://galaxy.ansible.com/rywillia/paws-install/
+        - https://galaxy.ansible.com/rywillia/install-paws/
 
           https://galaxy.ansible.com/rywillia/paws-run/
 
