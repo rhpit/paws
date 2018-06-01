@@ -71,8 +71,8 @@ def get_version(ctx, param, value):
     if value and param:
         try:
             # Collect version from version.txt when run by cli
-            _version = file_mgmt('r', join(dirname(paws_pathfile),
-                                           "version.txt"))
+            _version = str(file_mgmt('r', join(dirname(
+                paws_pathfile), "version.txt"))).strip()
         except IOError:
             # Collect version when run from IDE
             with open('../Makefile') as mkfile:
