@@ -151,6 +151,16 @@ Path: /home/$USER/ws/resources.yaml
              create: False
              clean: True
 
+      # example 3: create snapshot, override default settings for attempts and
+      # delay between attempts when checking if snapshot was created
+      # default attempts is 30 and default delay is 20 seconds
+      resources:
+         - name: MY_WINDOWS_VM
+           snapshot:
+             create: True
+             attempts: 60
+             delay: 30
+
 single network
 ^^^^^^^^^^^^^^
 
