@@ -9,11 +9,17 @@
 # -v /home/<user>/github/ws/:/home/paws/paws paws:devel bash
 #
 
-FROM python:2
-RUN apt-get -qq update
-RUN apt-get install -y libvirt-dev
-RUN git clone https://github.com/rhpit/paws.git -b devel /tmp/paws
-RUN pip install --no-cache-dir /tmp/paws/.
-RUN rm -rf /tmp/paws
-RUN adduser --disabled-password --uid 1000 --gecos "" paws
+FROM centos:7
+
+RUN useradd paws -u 1000
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
+python get-pip.py && rm get-pip.py
+RUN yum install -y git && yum clean all
 USER paws
+RUN pip install --no-cache-dir --user \
+git+https://github.com/rhpit/paws.git@devel
+USER root
+RUN yum remove -y git && yum clean all
+USER paws
+RUN echo "export PATH=$PATH:~/.local/bin" >> ~/.bashrc
+WORKDIR "/home/paws"
