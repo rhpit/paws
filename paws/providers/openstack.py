@@ -597,6 +597,17 @@ class OpenStack(LibCloud):
             )
             return
 
+        # default settings for snapshot checking values
+        attempts = 30
+        delay = 20
+
+        # user override default snapshot checking values
+        if 'attempts' in snap_details:
+            attempts = int(snap_details['attempts'])
+
+        if 'delay' in snap_details:
+            delay = int(snap_details['delay'])
+
         # create image
         image_id = ''
         if snap_details['create']:
@@ -622,8 +633,7 @@ class OpenStack(LibCloud):
 
             # wait for image upload to complete
             attempt = 1
-            max_attempts = 30
-            while attempt <= max_attempts:
+            while attempt <= attempts:
                 image = self.driver.get_image(image_id)
                 if image.extra['status'].lower() == 'active':
                     self.logger.info('Image: %s, id: %s upload complete!',
@@ -631,12 +641,12 @@ class OpenStack(LibCloud):
                     break
                 else:
                     self.logger.info('%s:%s. Image: %s, id: %s status: %s. '
-                                     'Rechecking in 20 seconds.', attempt,
-                                     max_attempts, image.name, image.id,
-                                     image.extra['status'])
-                    sleep(20)
+                                     'Rechecking in %s seconds.', attempt,
+                                     attempts, image.name, image.id,
+                                     image.extra['status'], delay)
+                    sleep(delay)
                     attempt += 1
-                if attempt == max_attempts:
+                if attempt == attempts:
                     self.logger.error('Image: %s, id: %s failed to become '
                                       'active!', image.name, image.id)
                     self.driver.ex_hard_reboot_node(node)
