@@ -1,5 +1,5 @@
 Name: 			paws
-Version:		0.5.1
+Version:		0.5.2
 Release:		0
 
 Summary:		Provision Automated Windows and Services
