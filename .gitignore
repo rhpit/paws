@@ -2,6 +2,7 @@
 .idea
 .pydevproject
 .project
+.vscode
 
 # Python
 *.pyc
