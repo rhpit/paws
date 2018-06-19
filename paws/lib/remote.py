@@ -250,13 +250,13 @@ class ParsePSResults(ResultsHandler):
             LOG.info('System : %s' % item['host'])
             LOG.info('-' * length)
 
-            if item['results']['stdout']:
+            if 'stdout' in item['results'] and item['results']['stdout']:
                     LOG.info("-" * length)
                     LOG.info('Standard Output'.center(length))
                     LOG.info("-" * length)
                     LOG.info(item['results']['stdout'])
 
-            if item['results']['stderr']:
+            if 'stderr' in item['results'] and item['results']['stderr']:
                 LOG.info("-" * length)
                 LOG.info('Standard Error'.center(length))
                 LOG.info("-" * length)
