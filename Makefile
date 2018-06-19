@@ -166,7 +166,7 @@ endif
 	sudo $(PKGMNGR) install $(shell bash -c "find $(RPMTOP)/RPMS/ \
 	-name '$(NAME)-$(VERSION)*'") -y > /dev/null
 # install pip modules
-	sudo pip install -r requirements.txt > /dev/null
+	sudo pip install -r rpm-post-packages.txt > /dev/null
 	sudo chown -R $(LOGNAME):$(LOGNAME) /usr/share/paws
 	@echo 
 	paws --version
