@@ -40,12 +40,12 @@ dependencies in order to have the install succeed.
     # dnf package manager
     sudo dnf install -y git gcc make python-devel python-setuptools \
     python-pip openssl openssl-devel libffi-devel redhat-rpm-config \
-    libvirt libvirt-devel
+    libvirt libvirt-devel virt-install
 
     # yum package manager
     sudo yum install -y git gcc make python-devel python-setuptools \
     python-pip openssl openssl-devel libffi-devel redhat-rpm-config \
-    libvirt libvirt-devel
+    libvirt libvirt-devel virt-install
 
 Application
 -----------
