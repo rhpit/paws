@@ -11,16 +11,17 @@ Source0:		https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/tarball/
 BuildArch:		noarch
 
 BuildRequires:	python-setuptools
+Requires:       ansible
+Requires:       gcc
+Requires:       git
+Requires:       libffi-devel
+Requires:       libvirt
+Requires:       libvirt-devel
+Requires:       openssl
+Requires:       openssl-devel
+Requires:       python-devel
 Requires:		python-pip
 Requires:		redhat-rpm-config
-Requires:		bash-completion
-Requires:		python-devel
-Requires:		gcc
-Requires:		libffi-devel
-Requires:		openssl-devel
-Requires:		openssl
-# git is needed to download ws.git repo
-Requires:		git
 
 %global debug_package %{nil}
 
@@ -39,9 +40,6 @@ configuring Windows services for test on hybrid Linux and Windows environment
 # manpage
 %{__mkdir_p} %{buildroot}/%{_mandir}/man1
 cp paws.1 %{buildroot}/%{_mandir}/man1
-# cli auto completion
-%{__mkdir_p} %{buildroot}/%{_datadir}/bash-completion/completions
-cp config/paws_completion %{buildroot}%{_datadir}/bash-completion/completions/paws
 
 %files
 %defattr(755,root,root,755)
@@ -50,12 +48,9 @@ cp config/paws_completion %{buildroot}%{_datadir}/bash-completion/completions/pa
 %doc README.md
 %doc doc/authors.rst
 %doc %{_mandir}/man1/paws.1.gz
-%{_datadir}/bash-completion/completions/paws
 
 %post
-# install pip modules required by PAWS and outdated when installed by rpm
-echo installing pip required modules from https://github.com/rhpit/paws/raw/master/requirements.txt
-pip install -U -r https://github.com/rhpit/paws/raw/master/requirements.txt > /dev/null
+pip install -U -r https://github.com/rhpit/paws/raw/devel/rpm-post-packages.txt > /dev/null
 
 %changelog
 * Wed Aug 08 2017 Eduardo Cerqueira <eduardomcerqueira@gmail.com>
@@ -64,8 +59,6 @@ pip install -U -r https://github.com/rhpit/paws/raw/master/requirements.txt > /d
  - Added git in required packages to be installed with paws
 * Wed Feb 22 2017 Ryan Williams <rwilliams5262@gmail.com>
  - Fix path to man file to have man page working again
-* Fri Feb 17 2017 Ryan Williams <rwilliams5262@gmail.com>
- - Added bash completion script to be part of rpm
 * Thu Nov 03 2016 Eduardo Cerqueira <eduardomcerqueira@gmail.com>
  - USERDIR setfacl for sudo_user
 * Mon Oct 31 2016 Eduardo Cerqueira <eduardomcerqueira@gmail.com>
