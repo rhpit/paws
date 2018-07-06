@@ -197,18 +197,32 @@ class LibCloud(LoggerMixin):
                 attempt += 1
         raise BootError('Maximum attempts reached to boot vm %s.' % name)
 
-    def wait_for_building_finish(self, node):
+    def wait_for_building_finish(self, node, res):
         """Wait for a vm to finish building.
 
         :param node: libcloud node object
+        :param res: resource definition
         """
         self.logger.info('Wait for vm %s to finish building.', node.name)
 
         attempt = 1
-        while attempt <= 30:
+        max_attempts = 30
+
+        # check if resource requested to override the default max attempts
+        if 'provision_attempts' in res:
+            provision_attempts = int(res['provision_attempts'])
+            if provision_attempts <= 0:
+                self.logger.warning(
+                    'Invalid amount for provision attempts: %s. Using default:'
+                    ' %s.' % (provision_attempts, max_attempts))
+            elif provision_attempts > 0:
+                max_attempts = provision_attempts
+
+        while attempt <= max_attempts:
             node = self.driver.ex_get_node_details(node.id)
             state = getattr(node, 'state')
-            msg = '%s. VM %s, STATE=%s' % (attempt, node.name, state)
+            msg = '%s:%s. VM %s, STATE=%s' % (attempt, max_attempts,
+                                              node.name, state)
 
             if state.lower() != 'running':
                 self.logger.info('%s, rechecking in 20 seconds.', msg)
@@ -436,7 +450,7 @@ class OpenStack(LibCloud):
                                     network=int_net)
 
                 # wait for vm to finish building
-                self.wait_for_building_finish(node)
+                self.wait_for_building_finish(node, res)
 
                 # create/attach floating ip
                 res['public_v4'] = self.attach_floating_ip(node, ext_net)
