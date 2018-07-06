@@ -66,6 +66,7 @@ Path: /home/$USER/ws/resources.yaml
         keypair: <keypair>
         ssh_private_key: /home/$USER/.ssh/<private_key>
         administrator_password: my_password@2018
+        provision_attempts: 30
 
 *PS: resources accepts multiple resources definition.*
 
@@ -125,6 +126,10 @@ Path: /home/$USER/ws/resources.yaml
 | administrator_password | The administrator password to set |      No     |
 |                        | on the Windows system after       |             |
 |                        | provisioning has finished.        |             |
++------------------------+-----------------------------------+-------------+
+| provision_attempts     | The number of attempts to wait    |      No     |
+|                        | for the provision request to      |             |
+|                        | finish building. Default is 30.   |             |
 +------------------------+-----------------------------------+-------------+
 | snapshot               | Take a snapshot for a given       |      No     |
 |                        | resource.                         |             |

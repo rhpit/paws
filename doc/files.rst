@@ -72,6 +72,7 @@ Example resources.yaml for Openstack provider:
         keypair: my_key_pair
         ssh_private_key: /home/user/.ssh/id_rsa
         administrator_password: my_password@2016
+        provision_attempts: 30
 
 .. note::
 
