@@ -139,7 +139,7 @@ copr-upstream: srpm
 	@echo "building source-code from branch $(BRANCH)"
 ifeq ("$(BRANCH)","master")
 	@echo -e "$(OK_COLOR)running build in https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/$(NO_COLOR)"
-	@copr-cli --config /home/$(USER)/.config/copr-fedora build eduardocerqueira/paws $(RPMTOP)/SRPMS/$(SRPM) 
+	@copr-cli --config /home/$(USER)/.config/copr-fedora build eduardocerqueira/paws $(RPMTOP)/SRPMS/$(SRPM)
 else
 	@echo -e "$(ERROR_COLOR)can't run build for branch != master to upstream$(NO_COLOR)"
 endif
@@ -180,12 +180,12 @@ pip: clean
 
 # requires credential in ~/.pypirc		
 pypi-test: pip
-	@python setup.py sdist upload -r pypitest
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 	@echo -e "$(OK_COLOR)check https://test.pypi.org/project/paws/#files$(NO_COLOR)"
 	@echo
 
 # requires credential in ~/.pypirc		
 pypi: pip
-	@python setup.py sdist upload -r pypi
+	twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
 	@echo -e "$(OK_COLOR)check https://pypi.org/project/paws/#files$(NO_COLOR)"
 	@echo
