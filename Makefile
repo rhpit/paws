@@ -55,25 +55,26 @@ help:
 	@echo -e "Usage: $(WARN_COLOR) make target$(NO_COLOR) where $(WARN_COLOR)target$(NO_COLOR) is one of following:"
 	@echo
 	@echo -e "\t$(OK_COLOR)--- code ---$(NO_COLOR)"	
-	@echo -e "\t$(WARN_COLOR)clean$(NO_COLOR)              clean temp files from local workspace"
-	@echo -e "\t$(WARN_COLOR)codecheck$(NO_COLOR)          run code checkers pep8 and pylint"
-	@echo -e "\t$(WARN_COLOR)test$(NO_COLOR)               run unit tests locally"
+	@echo -e "\t$(WARN_COLOR)clean$(NO_COLOR)                    clean temp files from local workspace"
+	@echo -e "\t$(WARN_COLOR)codecheck$(NO_COLOR)                run code checkers pep8 and pylint"
+	@echo -e "\t$(WARN_COLOR)test$(NO_COLOR)                     run unit tests locally"
 
 	@echo -e "\t$(OK_COLOR)--- doc ---$(NO_COLOR)"
-	@echo -e "\t$(WARN_COLOR)doc$(NO_COLOR)                generate sphinx doc html and man pages"
+	@echo -e "\t$(WARN_COLOR)doc$(NO_COLOR)                      generate sphinx doc html and man pages"
 
 	@echo -e "\t$(OK_COLOR)--- pip ---$(NO_COLOR)"	
-	@echo -e "\t$(WARN_COLOR)pip$(NO_COLOR)                build source codes and generate tar.gz file"
-	@echo -e "\t$(WARN_COLOR)pypi-test$(NO_COLOR)          upload tar.gz to pypi-test"
-	@echo -e "\t$(WARN_COLOR)pypi$(NO_COLOR)               upload tar.gz to pypi"
+	@echo -e "\t$(WARN_COLOR)pip$(NO_COLOR)                      build source codes and generate tar.gz file"
+	@echo -e "\t$(WARN_COLOR)pypi-test$(NO_COLOR)                upload tar.gz to pypi-test"
+	@echo -e "\t$(WARN_COLOR)pypi$(NO_COLOR)                     upload tar.gz to pypi"
 
 	@echo -e "\t$(OK_COLOR)--- rpm ---$(NO_COLOR)"	
-	@echo -e "\t$(WARN_COLOR)rpm$(NO_COLOR)                build source codes and generate rpm file"
-	@echo -e "\t$(WARN_COLOR)tarball$(NO_COLOR)            generate tarball of project"
-	@echo -e "\t$(WARN_COLOR)srpm$(NO_COLOR)               generate srpm of project"
-	@echo -e "\t$(WARN_COLOR)copr-upstream$(NO_COLOR)      generate srpm and send to build in upstream copr-fedora"
-	@echo -e "\t$(WARN_COLOR)all$(NO_COLOR)                clean test doc rpm"
-	@echo -e "\t$(WARN_COLOR)dev$(NO_COLOR)                clean, rpm and install PAWS locally"
+	@echo -e "\t$(WARN_COLOR)rpm$(NO_COLOR)                      build source codes and generate rpm file"
+	@echo -e "\t$(WARN_COLOR)tarball$(NO_COLOR)                  generate tarball of project"
+	@echo -e "\t$(WARN_COLOR)srpm$(NO_COLOR)                     generate srpm of project"
+	@echo -e "\t$(WARN_COLOR)copr-upstream$(NO_COLOR)            generate srpm and send to build in upstream copr-fedora (prod)"
+	@echo -e "\t$(WARN_COLOR)copr-upstream-devel$(NO_COLOR)      generate srpm and send to build in upstream copr-fedora (devel)"
+	@echo -e "\t$(WARN_COLOR)all$(NO_COLOR)                      clean test doc rpm"
+	@echo -e "\t$(WARN_COLOR)dev$(NO_COLOR)                      clean, rpm and install PAWS locally"
 	@echo -e "$(NO_COLOR)"
 
 all: clean test rpm
@@ -135,13 +136,24 @@ doc: prep set-version
 
 copr-upstream: srpm
 	# build in fedora copr
-	# you need to have a valid ~/.config/copr-fedora file to use copr-cli
+	# you need to have a valid ~/.config/copr file to use copr-cli
 	@echo "building source-code from branch $(BRANCH)"
 ifeq ("$(BRANCH)","master")
 	@echo -e "$(OK_COLOR)running build in https://copr.fedorainfracloud.org/coprs/eduardocerqueira/paws/$(NO_COLOR)"
-	@copr-cli --config /home/$(USER)/.config/copr-fedora build eduardocerqueira/paws $(RPMTOP)/SRPMS/$(SRPM)
+	@copr-cli --config /home/$(USER)/.config/copr build eduardocerqueira/paws $(RPMTOP)/SRPMS/$(SRPM)
 else
 	@echo -e "$(ERROR_COLOR)can't run build for branch != master to upstream$(NO_COLOR)"
+endif
+
+copr-upstream-devel: srpm
+	# build in fedora copr
+	# you need to have a valid ~/.config/copr file to use copr-cli
+	@echo "building source-code from branch $(BRANCH)"
+ifeq ("$(BRANCH)","devel")
+	@echo -e "$(OK_COLOR)running build in https://copr.fedorainfracloud.org/coprs/rywillia/paws-devel/$(NO_COLOR)"
+	@copr-cli --config /home/$(USER)/.config/copr build rywillia/paws-devel $(RPMTOP)/SRPMS/$(SRPM)
+else
+	@echo -e "$(ERROR_COLOR)can't run build for branch != devel to upstream$(NO_COLOR)"
 endif
 
 codecheck:
